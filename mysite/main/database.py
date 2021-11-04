@@ -4,6 +4,7 @@ from datetime import timedelta
 import pprint
 import re
 
+
 cluster = MongoClient(
     "mongodb+srv://group5:group5@cluster0.lbemc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 )
@@ -14,6 +15,12 @@ Room = db["Room"]
 Customer = db["Customer"]
 Amenities = db["Amenities"]
 Reservation = db["Reservation"]
+
+
+def strip_off_id(processthis):
+    for element in processthis:
+        element.pop("_id")
+    return processthis
 
 
 def make_hotel(
@@ -235,3 +242,11 @@ def get_customers():
 # hotel_by_index(0)
 # find_reservation_in_range(0, date_maker(3, 10, 2021), date_maker(6, 10, 2021))
 # print(hotel_has_vacancy(date_maker(3, 10, 2021), 0))  # day followed by
+
+# rooms = room_max_price(300)
+# rooms = strip_off_id(rooms)
+# hotels = get_all_hotels()
+# hotels = strip_off_id(hotels)
+
+
+# pprint.pprint(rooms)
