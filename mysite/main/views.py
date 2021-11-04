@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from main import database as db
 from .models import ToDoList, Item
-from .forms import CreateNewList
+from .forms import FindRoomMaxPrice
 
 # import database as db
 
@@ -28,20 +28,15 @@ def home(response):
     return render(response, "main/home.html", {})
 
 
-@csrf_exempt
-def create(response):
+# @csrf_exempt
+def form_max_price(response):
     if response.method == "POST":
-        form = CreateNewList(response.POST)
-
+        form = FindRoomMaxPrice(response.POST)
         if form.is_valid():
-            n = form.cleaned_data["name"]
-            t = ToDoList(name=n)
-            t.save()
-
-        return HttpResponseRedirect("/%i" % t.id)
+            p = form.cleaned_data["price"]
+            return HttpResponseRedirect("/maxprice/%i" % int(p))
 
     else:
-        form = CreateNewList()
-    form = CreateNewList()
+        form = FindRoomMaxPrice()
 
-    return render(response, "main/create.html", {"form": form})
+    return render(response, "main/maxprice.html", {"form": form})

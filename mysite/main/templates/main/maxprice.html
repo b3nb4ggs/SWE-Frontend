@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+
+{% block title %} Enter Max Price {% endblock %}
+
+{% block content %}
+
+Max Price
+<form method="post" action="/maxprice/">
+{% csrf_token %}
+{{form.as_p}}
+<button type="submit", name="save">Submit</button>
+
+{% endblock %}
