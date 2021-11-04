@@ -6,9 +6,7 @@ from main import database as db
 from .models import ToDoList, Item
 from .forms import FindRoomMaxPrice
 
-# import database as db
 
-# Create your views here.
 def strip_off_id(processthis):
     for element in processthis:
         element.pop("_id")
