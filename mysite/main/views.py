@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -31,11 +32,16 @@ def home(response):
 def create(response):
     if response.method == "POST":
         form = CreateNewList(response.POST)
+
         if form.is_valid():
             n = form.cleaned_data["name"]
             t = ToDoList(name=n)
             t.save()
-        else:
-            form = CreateNewList()
+
+        return HttpResponseRedirect("/%i" % t.id)
+
+    else:
+        form = CreateNewList()
     form = CreateNewList()
+
     return render(response, "main/create.html", {"form": form})
