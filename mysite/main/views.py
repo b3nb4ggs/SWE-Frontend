@@ -12,7 +12,7 @@ def strip_off_id(processthis):
     return processthis
 
 
-def index(response, id):
+def maxprice(response, id):
     price = int(id)
     ls = db.room_max_price(price)
     ls = strip_off_id(ls)
