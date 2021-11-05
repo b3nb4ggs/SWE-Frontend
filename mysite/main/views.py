@@ -19,6 +19,20 @@ def maxprice(response, id):
     ls = strip_off_id(ls)
     for item in ls:
         item["name"] = db.hotel_by_index(item["index"])[0]["name"]
+
+    if response.method == "POST":
+        print(response.POST)
+        if response.POST.get("save"):
+            for item in ls:
+                print(item)
+                # if response.POST.get("c" + str(item['whatever']) == "clicked"):
+                # print(item)
+
+        elif response.POST.get("newItem"):
+            txt = response.POST.get("new")
+            if len(txt) > 2:
+                print("length bigger thatn 2")
+
     return render(response, "main/list.html", {"roomlist": ls})
 
 
