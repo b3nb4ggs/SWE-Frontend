@@ -4,17 +4,25 @@
 {% block content %}
 
 <h1>Rooms and prices </h1>
+<form method="post" action="#">
+    {% csrf_token %}
 
 <ul>
     
 {% for item in roomlist %}
 
-<li>Hotel:{{item.name}} <br>Room type:{{item.type}}<br>Price:{{item.price}}<br>Weekend Price:{{item.weekend_price}}</li>
+<li>Hotel:{{item.name}} <br>Room type:{{item.type}}<br>
+    Price:{{item.price}}<br>Weekend Price:{{item.weekend_price}}
+    <input type="checkbox", value="clicked", name="c{{item.index}}">
+</li>
 
 {% endfor %}
 
 </ul>
-<!-- links work to redirect to our own stuff!!! this is going to be very helpful -->
-<a href="/maxprice/500">Link to 500 dollar rooms (links work)</a>
 
+<button type="submit", name="save", value="save">SAVE</button>
+<input type="text", name="new">
+<button type="submit", name="newItem", value="newItem">ADD</button>
+
+</form>
 {% endblock %}
