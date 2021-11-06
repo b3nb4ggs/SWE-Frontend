@@ -5,4 +5,5 @@ urlpatterns = [
     path("maxprice/<int:id>", views.maxprice, name="index"),
     path("", views.home, name="home"),
     path("maxprice/", views.form_max_price, name="maxprice form"),
+    path("create/", views.create, name="create"),
 ]
