@@ -36,6 +36,10 @@ def maxprice(response, id):
     return render(response, "main/list.html", {"roomlist": ls})
 
 
+def create(response):
+    return render(response, "main/create.html", {})
+
+
 def home(response):
     return render(response, "main/home.html", {})
 
