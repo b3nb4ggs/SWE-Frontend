@@ -37,7 +37,8 @@ def maxprice(response, id):
 
 
 def create(response):
-    return render(response, "main/create.html", {})
+    form = FindRoomMaxPrice()
+    return render(response, "main/create.html", {"form": form})
 
 
 def home(response):
