@@ -1,0 +1,14 @@
+{% block title %}
+        Filter Hotels
+{% endblock %}
+
+{% block content %}
+
+<form method="get" action="/filter/">
+		{% csrf_token %}
+		{{form.as_p}}
+		<button type="submit", name="filter">Filter</button>
+	</form>
+{% endblock %}
+
+
