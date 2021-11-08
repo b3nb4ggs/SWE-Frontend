@@ -8,4 +8,5 @@ urlpatterns = [
     path("maxprice/", views.form_max_price, name="maxprice form"),
     path("create/", views.create, name="create"),
     path("register/", v.register, name="register"),
+    path("proto/", views.proto, name="proto"),
 ]

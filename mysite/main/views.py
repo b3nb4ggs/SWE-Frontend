@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from main import database as db
 from .models import ToDoList, Item
-from .forms import FindRoomMaxPrice
+from .forms import FindRoomMaxPrice, Search
 
 
 def strip_off_id(processthis):
@@ -43,6 +43,23 @@ def create(response):
 
 def home(response):
     return render(response, "main/home.html", {})
+
+
+def proto(response):
+    if response.method == "POST":
+        form = Search(response.POST)
+        if form.is_valid():
+            # checkin = form.cleaned_data["checkin"]
+            # checkout = form.cleaned_data["checkout"]
+            # rooms = form.cleaned_data["numRooms"]
+            # guests = form.cleaned_data["numGuests"]
+            # search = {"form": form}
+            # return HttpResponseRedirect("/filterHotels")
+
+            print(form.cleaned_data["check_in"])
+    else:
+        form = Search()
+    return render(response, "main/homeK.html", {"form": form})
 
 
 # @csrf_exempt
