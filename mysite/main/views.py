@@ -45,6 +45,23 @@ def home(response):
     return render(response, "main/home.html", {})
 
 
+def next_page(response):
+    if response.method == "POST":
+        form = Search(response.POST)
+        if form.is_valid():
+            # checkin = form.cleaned_data["checkin"]
+            # checkout = form.cleaned_data["checkout"]
+            # rooms = form.cleaned_data["numRooms"]
+            # guests = form.cleaned_data["numGuests"]
+            # search = {"form": form}
+            # return HttpResponseRedirect("/filterHotels")
+
+            print(form.cleaned_data["check_in"])
+    else:
+        form = Search()
+    return render(response, "main/homeK.html", {"form": form})
+
+
 def proto(response):
     if response.method == "POST":
         form = Search(response.POST)

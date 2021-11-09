@@ -6,7 +6,7 @@
 
 {% block content %}
 	<h1>Find a hotel </h1>
-	<form method="post" action="/proto/">
+	<form method="post" action="/nextpage/">
 		{% csrf_token %}
 		{{form.as_p}}
 		<button type="submit", name="Search">Search</button>
