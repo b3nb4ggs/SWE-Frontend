@@ -12,11 +12,6 @@ from django.forms import widgets
 def home(request):
 	form = Search(request.GET)
 	if form.is_valid():
-		#checkin = form.cleaned_data["checkin"]
-		#checkout = form.cleaned_data["checkout"]
-		#rooms = form.cleaned_data["numRooms"]
-		#guests = form.cleaned_data["numGuests"]
-		#search = {"form":form}
 		request.session["search_form"] = request.GET.dict()
 		return redirect("/filterHotels")
 
@@ -40,17 +35,26 @@ def login(response):
 	form = Login(response.POST)
 	return render(response, "main/login.html", {"form": form})
 
-def filterHotels(request):
-	form_data = request.session.pop('search_form', {})
-	checkin = form_data.get("checkin")
-	checkout = form_data.get("checkout")
-	numRooms = form_data.get("numRooms")
-	numGuests = form_data.get("numGuests")
-	properties = Property.objects.all()
-	reservations = Reservation.objects.all()
-	form = Filter(initial={"checkin": checkin, "checkout":checkout, "numGuests":numGuests,"numRooms":numRooms})
-		
-	return render(request, "main/filter.html", {"form":form, "properties":properties, "reservations":reservations})
+def filterHotels(response):
+	#if request is coming from Search page	
+	if response.method == "GET":
+		form_data = response.session.pop('search_form', {})
+		checkin = form_data.get("checkin")
+		checkout = form_data.get("checkout")
+		numRooms = form_data.get("numRooms")
+		numGuests = form_data.get("numGuests")
+		properties = Property.objects.all() #get list of all property objects
+		reservations = Reservation.objects.all() #get list of all reservation objects
+		form = Filter(initial={"checkin": checkin, "checkout":checkout, "numGuests":numGuests,"numRooms":numRooms})
+		return render(response, "main/filter.html", {"form":form, "checkin":checkin, "properties":properties, "reservations":reservations})
+	
+	#if response is coming from Filter page
+	if response.method == "POST":
+		form = Filter(response.POST)
+		properties = Property.objects.all() #get list of all property objects
+		reservations = Reservation.objects.all() #get list of all reservation objects
+		return render(response, "main/filter.html", {"form":form, "properties":properties, "reservations":reservations})
+
 
 def makeReservation(response):
 	return HttpResponse("Make reservation")
