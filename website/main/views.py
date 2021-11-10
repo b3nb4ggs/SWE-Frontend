@@ -61,16 +61,27 @@ def makeReservation(response):
 		form = response.POST
 		roomType = form.get("roomType")
 		propertyId = form.get("propertyId")
+		property = Property.objects.get(id=propertyId)
 		checkin = form.get("checkin")
 		checkout = form.get("checkout")
+		numRooms = form.get("numRooms")
+		numNights = "X" # calculate from checkin and checkout
+		avgRate = "Y" #calculate from property info
+		total = "Z" #calculate from property info
+		# user = #pass in object of logged in user
 		#query database for room type's nightly price and weekend dif
 		#calculate weekend dif and nightly rate to get and average and total price
 		#pass current user information to the page
-		return redirect("/makeReservation", {"propertyId": propertyId, "roomType": roomType, "checkin": checkin, "checkout": checkout})
-	return render(response, "main/makeReservation.html")
+		return render(response, "main/makeReservation.html", {"form": form, "property": property, "numNights": numNights, "avgRate": avgRate, "total": total,"numRooms":numRooms, "roomType": roomType, "checkin": checkin, "checkout": checkout})
+	#return render(response, "main/makeReservation.html")
 
 def confirmReservation(response):
-	return HttpResponse("Confirm reservation")
+	if response.method == "POST":
+		#create reservation object with new id and add it to the database
+		form = response.POST
+		#reservation = reservation object that was just created
+		#property = property for which reservation was made
+		return render(response, "main/confirmReservation.html") # "reservation": reservation, "property": property)
 
 def viewReservations(response):
 	return HttpResponse("View my reservations")

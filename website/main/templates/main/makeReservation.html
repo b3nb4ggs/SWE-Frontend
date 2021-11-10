@@ -1,18 +1,40 @@
 {% block title %}
-        Reservation Page
+        <h1> Reservation Details</h1>
 {% endblock %}
 
 {% block content %}
 
-<h1> Reserve Room </h1>
+
+    	<table>
+        <td>
+            <tr><h2>Reservation Info</h2></tr>
+            <tr>{{property.name}}</tr> <br>
+            <tr>{{ numRooms }} {{roomType}}(s) for {{ numNights }} nights</tr> <br>
+            <tr>Check-in: {{ checkin }} Check-out: {{ checkout }}</tr> <br>
+            <tr>Hotel Amenities: {{property.amenities}}</tr> <br>
+        </td>
+        <td>
+            <tr><h2>Price Summary</h2></tr>
+            <tr>{{numNights}} Night Stay</tr> <br>
+            <tr>Average rate per night: ${{ avgRate }}</tr> <br>
+            <tr>Total cost: ${{ total }}</tr> <br>
+        </td>
+        <td>
+            <tr><h2>Your Information</h2></tr>
+            <tr>Username:  </tr> <br>
+            <tr>Name: </tr> <br>
+            <tr>Email: </tr> <br>
+            <tr>Phone Number: </tr>
+
+        </td>
+        </table>
 <table>
 	<td>
 	<form method="post" action="/confirmReservation/">
+        {% csrf_token %}
+        <!---Add reservation to database--->
 		<button type="submit", name="confirm">Confirm Reservation</button>
 	</form>
-    </td>
-    <td>
-        {{ propertyId }}
     </td>
 </table>
 
