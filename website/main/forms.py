@@ -47,4 +47,3 @@ class Filter(forms.Form):
 	class Meta(forms.Form):
 		widgets = {"checkin": dateinput()}
 
-#class CreateReservation(forms.Form):
