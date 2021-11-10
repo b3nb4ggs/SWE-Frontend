@@ -20,9 +20,9 @@ Reservation = db["Reservation"]
 Experiment = db["Experiment"]
 
 
-def add_enumerated_amenity():
-    add = {"Pool": False, "Gym": True, "Spa": False}
-    Experiment.insert_one(add)
+# def add_enumerated_amenity():
+#     add = {"Pool": False, "Gym": True, "Spa": False}
+#     Experiment.insert_one(add)
 
 
 def strip_off_id(processthis):
@@ -155,8 +155,19 @@ def room_price_range(low, high):
 
 
 def room_amenity():
-    query = {"0": {"$eq": "Pool"}}
-    result = Amenities.find(query)
+    cursor = db['collection'].find({})
+    for document in cursor: 
+        print(document.keys())  
+        
+    # print all fields of this document.
+    # Amenities.createIndex( { "$**": "text" } )
+    # cursor = collection.find({ $text: { $search: 'stringYouAreLookingFor' } })
+    # Amenities.createIndex({ "$**": "text" },{ "name": "TextIndex" })
+    # result = Amenities.find({ "$text" : { "$search" : "Pool" } })
+    # Amenities.create_index({ "Amenities.value" : 1})
+    # result = Amenities.find({ "Amenities.value" : "Pool" })
+    # query = {"0": {"$eq": "Pool"}}
+    # result = Amenities.find(query)
     return list(result)
 
 
@@ -275,5 +286,4 @@ def get_customers():
 # Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})
 
 result = room_amenity()
-print(result)
 pprint.pprint(result)
