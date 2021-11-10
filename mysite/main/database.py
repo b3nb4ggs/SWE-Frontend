@@ -154,20 +154,9 @@ def room_price_range(low, high):
     return result
 
 
-def room_amenity():
-    cursor = db['collection'].find({})
-    for document in cursor: 
-        print(document.keys())  
+
         
-    # print all fields of this document.
-    # Amenities.createIndex( { "$**": "text" } )
-    # cursor = collection.find({ $text: { $search: 'stringYouAreLookingFor' } })
-    # Amenities.createIndex({ "$**": "text" },{ "name": "TextIndex" })
-    # result = Amenities.find({ "$text" : { "$search" : "Pool" } })
-    # Amenities.create_index({ "Amenities.value" : 1})
-    # result = Amenities.find({ "Amenities.value" : "Pool" })
-    # query = {"0": {"$eq": "Pool"}}
-    # result = Amenities.find(query)
+    
     return list(result)
 
 
@@ -285,5 +274,16 @@ def get_customers():
 # wierdobject = result["_id"]
 # Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})
 
-result = room_amenity()
-pprint.pprint(result)
+def room_by_amenity(amenity):
+    output = []
+    get_all = Amenities.find({})
+    get_all = list(get_all)
+    get_all = strip_off_id(get_all)
+    for item in get_all: 
+        for thing in item:
+            if item[thing]==amenity:
+                output.append(item)
+    return output
+      
+# result = room_by_amenity("Gym")
+# pprint.pprint(result)
