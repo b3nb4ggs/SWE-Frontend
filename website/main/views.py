@@ -57,7 +57,17 @@ def filterHotels(response):
 
 
 def makeReservation(response):
-	return HttpResponse("Make reservation")
+	if response.method == "POST":
+		form = response.POST
+		roomType = form.get("roomType")
+		propertyId = form.get("propertyId")
+		checkin = form.get("checkin")
+		checkout = form.get("checkout")
+		#query database for room type's nightly price and weekend dif
+		#calculate weekend dif and nightly rate to get and average and total price
+		#pass current user information to the page
+		return redirect("/makeReservation", {"propertyId": propertyId, "roomType": roomType, "checkin": checkin, "checkout": checkout})
+	return render(response, "main/makeReservation.html")
 
 def confirmReservation(response):
 	return HttpResponse("Confirm reservation")
