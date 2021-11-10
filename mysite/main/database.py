@@ -1,3 +1,4 @@
+from warnings import resetwarnings
 from pymongo import MongoClient
 from datetime import datetime
 from datetime import timedelta
@@ -153,6 +154,12 @@ def room_price_range(low, high):
     return result
 
 
+def room_amenity():
+    query = {"0": {"$eq": "Pool"}}
+    result = Amenities.find(query)
+    return list(result)
+
+
 # helper function for date time where you just enter year month day
 def date_maker(day, month, year):
     return datetime(year, month, day)
@@ -266,3 +273,7 @@ def get_customers():
 # result = Experiment.find_one({})
 # wierdobject = result["_id"]
 # Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})
+
+result = room_amenity()
+print(result)
+pprint.pprint(result)
