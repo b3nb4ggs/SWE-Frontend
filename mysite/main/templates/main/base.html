@@ -45,7 +45,7 @@
     <div class="sidenav">
         <a href="/">Home</a>
         <a href="/maxprice/">Find by price</a>
-        <a href="/2">Find by amenity</a>
+        <a href="/reservation/">Reservations</a>
     </div>
 
     <div class="main" id="content", name="content" >
@@ -53,9 +53,21 @@
         <div class = "col-8">
             <h1 class ="mt-2">Hotel Project</h1>
             <hr class= "mt-0 mb-4">
-            
+
         {% block content %}
         {% endblock %}
+
+        {% if user.is_authenticated %}
+        <br>
+        <a href="/logout/">Logout</a>
+        {% else %}
+        <br>
+        <a href="/register/">Create a user</a>
+        <br>
+        <a href="/login/">Login</a>
+        <br>
+
+        {% endif %}
 
     </div>
 </div>

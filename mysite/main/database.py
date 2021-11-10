@@ -16,6 +16,13 @@ Customer = db["Customer"]
 Amenities = db["Amenities"]
 Reservation = db["Reservation"]
 
+Experiment = db["Experiment"]
+
+
+def add_enumerated_amenity():
+    add = {"Pool": False, "Gym": True, "Spa": False}
+    Experiment.insert_one(add)
+
 
 def strip_off_id(processthis):
     for element in processthis:
@@ -49,6 +56,13 @@ def make_hotel(
         Amenities.insert_one(amenity_dict)
     except:
         print("Unable to make hotel")
+
+
+def search_hotel(name: str):
+    pattern = re.compile(name, re.I)
+    query = {"name": {"$regex": pattern}}
+    result = Hotel.find(query)
+    return list(result)
 
 
 def number_of_days(in_date: datetime, out_date: datetime):
@@ -244,6 +258,11 @@ def get_customers():
 # rooms = strip_off_id(rooms)
 # hotels = get_all_hotels()
 # hotels = strip_off_id(hotels)
-
-
 # pprint.pprint(rooms)
+# result = search_hotel("All")
+# pprint.pprint(result)
+
+
+# result = Experiment.find_one({})
+# wierdobject = result["_id"]
+# Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})

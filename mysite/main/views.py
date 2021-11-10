@@ -42,7 +42,9 @@ def create(response):
 
 
 def home(response):
-    return render(response, "main/home.html", {})
+    name = response.user
+    print(name)
+    return render(response, "main/home.html", {"name": name})
 
 
 def next_page(response):
