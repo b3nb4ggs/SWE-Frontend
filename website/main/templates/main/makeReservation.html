@@ -1,0 +1,19 @@
+{% block title %}
+        Reservation Page
+{% endblock %}
+
+{% block content %}
+
+<h1> Reserve Room </h1>
+<table>
+	<td>
+	<form method="post" action="/confirmReservation/">
+		<button type="submit", name="confirm">Confirm Reservation</button>
+	</form>
+    </td>
+    <td>
+        {{ propertyId }}
+    </td>
+</table>
+
+{% endblock %}

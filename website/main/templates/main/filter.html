@@ -31,13 +31,22 @@
             <td>{{property.priceStandard}}</td>
             <td>{{property.weekendDiff}}</td>
             <td>{{property.amenities}}</td>
+            <td> 	<form method="post" action="/makeReservation/">
+                    {% csrf_token %}
+                    <input type="hidden" name="propertyId" value={{ property.id }}>
+                    <input type="hidden" name="roomType" value="room">
+                    <input type="hidden" name="checkin" value="checkin">
+                    <input type="hidden" name="checkout" value="checkout">
+		            <button type="submit", name="book">Book Room</button>
+	                </form>
+            </td>
           </tr>
 		{% endfor %}
         </tbody>
       </table>
 	</td>
     <td>
-        {{ form.checkin }}
+
     </td>
 </table>
 {% endblock %}
