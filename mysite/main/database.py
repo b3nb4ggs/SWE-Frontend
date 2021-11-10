@@ -172,9 +172,7 @@ def hotel_has_vacancy(day: datetime, hotel_index: int):
         return True
 
 
-def make_customer(
-    uname: str, pw: str, fname: str, lname: str, address: str, phone: str
-):
+def make_customer(uname: str, pw: str, fname: str, lname: str, phone: str):
     index = Customer.count_documents({})
     id = int(index)
     post = {
@@ -183,7 +181,6 @@ def make_customer(
         "password": pw,
         "first_name": fname,
         "last_name": lname,
-        "address": address,
         "phone": phone,
     }
     Customer.insert_one(post)
