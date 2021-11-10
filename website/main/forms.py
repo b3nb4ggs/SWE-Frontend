@@ -37,13 +37,22 @@ class Search(forms.Form):
 
 
 class Filter(forms.Form):
+	checkin = forms.DateField(widget=dateinput, required=True)
+	checkout = forms.DateField(widget=dateinput, required=True)
+	numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
+	numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES, required=True)
+	roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
+	amenities = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=AMENITIES, required=False)
+	priceRange = forms.MultipleChoiceField(label="Your Budget",widget=forms.CheckboxSelectMultiple,choices=PRICE_RANGE, required=False)
+	class Meta(forms.Form):
+		widgets = {"checkin": dateinput()}
+
+class Reserve(forms.Form):
 	checkin = forms.DateField(widget=dateinput)
 	checkout = forms.DateField(widget=dateinput)
 	numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES)
 	numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES)
 	roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES)
-	amenities = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices=AMENITIES)
-	priceRange = forms.MultipleChoiceField(label="Your Budget",widget=forms.CheckboxSelectMultiple,choices=PRICE_RANGE)
-	class Meta(forms.Form):
-		widgets = {"checkin": dateinput()}
 
+	class Meta(forms.Form):
+		widgets = {'checkin': forms.HiddenInput(), 'checkout': forms.HiddenInput(), 'numRooms': forms.HiddenInput(), 'numGuests': forms.HiddenInput(), 'roomType': forms.HiddenInput  }

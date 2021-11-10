@@ -20,7 +20,6 @@
           <tr>
             <th>Name</th>
             <th>Price {{ form.roomType }}</th>
-            <th>Weekend Diff</th>
 	    <th>Amenities</th>
           </tr>
         </thead>
@@ -29,15 +28,14 @@
           <tr>
             <td>{{property.name}}</td>
             <td>{{property.priceStandard}}</td>
-            <td>{{property.weekendDiff}}</td>
             <td>{{property.amenities}}</td>
-            <td> 	<form method="post" action="/makeReservation/">
+            <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
                     {% csrf_token %}
                     <input type="hidden" name="propertyId" value={{ property.id }}>
-                    <input type="hidden" name="roomType" value="room">
-                    <input type="hidden" name="checkin" value="checkin">
-                    <input type="hidden" name="checkout" value="checkout" >
-                    <input type="hidden" name="numRooms" value="1">
+                    <input type="hidden" name="roomType" value={{ roomType }}>
+                    <input type="hidden" name="checkin" value={{ checkin }}>
+                    <input type="hidden" name="checkout" value={{ checkout }} >
+                    <input type="hidden" name="numRooms" value={{ numRooms }}>
 		            <button type="submit", name="book">Book Room</button>
 	                </form>
             </td>
