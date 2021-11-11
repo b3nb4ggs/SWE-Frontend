@@ -62,6 +62,44 @@ def delete_hotel(index: int):
     Amenities.delete_many({"index": index})
 
 
+def update_hotel(
+    index: int,
+    name: str,
+    no_rooms: int,
+    differential: int,
+    amenities: list,
+    Rooms: dict,
+):
+    delete_hotel(index)
+    id = int(index)
+    post = {
+        "index": id,
+        "name": name,
+        "weekend_differential": differential,
+        "rooms": no_rooms,
+    }
+    for type in Rooms:
+        post[type["type"]] = type["number"]
+
+    # The amenities
+    amenity_dict = {k: v for k, v in enumerate(amenities)}
+    amenity_dict = {str(v): True for k, v in amenity_dict.items()}
+    amenity_dict["index"] = id
+
+    # The rooms already keys value pairs
+    for room in Rooms:
+        room["weekend_price"] = room["price"] * (differential + 100) / 100
+        room["index"] = id
+
+    # Put them in the database
+    try:
+        Hotel.insert_one(post)
+        Room.insert_many(Rooms)
+        Amenities.insert_one(amenity_dict)
+    except:
+        print("Unable to make hotel")
+
+
 def search_hotel(name: str):
     pattern = re.compile(name, re.I)
     query = {"name": {"$regex": pattern}}
