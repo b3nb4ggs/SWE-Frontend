@@ -56,6 +56,12 @@ def make_hotel(
         print("Unable to make hotel")
 
 
+def delete_hotel(index: int):
+    Hotel.delete_many({"index": index})
+    Room.delete_many({"index": index})
+    Amenities.delete_many({"index": index})
+
+
 def search_hotel(name: str):
     pattern = re.compile(name, re.I)
     query = {"name": {"$regex": pattern}}
@@ -101,7 +107,10 @@ def make_reservation(
 
     total_cost = (total_weekdays * weekday_price) + (total_weekend_days * weekend_price)
 
+    index = Reservation.count_documents({})
+
     post = {
+        "index": index,
         "made_on": datetime.utcnow(),
         "in": in_date,
         "out": out_date,
@@ -279,3 +288,6 @@ def get_customers():
 
 
 # pprint.pprint(room_amenity_range_type(0, 200, ["Gym", "Pool", "Spa"], "Standard"))
+
+
+# delete_hotel(10)
