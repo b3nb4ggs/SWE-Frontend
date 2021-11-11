@@ -150,7 +150,21 @@ def room_price_range(low, high):
     result = list(Room.find(query))
     return result
 
+
+def room_amenity(amenity: list):
+    query = {str(v): True for v in amenity}
+    result = Amenities.find(query)
     return list(result)
+
+
+def room_amenity_range_type(low: int, high: int, amenity: list, type: str):
+    query = {str(v): True for v in amenity}
+    result = Amenities.find(query)
+    hotels = [l["index"] for l in result]
+    rooms = room_price_range(low, high)
+    output = [x for x in rooms if x["index"] in hotels]
+    final_output = [x for x in output if x["type"] == type]
+    return final_output
 
 
 # helper function for date time where you just enter year month day
@@ -261,3 +275,7 @@ def get_customers():
 # pprint.pprint(rooms)
 # result = search_hotel("All")
 # pprint.pprint(result)
+# pprint.pprint(room_amenity(["Gym", "Pool", "Spa"]))
+
+
+# pprint.pprint(room_amenity_range_type(0, 200, ["Gym", "Pool", "Spa"], "Standard"))
