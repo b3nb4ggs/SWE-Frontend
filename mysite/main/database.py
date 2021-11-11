@@ -17,13 +17,6 @@ Customer = db["Customer"]
 Amenities = db["Amenities"]
 Reservation = db["Reservation"]
 
-Experiment = db["Experiment"]
-
-
-# def add_enumerated_amenity():
-#     add = {"Pool": False, "Gym": True, "Spa": False}
-#     Experiment.insert_one(add)
-
 
 def strip_off_id(processthis):
     for element in processthis:
@@ -42,6 +35,8 @@ def make_hotel(
         "weekend_differential": differential,
         "rooms": no_rooms,
     }
+    for type in Rooms:
+        post[type["type"]] = type["number"]
     # The amenities
     amenity_dict = {k: v for k, v in enumerate(amenities)}
     amenity_dict["index"] = id
@@ -50,6 +45,7 @@ def make_hotel(
     for room in Rooms:
         room["weekend_price"] = room["price"] * (differential + 100) / 100
         room["index"] = id
+
     # Put them in the database
     try:
         Hotel.insert_one(post)
@@ -153,10 +149,6 @@ def room_price_range(low, high):
     result = list(Room.find(query))
     return result
 
-
-
-        
-    
     return list(result)
 
 
@@ -216,15 +208,15 @@ def get_customers():
 # ----------------------------------------------CUSTOMER FUNCTIONS------------------------------------------------------------------------------------------
 # make_customer("b3nb4ggs", "password", "Ben", "Baggs", "1234 Doepp", "555-837-0309")
 # -----------------------------------------------------ENTER HOTELS INTO DATABASE---------------------------------------------------------------------------
-# make_hotel(
+# result = make_hotel(
 #     "Rio Inn",
 #     50,
 #     20,
 #     ["Pool"],
 #     [
-#         {"type": "Standard", "price": 25},
-#         {"type": "Queen", "price": 55},
-#         {"type": "King", "price": 89},
+#         {"type": "Standard", "price": 25, "number": 25},
+#         {"type": "Queen", "price": 55, "number": 15},
+#         {"type": "King", "price": 89, "number": 10},
 #     ],
 # )
 # ----------------------------------------------------QUERY ROOMS----------------------------------------------------------------------------------------
@@ -274,16 +266,16 @@ def get_customers():
 # wierdobject = result["_id"]
 # Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})
 
-def room_by_amenity(amenity):
-    output = []
-    get_all = Amenities.find({})
-    get_all = list(get_all)
-    get_all = strip_off_id(get_all)
-    for item in get_all: 
-        for thing in item:
-            if item[thing]==amenity:
-                output.append(item)
-    return output
-      
+# def room_by_amenity(amenity):
+#     output = []
+#     get_all = Amenities.find({})
+#     get_all = list(get_all)
+#     get_all = strip_off_id(get_all)
+#     for item in get_all:
+#         for thing in item:
+#             if item[thing]==amenity:
+#                 output.append(item)
+#     return output
+
 # result = room_by_amenity("Gym")
 # pprint.pprint(result)
