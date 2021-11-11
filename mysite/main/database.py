@@ -232,19 +232,32 @@ def find_reservation_in_range(hotel_index: int, in_date: datetime, out_date: dat
     return result
 
 
-# Returns true if there is occupancy on a specific day.  Otherwise false (should prevent reservations from being made if beds are full)
-def hotel_has_vacancy(day: datetime, hotel_index: int):
+def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     day_before = datetime(day.year, day.month, day.day, 23, 59, 59)
     day_after = date_maker(day.day + 1, day.month, day.year)
-    query = {"hotel": hotel_index, "in": {"$lt": day_after, "$gte": day_before}}
-    number_of_reservations = Reservation.count_documents(query)
-    result = Hotel.find_one({"index": hotel_index})
-    number_of_rooms = result["rooms"]
 
-    if number_of_rooms - number_of_reservations <= 0:
-        return False
-    else:
-        return True
+    query = {
+        "hotel": hotel_index,
+        "in": {"$lt": day_after},
+        "out": {"$gte": day_before},
+        "type": type,
+    }
+    number_of_reservations = Reservation.count_documents(query)
+
+    result = Hotel.find_one({"index": hotel_index})
+    number_of_rooms = result[type]
+    return number_of_rooms - number_of_reservations
+
+
+def hotel_vacancy_range(
+    in_date: datetime, out_date: datetime, hotel_index: int, type: str
+):
+    room_vacancy_by_day = []
+    iterable_days = number_of_days(in_date, out_date)
+    for day in range(iterable_days):
+        room_vacancy_by_day.append(hotel_has_vacancy(in_date, hotel_index, type))
+        in_date += timedelta(days=1)
+    return room_vacancy_by_day
 
 
 def make_customer(uname: str, pw: str, fname: str, lname: str, phone: str):
@@ -329,3 +342,10 @@ def get_customers():
 
 
 # delete_hotel(10)
+
+
+# print(
+#     hotel_vacancy_range(
+#         date_maker(5, 11, 2021), date_maker(20, 11, 2021), 2, "Standard"
+#     )
+# )
