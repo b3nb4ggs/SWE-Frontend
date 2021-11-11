@@ -5,7 +5,6 @@ from datetime import timedelta
 import pprint
 import re
 
-
 cluster = MongoClient(
     "mongodb+srv://group5:group5@cluster0.lbemc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 )
@@ -37,10 +36,12 @@ def make_hotel(
     }
     for type in Rooms:
         post[type["type"]] = type["number"]
+
     # The amenities
     amenity_dict = {k: v for k, v in enumerate(amenities)}
+    amenity_dict = {str(v): True for k, v in amenity_dict.items()}
     amenity_dict["index"] = id
-    amenity_dict = {str(k): v for k, v in amenity_dict.items()}
+
     # The rooms already keys value pairs
     for room in Rooms:
         room["weekend_price"] = room["price"] * (differential + 100) / 100
@@ -259,23 +260,4 @@ def get_customers():
 # hotels = strip_off_id(hotels)
 # pprint.pprint(rooms)
 # result = search_hotel("All")
-# pprint.pprint(result)
-
-
-# result = Experiment.find_one({})
-# wierdobject = result["_id"]
-# Experiment.find_one_and_update({"_id": wierdobject}, {"$set": {"newfield": "abc"}})
-
-# def room_by_amenity(amenity):
-#     output = []
-#     get_all = Amenities.find({})
-#     get_all = list(get_all)
-#     get_all = strip_off_id(get_all)
-#     for item in get_all:
-#         for thing in item:
-#             if item[thing]==amenity:
-#                 output.append(item)
-#     return output
-
-# result = room_by_amenity("Gym")
 # pprint.pprint(result)
