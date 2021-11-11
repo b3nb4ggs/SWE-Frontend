@@ -8,16 +8,16 @@
     	<table>
         <td>
             <tr><h2>Reservation Info</h2></tr>
-            <tr><< property name >> {{property.name}}</tr> <br>
-            <tr><< numRooms >>{{ numRooms }} << room type >> {{roomType}}(s) for << num nights >> {{ numNights }} nights</tr> <br>
-            <tr>Check-in: << checkin >{{ checkin }} Check-out: << checkout >> {{ checkout }}</tr> <br>
-            <tr>Hotel Amenities: << amenities list >> {{property.amenities}}</tr> <br>
+            <tr>{{property.name}}</tr> <br>
+            <tr>{{ context.numRooms }} {{context.roomType}} Room(s) for {{ context.numNights }} nights</tr> <br>
+            <tr>Check-in: {{ context.checkin }} Check-out: {{ context.checkout }}</tr> <br>
+            <tr>Hotel Amenities: {{property.amenities}}</tr> <br>
         </td>
         <td>
             <tr><h2>Price Summary</h2></tr>
-            <tr><< numNights >> {{numNights}} Night Stay</tr> <br>
-            <tr>Average rate per night: $<< avg rate>> {{ avgRate }}</tr> <br>
-            <tr>Total cost: $<< total >> {{ total }}</tr> <br>
+            <tr>{{context.numNights}} Night Stay</tr> <br>
+            <tr>Average rate per night: ${{ context.avgRate }}</tr> <br>
+            <tr>Total cost: ${{ context.total }}</tr> <br>
         </td>
         <td>
             <tr><h2>Your Information</h2></tr>
