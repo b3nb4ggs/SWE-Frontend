@@ -89,6 +89,7 @@ def makeReservation(response):
 		context["numNights"] = numNights
 		context["avgRate"] = avgRate
 		context["total"] = totalCost
+		# user = get current user object and pass it to the page 
 
 		return render(response, "main/makeReservation.html", {"context":context, "property":property})
 

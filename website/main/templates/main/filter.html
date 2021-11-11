@@ -27,7 +27,15 @@
 	    {% for property in properties %}
           <tr>
             <td>{{property.name}}</td>
-            <td>{{property.priceStandard}}</td>
+            <td>
+                {% if roomType == "Standard" %}
+                  {{property.priceStandard}}
+                {% elif roomType == "Queen" %}
+                    {{property.priceQueen}}
+                {% else %}
+                    {{ property.priceKing }}
+                {% endif %}
+            </td>
             <td>{{property.amenities}}</td>
               <td> <a href="/makeReservation/?id={{property.id}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
           </tr>
