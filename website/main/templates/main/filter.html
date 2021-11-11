@@ -8,7 +8,7 @@
 <table>
 	<tr>
 	<td>
-	<form method="post" action="/filter/">
+	<form method="POST" id="filter" action="/filter/">
 		{% csrf_token %}
 		{{form.as_p}}
 		<button type="submit", name="filter">Filter</button>
@@ -19,7 +19,7 @@
 	<thead>
           <tr>
             <th>Name</th>
-            <th>Price {{ form.roomType }}</th>
+            <th>Price {{ roomType }}</th>
 	    <th>Amenities</th>
           </tr>
         </thead>
@@ -29,16 +29,7 @@
             <td>{{property.name}}</td>
             <td>{{property.priceStandard}}</td>
             <td>{{property.amenities}}</td>
-            <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
-                    {% csrf_token %}
-                    <input type="hidden" name="propertyId" value={{ property.id }}>
-                    <input type="hidden" name="roomType" value={{ roomType }}>
-                    <input type="hidden" name="checkin" value={{ checkin }}>
-                    <input type="hidden" name="checkout" value={{ checkout }} >
-                    <input type="hidden" name="numRooms" value={{ numRooms }}>
-		            <button type="submit", name="book">Book Room</button>
-	                </form>
-            </td>
+              <td> <a href="/makeReservation/?id={{property.id}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
           </tr>
 		{% endfor %}
         </tbody>

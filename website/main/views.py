@@ -43,48 +43,56 @@ def filterHotels(response):
 		checkout = form_data.get("checkout")
 		numRooms = form_data.get("numRooms")
 		numGuests = form_data.get("numGuests")
-		roomType = form_data.get("roomType")
+		roomType = "Standard"
 		properties = Property.objects.all() #get list of all property objects
 		reservations = Reservation.objects.all() #get list of all reservation objects
-		form = Filter(initial={"checkin": checkin, "checkout":checkout, "numGuests":numGuests,"numRooms":numRooms})
-		return render(response, "main/filter.html", {"form":form, "checkin":checkin, "roomType": roomType, "numRooms": numRooms, "numGuests": numGuests, "checkout":checkout, "properties":properties, "reservations":reservations})
+		form = Filter(initial={"checkin": checkin, "checkout":checkout, "numGuests":numGuests,"numRooms":numRooms, "roomType": roomType})
+		return render(response, "main/filter.html", {"form":form, "form_data": form_data, "checkin":checkin, "roomType":roomType, "numRooms": numRooms, "numGuests": numGuests, "checkout":checkout, "properties":properties, "reservations":reservations})
 	
 	#if response is coming from Filter page
 	if response.method == "POST":
 		form = Filter(response.POST)
+		form_data = response.POST.dict()
+		checkin = form_data.get("checkin")
+		checkout = form_data.get("checkout")
+		numRooms = form_data.get("numRooms")
+		numGuests = form_data.get("numGuests")
+		roomType = form_data.get("roomType")
 		properties = Property.objects.all() #get list of all property objects
 		reservations = Reservation.objects.all() #get list of all reservation objects
-		return render(response, "main/filter.html", {"form":form, "properties":properties, "reservations":reservations})
+		return render(response, "main/filter.html", {"form":form, "checkin":checkin, "numGuests":numGuests, "roomType":roomType, "numRooms":numRooms, "checkout": checkout, "properties":properties, "reservations":reservations})
 
 
 def makeReservation(response):
-	if response.method == "POST":
-		form = Filter(response.POST)
-		#form = response.POST
-		# print(form.cleaned_data["checkin"])
-		# roomType = form.get("roomType")
-		# checkin = form.get("checkin")
-		# checkout = form.get("checkout")
-		# numRooms = form.get("numRooms")
-		# numGuests = form.get("numGuests")
-		if(form.is_valid()):
-			roomType = form.cleaned_data["roomType"]
-			propertyId = form.cleaned_data["checkin"]
-			checkin = form.cleaned_data("checkin")
-			checkout = form.cleaned_data("checkout")
-			numRooms = form.cleaned_data("numRooms")
-			numGuests = form.cleaned_data("numGuests")
-			propertyId = form.cleaned_data("propertyId")
-			property = Property.objects.get(id=propertyId)
-			numNights = "X" # calculate from checkin and checkout
-			avgRate = "Y" #calculate from property info
-			total = "Z" #calculate from property info
-			# user = #pass in object of logged in user
-			#query database for room type's nightly price and weekend dif
-			#calculate weekend dif and nightly rate to get and average and total price
-			#pass current user information to the page
-			return render(response, "main/makeReservation.html", {"form": form, "numGuests": numGuests, "property": property, "numNights": numNights, "avgRate": avgRate, "total": total,"numRooms":numRooms, "roomType": roomType, "checkin": checkin, "checkout": checkout})
-	return render(response, "main/makeReservation.html")
+	if response.method == "GET":
+		#form = response.GET.dict()
+		#propertyId = form.get("id")
+		#roomType = form.get("roomType")
+		#property = Property.objects.get(id=propertyId)
+		#return render(response, "main/makeReservation.html", {"form": form, "roomType": roomType,"property": property})
+		context = {}
+		checkin = response.GET.get("checkin", None)
+		checkout = response.GET.get("checkout", None)
+		numRooms = response.GET.get("numRooms", None)
+		numGuests = response.GET.get("numGuests", None)
+		roomType = response.GET.get("roomType", None)
+		propertyId = response.GET.get("id", None)
+		property = Property.objects.get(id=propertyId) #query for property with given id and return property object
+		numNights = "X"  # calculate number of nights here
+		avgRate = "Y" #query for rate of roomType and weekend differential, calculate total/numNights
+		totalCost = "Z" #use data from previous query
+		context["checkin"] = checkin
+		context["checkout"] = checkout
+		context["numRooms"] = numRooms
+		context["numGuests"] = numGuests
+		context["roomType"] = roomType
+		context["numNights"] = numNights
+		context["avgRate"] = avgRate
+		context["total"] = totalCost
+
+		return render(response, "main/makeReservation.html", {"context":context, "property":property})
+
+
 
 def confirmReservation(response):
 	if response.method == "POST":
