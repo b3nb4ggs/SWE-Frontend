@@ -14,10 +14,10 @@ def home(request):
 	if form.is_valid():
 		request.session["search_form"] = request.GET.dict()
 		return redirect("/filterHotels")
+	user = "anonymous" #set user value here and pass to page
+	return render(request, "main/home.html", {"form": form, "user": user})
 
-	return render(request, "main/home.html", {"form": form})
-
-def createAccount(response):
+def register(response):
 	if response.method == "POST":
 		form = CreateAccount(response.POST)
 		if form.is_valid():
@@ -33,6 +33,12 @@ def createAccount(response):
 def login(response):
 	#user = User.objects.get(username=username)
 	form = Login(response.POST)
+	# if login == successful && login = admin:
+	#      route to admin page
+	# if login == successful && login == customer:
+	#      route to home page
+	# else
+	#      display error page, reroute to login 
 	return render(response, "main/login.html", {"form": form})
 
 def filterHotels(response):
@@ -107,7 +113,9 @@ def confirmReservation(response):
 		return render(response, "main/confirmReservation.html", {"property": property}) # "reservation": reservation, "property": property)
 
 def viewReservations(response):
-	return HttpResponse("View my reservations")
+	#User = ****get user that is curently logged in from import ****
+	reservations = Reservation.objects.all()  # get list of all reservation objects for the given user
+	return render(response, "main/viewReservations.html", {"reservations": reservations})
 
 def cancelReservation(response):
 	return HttpResponse("cancel a reservation")
