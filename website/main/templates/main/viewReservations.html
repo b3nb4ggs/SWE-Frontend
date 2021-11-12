@@ -17,8 +17,6 @@
             <td>{{reservation.id}}</td>
             <td>{{ property.name }}</td>
             <td>Checkin: {{reservation.checkin}} Checkout: {{ reservation.checkout }}</td>
-              <td> <a href="/makeReservation/?id={{property.id}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
-          </tr>
 		{% endfor %}
         </tbody>
       </table>
