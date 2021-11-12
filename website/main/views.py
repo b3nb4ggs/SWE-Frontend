@@ -89,7 +89,7 @@ def makeReservation(response):
 		context["numNights"] = numNights
 		context["avgRate"] = avgRate
 		context["total"] = totalCost
-		# user = get current user object and pass it to the page 
+		# user = get current user object and pass it to the page
 
 		return render(response, "main/makeReservation.html", {"context":context, "property":property})
 
@@ -98,10 +98,13 @@ def makeReservation(response):
 def confirmReservation(response):
 	if response.method == "POST":
 		#create reservation object with new id and add it to the database
-		form = response.POST
-		#reservation = reservation object that was just created
-		#property = property for which reservation was made
-		return render(response, "main/confirmReservation.html") # "reservation": reservation, "property": property)
+		form_data = response.POST.dict()
+		propertyId = form_data.get("id", None)
+		property = Property.objects.get(id=propertyId)
+		#user = get current user that is logged in
+		#add new reservation to database
+		#reservation = reservation object that was just created, pass reservation id to page
+		return render(response, "main/confirmReservation.html", {"property": property}) # "reservation": reservation, "property": property)
 
 def viewReservations(response):
 	return HttpResponse("View my reservations")

@@ -33,6 +33,7 @@
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
         <!---Add reservation to database--->
+        <input type="hidden", name="id" value={{ property.id }}>
 		<button type="submit", name="confirm">Confirm Reservation</button>
 	</form>
     </td>
