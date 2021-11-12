@@ -4,11 +4,50 @@
 
 {% block content %}
 
-<form method="get" action="/filter/">
+<h1>{{ properties.name }}</h1>
+<table>
+	<tr>
+	<td>
+	<form method="post" action="/filter/">
 		{% csrf_token %}
 		{{form.as_p}}
 		<button type="submit", name="filter">Filter</button>
 	</form>
+	</td>
+	<td>
+	<table>
+	<thead>
+          <tr>
+            <th>Name</th>
+            <th>Price {{ form.roomType }}</th>
+	    <th>Amenities</th>
+          </tr>
+        </thead>
+        <tbody>
+	    {% for property in properties %}
+          <tr>
+            <td>{{property.name}}</td>
+            <td>{{property.priceStandard}}</td>
+            <td>{{property.amenities}}</td>
+            <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
+                    {% csrf_token %}
+                    <input type="hidden" name="propertyId" value={{ property.id }}>
+                    <input type="hidden" name="roomType" value={{ roomType }}>
+                    <input type="hidden" name="checkin" value={{ checkin }}>
+                    <input type="hidden" name="checkout" value={{ checkout }} >
+                    <input type="hidden" name="numRooms" value={{ numRooms }}>
+		            <button type="submit", name="book">Book Room</button>
+	                </form>
+            </td>
+          </tr>
+		{% endfor %}
+        </tbody>
+      </table>
+	</td>
+    <td>
+
+    </td>
+</table>
 {% endblock %}
 
 

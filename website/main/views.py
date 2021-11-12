@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter
+from .forms import CreateAccount, Search, Login, Filter  # ,Reserve
 from django import forms
 import datetime
 from django.forms import widgets
@@ -12,13 +12,9 @@ from django.forms import widgets
 
 
 def home(request):
+
     form = Search(request.GET)
     if form.is_valid():
-        # checkin = form.cleaned_data["checkin"]
-        # checkout = form.cleaned_data["checkout"]
-        # rooms = form.cleaned_data["numRooms"]
-        # guests = form.cleaned_data["numGuests"]
-        # search = {"form":form}
         request.session["search_form"] = request.GET.dict()
         return redirect("/filterHotels")
 
@@ -45,37 +41,106 @@ def login(response):
     return render(response, "main/login.html", {"form": form})
 
 
-def filterHotels(request):
+def filterHotels(response):
+    # if request is coming from Search page
+    if response.method == "GET":
+        form_data = response.session.pop("search_form", {})
+        checkin = form_data.get("checkin")
+        checkout = form_data.get("checkout")
+        numRooms = form_data.get("numRooms")
+        numGuests = form_data.get("numGuests")
+        roomType = form_data.get("roomType")
+        properties = Property.objects.all()  # get list of all property objects
+        reservations = Reservation.objects.all()  # get list of all reservation objects
+        form = Filter(
+            initial={
+                "checkin": checkin,
+                "checkout": checkout,
+                "numGuests": numGuests,
+                "numRooms": numRooms,
+            }
+        )
+        return render(
+            response,
+            "main/filter.html",
+            {
+                "form": form,
+                "checkin": checkin,
+                "roomType": roomType,
+                "numRooms": numRooms,
+                "numGuests": numGuests,
+                "checkout": checkout,
+                "properties": properties,
+                "reservations": reservations,
+            },
+        )
 
-    form_data = request.session.pop("search_form", {})
-    checkin = form_data.get("checkin")
-    checkout = form_data.get("checkout")
-    numRooms = form_data.get("numRooms")
-    numGuests = form_data.get("numGuests")
-    properties = Property.objects.all()
-    reservations = Reservation.objects.all()
-    form = Filter(
-        initial={
-            "checkin": checkin,
-            "checkout": checkout,
-            "numGuests": numGuests,
-            "numRooms": numRooms,
-        }
-    )
-
-    return render(
-        request,
-        "main/filter.html",
-        {"form": form, "properties": properties, "reservations": reservations},
-    )
+    # if response is coming from Filter page
+    if response.method == "POST":
+        form = Filter(response.POST)
+        properties = Property.objects.all()  # get list of all property objects
+        reservations = Reservation.objects.all()  # get list of all reservation objects
+        return render(
+            response,
+            "main/filter.html",
+            {"form": form, "properties": properties, "reservations": reservations},
+        )
 
 
 def makeReservation(response):
-    return HttpResponse("Make reservation")
+    if response.method == "POST":
+        form = Filter(response.POST)
+        # form = response.POST
+        # print(form.cleaned_data["checkin"])
+        # roomType = form.get("roomType")
+        # checkin = form.get("checkin")
+        # checkout = form.get("checkout")
+        # numRooms = form.get("numRooms")
+        # numGuests = form.get("numGuests")
+        if form.is_valid():
+            roomType = form.cleaned_data["roomType"]
+            propertyId = form.cleaned_data["checkin"]
+            checkin = form.cleaned_data("checkin")
+            checkout = form.cleaned_data("checkout")
+            numRooms = form.cleaned_data("numRooms")
+            numGuests = form.cleaned_data("numGuests")
+            propertyId = form.cleaned_data("propertyId")
+            property = Property.objects.get(id=propertyId)
+            numNights = "X"  # calculate from checkin and checkout
+            avgRate = "Y"  # calculate from property info
+            total = "Z"  # calculate from property info
+            # user = #pass in object of logged in user
+            # query database for room type's nightly price and weekend dif
+            # calculate weekend dif and nightly rate to get and average and total price
+            # pass current user information to the page
+            return render(
+                response,
+                "main/makeReservation.html",
+                {
+                    "form": form,
+                    "numGuests": numGuests,
+                    "property": property,
+                    "numNights": numNights,
+                    "avgRate": avgRate,
+                    "total": total,
+                    "numRooms": numRooms,
+                    "roomType": roomType,
+                    "checkin": checkin,
+                    "checkout": checkout,
+                },
+            )
+    return render(response, "main/makeReservation.html")
 
 
 def confirmReservation(response):
-    return HttpResponse("Confirm reservation")
+    if response.method == "POST":
+        # create reservation object with new id and add it to the database
+        form = response.POST
+        # reservation = reservation object that was just created
+        # property = property for which reservation was made
+        return render(
+            response, "main/confirmReservation.html"
+        )  # "reservation": reservation, "property": property)
 
 
 def viewReservations(response):

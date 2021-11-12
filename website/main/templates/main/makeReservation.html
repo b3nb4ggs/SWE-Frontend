@@ -1,0 +1,41 @@
+{% block title %}
+        <h1> Reservation Details</h1>
+{% endblock %}
+
+{% block content %}
+
+
+    	<table>
+        <td>
+            <tr><h2>Reservation Info</h2></tr>
+            <tr><< property name >> {{property.name}}</tr> <br>
+            <tr><< numRooms >>{{ numRooms }} << room type >> {{roomType}}(s) for << num nights >> {{ numNights }} nights</tr> <br>
+            <tr>Check-in: << checkin >{{ checkin }} Check-out: << checkout >> {{ checkout }}</tr> <br>
+            <tr>Hotel Amenities: << amenities list >> {{property.amenities}}</tr> <br>
+        </td>
+        <td>
+            <tr><h2>Price Summary</h2></tr>
+            <tr><< numNights >> {{numNights}} Night Stay</tr> <br>
+            <tr>Average rate per night: $<< avg rate>> {{ avgRate }}</tr> <br>
+            <tr>Total cost: $<< total >> {{ total }}</tr> <br>
+        </td>
+        <td>
+            <tr><h2>Your Information</h2></tr>
+            <tr>Username:  </tr> <br>
+            <tr>Name: </tr> <br>
+            <tr>Email: </tr> <br>
+            <tr>Phone Number: </tr>
+
+        </td>
+        </table>
+<table>
+	<td>
+	<form method="post" action="/confirmReservation/">
+        {% csrf_token %}
+        <!---Add reservation to database--->
+		<button type="submit", name="confirm">Confirm Reservation</button>
+	</form>
+    </td>
+</table>
+
+{% endblock %}
