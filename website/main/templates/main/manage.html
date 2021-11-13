@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Management Home Page {% endblock %}
+
+{% block content %}
+
+<h2>Welcome, < username >{{ user.name }}</h2>
+
+    <table>
+        <tr> <a href="/manageUsers/" >Manage Users </a> </tr> <br>
+        <tr> <a href="/manageReservations/" >Manage Reservations </a> </tr> <br>
+        <tr> <a href="/manageProperties/" >Manage Properties </a> </tr> <br>
+    </table>
+{%  endblock %}

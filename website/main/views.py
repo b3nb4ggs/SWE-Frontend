@@ -38,7 +38,7 @@ def login(response):
 	# if login == successful && login == customer:
 	#      route to home page
 	# else
-	#      display error page, reroute to login 
+	#      display error page, reroute to login
 	return render(response, "main/login.html", {"form": form})
 
 def filterHotels(response):
@@ -120,14 +120,33 @@ def viewReservations(response):
 def cancelReservation(response):
 	return HttpResponse("cancel a reservation")
 
+def manage(response):
+	return render(response, "main/manage.html")
+
 def manageProperties(response):
-	return HttpResponse("Manage Properties Page")
+	return render(response, "main/manageProperties.html")
 
 def addProperty(response):
-	return HttpResponse("Add new property page")
+	return render(response, "main/addProperty.html")
 
 def editProperty(response):
-	return HttpResponse("Edit existing property page")
+	return render(response, "main/editProperty.html")
 
+def manageUsers(response):
+	return render(response, "main/manageUsers.html")
 
+def addUser(response):
+	return render(response, "main/addUser.html")
+
+def editUser(response):
+	return render(response, "main/editUser.html")
+
+def manageReservations(response):
+	return render(response, "main/manageReservations.html")
+
+def addReservation(response):
+	return render(response, "main/addReservation.html")
+
+def editReservation(response):
+	return render(response, "main/editReservation.html")
 
