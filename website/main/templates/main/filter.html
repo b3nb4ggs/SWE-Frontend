@@ -5,7 +5,11 @@
 
 {% block content %}
 
-<h1>{{ properties.name }}</h1>
+<!-- <h1>{{ properties.name }}</h1> -->
+
+<!-- <p>{{hotels}}</p> -->
+<p>{{amenities}}</p>
+
 <table>
 	<tr>
 	<td>
@@ -20,16 +24,38 @@
 	<thead>
           <tr>
             <th>Name</th>
-            <th>Price {{ form.roomType }}</th>
+            <!-- <th>Price {{ form.roomType }}</th> -->
+            <th>Type</th>
 	    <th>Amenities</th>
           </tr>
         </thead>
         <tbody>
-	    {% for property in properties %}
+	    {% for property in hotels %}
           <tr>
-            <td>{{property.name}}</td>
+            <!-- <td>{{property.name}}</td>
             <td>{{property.priceStandard}}</td>
-            <td>{{property.amenities}}</td>
+            <td>{{property.amenities}}</td> -->
+            <td>{{property.name}}</td>
+            <td>
+              {% if property.King %}
+                King
+                <!-- <br> -->
+              {% endif %}
+              {% if property.Queen %}
+                Queen
+                <!-- <br> -->
+              {% endif %}
+              {% if property.Standard  %}
+                Standard
+                <!-- <br> -->
+              {% endif %}
+            </td>
+
+            <td>
+              {{property.amenity}}
+            </td>
+
+
             <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
                     {% csrf_token %}
                     <input type="hidden" name="propertyId" value={{ property.id }}>

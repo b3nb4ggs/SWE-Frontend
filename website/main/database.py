@@ -279,6 +279,29 @@ def get_customers():
     return result
 
 
+def get_amenities():
+    result = list(Amenities.find({}))
+    return result
+
+
+def amenities_by_index(index):
+    query = {"index": index}
+    result = Amenities.find(query)
+    return list(result)
+
+
+this = get_all_hotels()
+this = strip_off_id(this)
+for item in this:
+    amenity = amenities_by_index(item["index"])
+    process = [k for k, v in amenity[0].items() if v == True]
+    thestring = " ".join(process)
+    print(thestring)
+    item["amenity"] = thestring
+
+pprint.pprint(this)
+
+
 # Line change
 # ----------------------------------------------CUSTOMER FUNCTIONS------------------------------------------------------------------------------------------
 # -----------------------------------------------------ENTER HOTELS INTO DATABASE---------------------------------------------------------------------------

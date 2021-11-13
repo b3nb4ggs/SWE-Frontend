@@ -12,6 +12,12 @@ from main import database as db
 # Create your views here.
 
 
+def strip_off_id(processthis):
+    for element in processthis:
+        element.pop("_id")
+    return processthis
+
+
 def home(request):
 
     form = Search(request.GET)
@@ -97,8 +103,16 @@ def filterHotels(response):
         numRooms = form_data.get("numRooms")
         numGuests = form_data.get("numGuests")
         roomType = form_data.get("roomType")
-        properties = Property.objects.all()  # get list of all property objects
-        reservations = Reservation.objects.all()  # get list of all reservation objects
+        this = db.get_all_hotels()
+        this = strip_off_id(this)
+        for item in this:
+            amenity = db.amenities_by_index(item["index"])
+            process = [k for k, v in amenity[0].items() if v == True]
+            thestring = " ".join(process)
+            # print(thestring)
+            item["amenity"] = thestring
+        list_of_hotels = this
+
         form = Filter(
             initial={
                 "checkin": checkin,
@@ -117,8 +131,7 @@ def filterHotels(response):
                 "numRooms": numRooms,
                 "numGuests": numGuests,
                 "checkout": checkout,
-                "properties": properties,
-                "reservations": reservations,
+                "hotels": list_of_hotels,
             },
         )
 
