@@ -21,24 +21,24 @@ def home(request):
     return render(request, "main/home.html", {"form": form})
 
 
-def createAccount(response):
-    if response.method == "POST":
-        form = CreateAccount(response.POST)
-        if form.is_valid():
-            u = form.cleaned_data["username"]
-            user = User(username=u)
-            user.save()
-            return redirect("/login", {"user": user})
-    else:
-        form = CreateAccount()
+# def createAccount(response):
+#     if response.method == "POST":
+#         form = CreateAccount(response.POST)
+#         if form.is_valid():
+#             u = form.cleaned_data["username"]
+#             user = User(username=u)
+#             user.save()
+#             return redirect("/login", {"user": user})
+#     else:
+#         form = CreateAccount()
 
-    return render(response, "main/register.html", {"form": form})
+#     return render(response, "main/register.html", {"form": form})
 
 
-def login(response):
-    # user = User.objects.get(username=username)
-    form = Login(response.POST)
-    return render(response, "main/login.html", {"form": form})
+# def login(response):
+#     # user = User.objects.get(username=username)
+#     form = Login(response.POST)
+#     return render(response, "main/login.html", {"form": form})
 
 
 def filterHotels(response):
