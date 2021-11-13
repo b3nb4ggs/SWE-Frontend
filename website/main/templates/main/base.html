@@ -44,8 +44,19 @@
 
     <div class="sidenav">
         <a href="/">Home</a>
-        <a href="/maxprice/">Find by price</a>
+        
+        {% if user.is_authenticated %}
+        <br>
         <a href="/reservation/">Reservations</a>
+        <br>
+        <a href="/logout/">Logout</a>
+        {% else %}
+        <br>
+        <a href="/register/">Create a user</a>
+        <br>
+        <a href="/login/">Login</a>
+        <br>
+        {% endif %}
     </div>
 
     <div class="main" id="content", name="content" >
@@ -57,17 +68,7 @@
         {% block content %}
         {% endblock %}
 
-        {% if user.is_authenticated %}
-        <br>
-        <a href="/logout/">Logout</a>
-        {% else %}
-        <br>
-        <a href="/register/">Create a user</a>
-        <br>
-        <a href="/login/">Login</a>
-        <br>
-
-        {% endif %}
+       
 
     </div>
 </div>
