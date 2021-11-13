@@ -5,6 +5,7 @@ from .forms import CreateAccount, Search, Login, Filter  # ,Reserve
 from django import forms
 import datetime
 from django.forms import widgets
+from main import database as db
 
 # from main import database as db
 
@@ -39,6 +40,52 @@ def home(request):
 #     # user = User.objects.get(username=username)
 #     form = Login(response.POST)
 #     return render(response, "main/login.html", {"form": form})
+
+
+# def filterHotels(response):
+#     # if request is coming from Search page
+#     if response.method == "GET":
+#         form_data = response.session.pop("search_form", {})
+#         checkin = form_data.get("checkin")
+#         checkout = form_data.get("checkout")
+#         numRooms = form_data.get("numRooms")
+#         numGuests = form_data.get("numGuests")
+#         roomType = form_data.get("roomType")
+#         properties = Property.objects.all()  # get list of all property objects
+#         reservations = Reservation.objects.all()  # get list of all reservation objects
+#         form = Filter(
+#             initial={
+#                 "checkin": checkin,
+#                 "checkout": checkout,
+#                 "numGuests": numGuests,
+#                 "numRooms": numRooms,
+#             }
+#         )
+#         return render(
+#             response,
+#             "main/filter.html",
+#             {
+#                 "form": form,
+#                 "checkin": checkin,
+#                 "roomType": roomType,
+#                 "numRooms": numRooms,
+#                 "numGuests": numGuests,
+#                 "checkout": checkout,
+#                 "properties": properties,
+#                 "reservations": reservations,
+#             },
+#         )
+
+#     # if response is coming from Filter page
+#     if response.method == "POST":
+#         form = Filter(response.POST)
+#         properties = Property.objects.all()  # get list of all property objects
+#         reservations = Reservation.objects.all()  # get list of all reservation objects
+#         return render(
+#             response,
+#             "main/filter.html",
+#             {"form": form, "properties": properties, "reservations": reservations},
+#         )
 
 
 def filterHotels(response):
