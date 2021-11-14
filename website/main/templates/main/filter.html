@@ -4,19 +4,19 @@
 {% endblock %}
 
 {% block content %}
-
+{% load crispy_forms_tags %}
 <!-- <h1>{{ properties.name }}</h1> -->
 
 <!-- <p>{{hotels}}</p> -->
-<p>{{amenities}}</p>
+<!-- <p>{{amenities}}</p> -->
 
 <table>
 	<tr>
 	<td>
-	<form method="post" action="/filter/">
+	<form method="post" class="form-group" action="/filter/">
 		{% csrf_token %}
-		{{form.as_p}}
-		<button type="submit", name="filter">Filter</button>
+		{{form|crispy}}
+		<button type="submit", name="filter" class="btn btn-success">Filter </button>
 	</form>
 	</td>
 	<td>
