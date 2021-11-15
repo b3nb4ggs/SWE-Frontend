@@ -6,6 +6,7 @@ from django import forms
 import datetime
 from django.forms import widgets
 from main import database as db
+from datetime import datetime
 
 # from main import database as db
 
@@ -16,6 +17,10 @@ def strip_off_id(processthis):
     for element in processthis:
         element.pop("_id")
     return processthis
+
+
+def format_date(date_string):
+    pass
 
 
 def home(request):
@@ -103,15 +108,31 @@ def filterHotels(response):
         numRooms = form_data.get("numRooms")
         numGuests = form_data.get("numGuests")
         roomType = form_data.get("roomType")
-        this = db.get_all_hotels()
-        this = strip_off_id(this)
-        for item in this:
+
+        hotels = db.get_all_hotels()
+        hotels = strip_off_id(hotels)
+
+        # THIS IS SO I CAN COMPARE DATES.  CHECK RESERVATIONS WERE NOT MADE IN THE PAST OR BACKWARDS
+        dbcheckin = datetime.fromisoformat(checkin)
+        dbcheckout = datetime.fromisoformat(checkout)
+        # IF THE DATES DONT MAKE SENSE I JUST REVERSE THEM
+        if dbcheckin > dbcheckout:
+            dbcheckin, dbcheckout = dbcheckout, dbcheckin
+            checkin, checkout = checkout, checkin
+
+        number_of_days = db.number_of_days(dbcheckin, dbcheckout)
+
+        for item in hotels:
             amenity = db.amenities_by_index(item["index"])
+            price = db.room_by_type_index("Standard", item["index"])
             process = [k for k, v in amenity[0].items() if v == True]
-            thestring = " ".join(process)
-            # print(thestring)
-            item["amenity"] = thestring
-        list_of_hotels = this
+            amenity_string = " ".join(process)
+            item["amenity"] = amenity_string
+            item["price"] = (
+                db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+                / number_of_days
+            )
+            list_of_hotels = hotels
 
         form = Filter(
             initial={

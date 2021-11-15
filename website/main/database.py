@@ -107,6 +107,11 @@ def search_hotel(name: str):
     return list(result)
 
 
+# helper function for date time where you just enter year month day
+def date_maker(day, month, year):
+    return datetime(year, month, day)
+
+
 def number_of_days(in_date: datetime, out_date: datetime):
     result = out_date - in_date
     return result.days
@@ -165,6 +170,38 @@ def make_reservation(
     return result
 
 
+def rooms_by_index(index):
+    query = {"index": index}
+    result = list(Room.find(query))
+    return result
+
+
+def get_price(
+    in_date: datetime,
+    out_date: datetime,
+    hotel_index: int,
+    room_type: str,
+):
+
+    weekday_price = 0
+    weekend_price = 0
+    total_cost = 0
+
+    result = rooms_by_index(hotel_index)
+    for i in range(len(result)):
+        if result[i]["type"] == room_type:
+            weekday_price, weekend_price = (
+                result[i]["price"],
+                result[i]["weekend_price"],
+            )
+    total_days = number_of_days(in_date, out_date)
+    total_weekdays = weekdays_between(in_date, out_date)
+    total_weekend_days = total_days - total_weekdays
+
+    total_cost = (total_weekdays * weekday_price) + (total_weekend_days * weekend_price)
+    return total_cost
+
+
 def get_all_hotels():
     result = list(Hotel.find({}))
     return result
@@ -180,10 +217,10 @@ def list_all_rooms():
     return result
 
 
-def rooms_by_index(index):
-    query = {"index": index}
-    result = list(Room.find(query))
-    return result
+def room_by_type_index(type: str, index: int):
+    query = {"type": type, "index": index}
+    result = Room.find(query)
+    return list(result)
 
 
 def room_max_price(amount):
@@ -212,11 +249,6 @@ def room_amenity_range_type(low: int, high: int, amenity: list, type: str):
     output = [x for x in rooms if x["index"] in hotels]
     final_output = [x for x in output if x["type"] == type]
     return final_output
-
-
-# helper function for date time where you just enter year month day
-def date_maker(day, month, year):
-    return datetime(year, month, day)
 
 
 def is_weekend(date: datetime):
@@ -359,3 +391,7 @@ def amenities_by_index(index):
 #         date_maker(5, 11, 2021), date_maker(20, 11, 2021), 2, "Standard"
 #     )
 # )
+
+
+# print(get_price(date_maker(14, 11, 2021), date_maker(16, 11, 2021), 0, "Standard"))
+# print(number_of_days(date_maker(14, 11, 2021), date_maker(16, 11, 2021)))
