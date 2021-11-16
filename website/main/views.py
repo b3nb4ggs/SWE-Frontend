@@ -8,8 +8,6 @@ from django.forms import widgets
 from main import database as db
 from datetime import datetime
 
-# from main import database as db
-
 # Create your views here.
 
 
@@ -17,10 +15,6 @@ def strip_off_id(processthis):
     for element in processthis:
         element.pop("_id")
     return processthis
-
-
-def format_date(date_string):
-    pass
 
 
 def home(request):
@@ -112,13 +106,8 @@ def filterHotels(response):
         hotels = db.get_all_hotels()
         hotels = strip_off_id(hotels)
 
-        # THIS IS SO I CAN COMPARE DATES.  CHECK RESERVATIONS WERE NOT MADE IN THE PAST OR BACKWARDS
         dbcheckin = datetime.fromisoformat(checkin)
         dbcheckout = datetime.fromisoformat(checkout)
-        # IF THE DATES DONT MAKE SENSE I JUST REVERSE THEM
-        if dbcheckin > dbcheckout:
-            dbcheckin, dbcheckout = dbcheckout, dbcheckin
-            checkin, checkout = checkout, checkin
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
 
@@ -128,7 +117,7 @@ def filterHotels(response):
             process = [k for k, v in amenity[0].items() if v == True]
             amenity_string = " ".join(process)
             item["amenity"] = amenity_string
-            item["price"] = (
+            item["price"] = "{:.2f}".format(
                 db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
                 / number_of_days
             )
