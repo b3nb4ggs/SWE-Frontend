@@ -152,18 +152,33 @@ def filterHotels(response):
         form = Filter(response.POST)
         if form.is_valid():
             print(form.cleaned_data)
-            # roomType = form.cleaned_data["roomType"]
-            # print(roomType)
-            # THIS IS VERY UGLY BUT SLIDERS WILL FIX IT
-            # THATS WHY I PROGRAMMED IT SO LAZY
-            # print(form.cleaned_data["priceRange"][0])
             low = 0
             high = 200
 
             amenity_list = form.cleaned_data["amenities"]
             type = form.cleaned_data["roomType"]
 
-            list_of_hotels = db.room_amenity_range_type(low, high, amenity_list, type)
+            hotels = db.room_amenity_range_type(low, high, amenity_list, type)
+            hotels = strip_off_id(hotels)
+
+            dbcheckin = form.cleaned_data["checkin"]
+            dbcheckout = form.cleaned_data["checkout"]
+
+            number_of_days = db.number_of_days(dbcheckin, dbcheckout)
+
+            for item in hotels:
+                name = db.hotel_by_index(item["index"])
+                amenity = db.amenities_by_index(item["index"])
+                price = db.room_by_type_index("Standard", item["index"])
+                process = [k for k, v in amenity[0].items() if v == True]
+                amenity_string = " ".join(process)
+                item["amenity"] = amenity_string
+                item["price"] = "{:.2f}".format(
+                    db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+                    / number_of_days
+                )
+                item["name"] = name[0]["name"]
+            list_of_hotels = hotels
 
         properties = Property.objects.all()  # get list of all property objects
         reservations = Reservation.objects.all()  # get list of all reservation objects

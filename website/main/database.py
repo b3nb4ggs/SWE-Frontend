@@ -393,4 +393,8 @@ def amenities_by_index(index):
 # print(get_price(date_maker(14, 11, 2021), date_maker(16, 11, 2021), 0, "Standard"))
 # print(number_of_days(date_maker(14, 11, 2021), date_maker(16, 11, 2021)))
 
-pprint.pprint(room_amenity_range_type(0, 200, ["Gym", "Pool", "Spa"], "Standard"))
+# pprint.pprint(room_amenity_range_type(0, 200, ["Gym", "Pool"], "Standard"))
+
+name = hotel_by_index(0)
+print(name)
+print(name[0]["name"])
