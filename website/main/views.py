@@ -151,7 +151,7 @@ def filterHotels(response):
     if response.method == "POST":
         form = Filter(response.POST)
         if form.is_valid():
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             low = 0
             high = 200
 
@@ -166,15 +166,17 @@ def filterHotels(response):
 
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
 
+            roomType = form.cleaned_data["roomType"]
+
             for item in hotels:
                 name = db.hotel_by_index(item["index"])
                 amenity = db.amenities_by_index(item["index"])
-                price = db.room_by_type_index("Standard", item["index"])
+                # price = db.room_by_type_index(roomType, item["index"])
                 process = [k for k, v in amenity[0].items() if v == True]
                 amenity_string = " ".join(process)
                 item["amenity"] = amenity_string
                 item["price"] = "{:.2f}".format(
-                    db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+                    db.get_price(dbcheckin, dbcheckout, item["index"], roomType)
                     / number_of_days
                 )
                 item["name"] = name[0]["name"]
