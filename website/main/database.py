@@ -395,5 +395,7 @@ def amenities_by_index(index):
 
 # pprint.pprint(room_amenity_range_type(0, 200, ["Gym", "Pool"], "Standard"))
 
-amenity = amenities_by_index(1)
-print(amenity)
+# amenity = amenities_by_index(1)
+# print(amenity)
+# process = [k for k, v in amenity[0].items() if v == True and k != "index"]
+# print(process)

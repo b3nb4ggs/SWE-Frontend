@@ -172,7 +172,9 @@ def filterHotels(response):
                 name = db.hotel_by_index(item["index"])
                 amenity = db.amenities_by_index(item["index"])
                 # price = db.room_by_type_index(roomType, item["index"])
-                process = [k for k, v in amenity[0].items() if v == True]
+                process = [
+                    k for k, v in amenity[0].items() if v == True and k != "index"
+                ]
                 amenity_string = " ".join(process)
                 item["amenity"] = amenity_string
                 item["price"] = "{:.2f}".format(
