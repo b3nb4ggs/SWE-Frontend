@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
+from pymongo.message import MAX_INT32
 from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter  # ,Reserve
+from .forms import CreateAccount, Search, Login, Filter, ROOM_TYPES  # ,Reserve
 from django import forms
 import datetime
 from django.forms import widgets
 from main import database as db
 from datetime import datetime
+
 
 # Create your views here.
 
@@ -148,12 +150,32 @@ def filterHotels(response):
     # if response is coming from Filter page
     if response.method == "POST":
         form = Filter(response.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            # roomType = form.cleaned_data["roomType"]
+            # print(roomType)
+            # THIS IS VERY UGLY BUT SLIDERS WILL FIX IT
+            # THATS WHY I PROGRAMMED IT SO LAZY
+            # print(form.cleaned_data["priceRange"][0])
+            low = 0
+            high = 200
+
+            amenity_list = form.cleaned_data["amenities"]
+            type = form.cleaned_data["roomType"]
+
+            list_of_hotels = db.room_amenity_range_type(low, high, amenity_list, type)
+
         properties = Property.objects.all()  # get list of all property objects
         reservations = Reservation.objects.all()  # get list of all reservation objects
         return render(
             response,
             "main/filter.html",
-            {"form": form, "properties": properties, "reservations": reservations},
+            {
+                "form": form,
+                "properties": properties,
+                "reservations": reservations,
+                "hotels": list_of_hotels,
+            },
         )
 
 
