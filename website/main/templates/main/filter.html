@@ -12,7 +12,6 @@
 	<form method="POST" class="form-group" id="filter" action="/filter/">
 
 		{% csrf_token %}
-		{{form|crispy}}
 		<button type="submit", name="filter" class="btn btn-success">Filter </button>
 	</form>
 	</td>
