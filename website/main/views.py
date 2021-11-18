@@ -1,13 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
-<<<<<<< HEAD
-from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter, ROOM_TYPES  # ,Reserve
-=======
 from .models import User,Property,Reservation
 from .forms import CreateAccount,Search,Login,Filter,Reserve
->>>>>>> katie
 from django import forms
 import datetime
 from django.forms import widgets
