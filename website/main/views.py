@@ -71,7 +71,7 @@ def filterHotels(response):
 		for item in hotels:
 			amenity = db.amenities_by_index(item["index"])
 			price = db.room_by_type_index("Standard", item["index"])
-			process = [k for k, v in amenity[0].items() if v == True]
+			process = [k for k, v in amenity[0].items() if v == True and k != "index"]
 			amenity_string = " ".join(process)
 			item["amenity"] = amenity_string
 			item["price"] = "{:.2f}".format(
@@ -116,11 +116,11 @@ def filterHotels(response):
 			name = db.hotel_by_index(item["index"])
 			amenity = db.amenities_by_index(item["index"])
 			price = db.room_by_type_index("Standard", item["index"])
-			process = [k for k, v in amenity[0].items() if v == True]
+			process = [k for k, v in amenity[0].items() if v == True and k != "index"]
 			amenity_string = " ".join(process)
 			item["amenity"] = amenity_string
 			item["price"] = "{:.2f}".format(
-				db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+				db.get_price(dbcheckin, dbcheckout, item["index"], roomType)
 				/ number_of_days
 			)
 			item["name"] = name[0]["name"]
