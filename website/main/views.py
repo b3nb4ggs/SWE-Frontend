@@ -1,13 +1,20 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
+from pymongo.message import MAX_INT32
 from .models import User,Property,Reservation
-from .forms import CreateAccount,Search,Login,Filter #,Reserve
+from .forms import CreateAccount,Search,Login,Filter,Reserve
 from django import forms
 import datetime
 from django.forms import widgets
-#from main import database as db
+from main import database as db
+from datetime import datetime
 
 # Create your views here.
+
+def strip_off_id(processthis):
+    for element in processthis:
+        element.pop("_id")
+    return processthis
 
 def home(request):
 	form = Search(request.GET)
@@ -50,10 +57,31 @@ def filterHotels(response):
 		numRooms = form_data.get("numRooms")
 		numGuests = form_data.get("numGuests")
 		roomType = "Standard"
-		properties = Property.objects.all() #get list of all property objects
-		reservations = Reservation.objects.all() #get list of all reservation objects
+		#properties = Property.objects.all() #get list of all property objects
+		#reservations = Reservation.objects.all() #get list of all reservation objects
+
+		hotels = db.get_all_hotels()
+		hotels = strip_off_id(hotels)
+
+		dbcheckin = datetime.fromisoformat(checkin)
+		dbcheckout = datetime.fromisoformat(checkout)
+
+		number_of_days = db.number_of_days(dbcheckin, dbcheckout)
+
+		for item in hotels:
+			amenity = db.amenities_by_index(item["index"])
+			price = db.room_by_type_index("Standard", item["index"])
+			process = [k for k, v in amenity[0].items() if v == True]
+			amenity_string = " ".join(process)
+			item["amenity"] = amenity_string
+			item["price"] = "{:.2f}".format(
+				db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+				/ number_of_days
+			)
+		properties = hotels
+
 		form = Filter(initial={"checkin": checkin, "checkout":checkout, "numGuests":numGuests,"numRooms":numRooms, "roomType": roomType})
-		return render(response, "main/filter.html", {"form":form, "form_data": form_data, "checkin":checkin, "roomType":roomType, "numRooms": numRooms, "numGuests": numGuests, "checkout":checkout, "properties":properties, "reservations":reservations})
+		return render(response, "main/filter.html", {"form":form, "form_data": form_data, "checkin":checkin, "roomType":roomType, "numRooms": numRooms, "numGuests": numGuests, "checkout":checkout, "properties":properties}) #,"reservations":reservations})
 	
 	#if response is coming from Filter page
 	if response.method == "POST":
@@ -61,12 +89,51 @@ def filterHotels(response):
 		form_data = response.POST.dict()
 		checkin = form_data.get("checkin")
 		checkout = form_data.get("checkout")
-		numRooms = form_data.get("numRooms")
-		numGuests = form_data.get("numGuests")
-		roomType = form_data.get("roomType")
-		properties = Property.objects.all() #get list of all property objects
-		reservations = Reservation.objects.all() #get list of all reservation objects
-		return render(response, "main/filter.html", {"form":form, "checkin":checkin, "numGuests":numGuests, "roomType":roomType, "numRooms":numRooms, "checkout": checkout, "properties":properties, "reservations":reservations})
+		#numRooms = form_data.get("numRooms")
+		#numGuests = form_data.get("numGuests")
+		#roomType = form_data.get("roomType")
+
+		if form.is_valid():
+			# print(form.cleaned_data)
+			low = 0
+			high = 200
+
+			amenity_list = form.cleaned_data["amenities"]
+			type = form.cleaned_data["roomType"]
+			numGuests = form.cleaned_data["numGuests"]
+			numRooms = form.cleaned_data["numRooms"]
+
+			hotels = db.room_amenity_range_type(low, high, amenity_list, type)
+			hotels = strip_off_id(hotels)
+
+			dbcheckin = form.cleaned_data["checkin"]
+			dbcheckout = form.cleaned_data["checkout"]
+
+			number_of_days = db.number_of_days(dbcheckin, dbcheckout)
+
+			roomType = form.cleaned_data["roomType"]
+		for item in hotels:
+			name = db.hotel_by_index(item["index"])
+			amenity = db.amenities_by_index(item["index"])
+			price = db.room_by_type_index("Standard", item["index"])
+			process = [k for k, v in amenity[0].items() if v == True]
+			amenity_string = " ".join(process)
+			item["amenity"] = amenity_string
+			item["price"] = "{:.2f}".format(
+				db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
+				/ number_of_days
+			)
+			item["name"] = name[0]["name"]
+		properties = hotels
+
+	return render(response, "main/filter.html",
+				  {"form": form, "checkin": checkin, "numGuests": numGuests, "roomType": roomType, "numRooms": numRooms,
+				   "checkout": checkout, "properties": properties})
+
+		#properties = Property.objects.all() #get list of all property objects
+		#reservations = Reservation.objects.all() #get list of all reservation objects
+
+		#return render(response, "main/filter.html", {"form":form, "checkin":checkin, "numGuests":numGuests, "roomType":roomType, "numRooms":numRooms, "checkout": checkout, "properties":properties}) #, "reservations":reservations})
 
 
 def makeReservation(response):

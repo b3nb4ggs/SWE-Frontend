@@ -36,7 +36,7 @@
                     {{ property.priceKing }}
                 {% endif %}
             </td>
-            <td>{{property.amenities}}</td>
+            <td>{{property.amenity}}</td>
               <td> <a href="/makeReservation/?id={{property.id}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
           </tr>
 		{% endfor %}

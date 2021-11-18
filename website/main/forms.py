@@ -11,7 +11,14 @@ ROOM_TYPES = ( ("Standard", "Standard"),
 		("Queen", "Queen"),
 		("King", "King")
 )
-AMENITIES = ((1, "Pool"), (2, "Gym"), (3, "Business Office"), (4, "Wifi"), (5, "Room Service"), (6, "Spa"))
+AMENITIES = (
+    ("Pool", "Pool"),
+    ("Gym", "Gym"),
+    ("Business Office", "Business Office"),
+    ("Wifi", "Wifi"),
+    ("Room Service", "Room Service"),
+    ("Spa", "Spa"),
+)
 PRICE_RANGE = ( (1, "Less than $50"), (2,"$50 to $100"), (3,"$100 to $200"), (4, "$200 to $300"), (5, "Greater than $300")) 
 
 class CreateAccount(forms.Form):
