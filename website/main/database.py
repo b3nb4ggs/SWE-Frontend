@@ -1,4 +1,7 @@
+import ssl
 from warnings import resetwarnings
+import pymongo as pymongo
+import uri as uri
 from pymongo import MongoClient
 from datetime import datetime
 from datetime import timedelta
@@ -6,7 +9,8 @@ import pprint
 import re
 
 cluster = MongoClient(
-    "mongodb://localhost:27017"
+    "mongodb://localhost:27017",
+    ssl_cert_reqs=ssl.CERT_NONE
 )
 
 db = cluster["Group5"]

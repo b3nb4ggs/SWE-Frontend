@@ -5,9 +5,13 @@ from django.forms import widgets
 from django.forms.fields import DateField
 from datetime import date
 
-INTEGER_CHOICES = [tuple([x, x]) for x in range(1, 10)]
-# DATE_FORMAT
-ROOM_TYPES = (("Standard", "Standard"), ("Queen", "Queen"), ("King", "King"))
+INTEGER_CHOICES=[tuple([x,x]) for x in range(1,10)]
+#DATE_FORMAT 
+ROOM_TYPES = ( ("Standard", "Standard"),
+		("Queen", "Queen"),
+		("King", "King")
+)
+
 AMENITIES = (
     ("Pool", "Pool"),
     ("Gym", "Gym"),
@@ -16,13 +20,8 @@ AMENITIES = (
     ("Room Service", "Room Service"),
     ("Spa", "Spa"),
 )
-PRICE_RANGE = (
-    (1, "Less than $50"),
-    (2, "$50 to $100"),
-    (3, "$100 to $200"),
-    (4, "$200 to $300"),
-    (5, "Greater than $300"),
-)
+
+PRICE_RANGE = ( (1, "Less than $50"), (2,"$50 to $100"), (3,"$100 to $200"), (4, "$200 to $300"), (5, "Greater than $300")) 
 
 
 class CreateAccount(forms.Form):
@@ -80,10 +79,5 @@ class Reserve(forms.Form):
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES)
 
     class Meta(forms.Form):
-        widgets = {
-            "checkin": forms.HiddenInput(),
-            "checkout": forms.HiddenInput(),
-            "numRooms": forms.HiddenInput(),
-            "numGuests": forms.HiddenInput(),
-            "roomType": forms.HiddenInput,
-        }
+        widgets = {'checkin': forms.HiddenInput(), 'checkout': forms.HiddenInput(), 'numRooms': forms.HiddenInput(), 'numGuests': forms.HiddenInput(), 'roomType': forms.HiddenInput  }
+

@@ -5,15 +5,12 @@
 
 {% block content %}
 {% load crispy_forms_tags %}
-<!-- <h1>{{ properties.name }}</h1> -->
-
-<!-- <p>{{hotels}}</p> -->
-
 
 <table>
 	<tr>
 	<td>
-	<form method="post" class="form-group" action="/filter/">
+	<form method="POST" class="form-group" id="filter" action="/filter/">
+
 		{% csrf_token %}
 		{{form|crispy}}
 		<button type="submit", name="filter" class="btn btn-success">Filter </button>
@@ -24,21 +21,20 @@
 	<thead>
           <tr>
             <th>Name</th>
-            <!-- <th>Price {{ form.roomType }}</th> -->
-            <th>Price</th>
+            <th>Price {{ roomType }}</th>
 	    <th>Amenities</th>
           </tr>
         </thead>
         <tbody>
 	    {% for property in hotels %}
           <tr>
-            <!-- <td>{{property.name}}</td>
+<!--
+            <td>{{property.name}}</td>
             <td>{{property.priceStandard}}</td>
-            <td>{{property.amenities}}</td> -->
+            <td>{{property.amenities}}</td>
             <td>{{property.name}}</td>
             <td>
-              {{property.price}}
-                <!-- <br> -->
+              {{#property.price}}
             </td>
 
             <td>
@@ -47,15 +43,21 @@
 
 
             <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
-                    {% csrf_token %}
-                    <input type="hidden" name="propertyId" value={{ property.id }}>
-                    <input type="hidden" name="roomType" value={{ roomType }}>
-                    <input type="hidden" name="checkin" value={{ checkin }}>
-                    <input type="hidden" name="checkout" value={{ checkout }} >
-                    <input type="hidden" name="numRooms" value={{ numRooms }}>
+                    {#% csrf_token %#}
+                    <input type="hidden" name="propertyId" value={{property.id }}>
+                    <input type="hidden" name="roomType" value={{roomType }}>
+                    <input type="hidden" name="checkin" value={{checkin }}>
+                    <input type="hidden" name="checkout" value={{checkout }} >
+                    <input type="hidden" name="numRooms" value={{numRooms }}>
 		            <button type="submit", name="book">Book Room</button>
 	                </form>
+-->
+            <td>{{property.name}}</td>
+            <td>
+                  ${{property.price}}
             </td>
+            <td>{{property.amenity}}</td>
+              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
           </tr>
 		{% endfor %}
         </tbody>

@@ -1,0 +1,25 @@
+{% block title %}
+        <h1> My Reservations </h1>
+{% endblock %}
+
+{% block content %}
+	<table>
+	<thead>
+          <tr>
+            <th>Reservation Id</th>
+            <th>Hotel Name</th>
+	        <th>Dates</th>
+              <th>Details </th>
+          </tr>
+        </thead>
+        <tbody>
+	    {% for reservation in reservations %}
+          <tr>
+            <td>{{reservation.id}}</td>
+            <td>{{ reservation.property.name }}</td>
+            <td>Checkin: {{reservation.checkin}} Checkout: {{ reservation.checkout }}</td>
+            <td> Num Rooms: < > Room Type: < > Num Guests: < > Nightly Rate: < > Total Cost: < > </td>
+		{% endfor %}
+        </tbody>
+      </table>
+{% endblock %}
