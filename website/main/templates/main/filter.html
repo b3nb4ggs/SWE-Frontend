@@ -10,8 +10,8 @@
 	<tr>
 	<td>
 	<form method="POST" class="form-group" id="filter" action="/filter/">
-
 		{% csrf_token %}
+		{{form.as_p}}
 		<button type="submit", name="filter" class="btn btn-success">Filter </button>
 	</form>
 	</td>
@@ -25,8 +25,19 @@
           </tr>
         </thead>
         <tbody>
-	    {% for property in hotels %}
+	    {% for property in properties %}
           <tr>
+              <td>{{property.name}} </td>
+              <td> ${{property.price}} </td>
+              <td>{{property.amenity}} </td>
+              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
+          </tr>
+		{% endfor %}
+        </tbody>
+      </table>
+	</td>
+</table>
+{% endblock %}
 <!--
             <td>{{property.name}}</td>
             <td>{{property.priceStandard}}</td>
@@ -51,21 +62,6 @@
 		            <button type="submit", name="book">Book Room</button>
 	                </form>
 -->
-            <td>{{property.name}}</td>
-            <td>
-                  ${{property.price}}
-            </td>
-            <td>{{property.amenity}}</td>
-              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
-          </tr>
-		{% endfor %}
-        </tbody>
-      </table>
-	</td>
-    <td>
 
-    </td>
-</table>
-{% endblock %}
 
 

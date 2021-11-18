@@ -14,110 +14,6 @@ def strip_off_id(processthis):
         element.pop("_id")
     return processthis
 
-#start bens code
-# def filterHotels(response):
-#     # if request is coming from Search page
-#     if response.method == "GET":
-#         form_data = response.session.pop("search_form", {})
-#         checkin = form_data.get("checkin")
-#         checkout = form_data.get("checkout")
-#         numRooms = form_data.get("numRooms")
-#         numGuests = form_data.get("numGuests")
-#         roomType = form_data.get("roomType")
-#
-#         hotels = db.get_all_hotels()
-#         hotels = strip_off_id(hotels)
-#
-#         dbcheckin = datetime.fromisoformat(checkin)
-#         dbcheckout = datetime.fromisoformat(checkout)
-#
-#         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-#
-#         for item in hotels:
-#             amenity = db.amenities_by_index(item["index"])
-#             price = db.room_by_type_index("Standard", item["index"])
-#             process = [k for k, v in amenity[0].items() if v == True]
-#             amenity_string = " ".join(process)
-#             item["amenity"] = amenity_string
-#             item["price"] = "{:.2f}".format(
-#                 db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
-#                 / number_of_days
-#             )
-#             list_of_hotels = hotels
-#
-#         form = Filter(
-#             initial={
-#                 "checkin": checkin,
-#                 "checkout": checkout,
-#                 "numGuests": numGuests,
-#                 "numRooms": numRooms,
-#             }
-#         )
-#         return render(
-#             response,
-#             "main/filter.html",
-#             {
-#                 "form": form,
-#                 "checkin": checkin,
-#                 "roomType": roomType,
-#                 "numRooms": numRooms,
-#                 "numGuests": numGuests,
-#                 "checkout": checkout,
-#                 "hotels": list_of_hotels,
-#             },
-#         )
-#
-#     # if response is coming from Filter page
-#     if response.method == "POST":
-#         form = Filter(response.POST)
-#         if form.is_valid():
-#             # print(form.cleaned_data)
-#             low = 0
-#             high = 200
-#
-#             amenity_list = form.cleaned_data["amenities"]
-#             type = form.cleaned_data["roomType"]
-#
-#             hotels = db.room_amenity_range_type(low, high, amenity_list, type)
-#             hotels = strip_off_id(hotels)
-#
-#             dbcheckin = form.cleaned_data["checkin"]
-#             dbcheckout = form.cleaned_data["checkout"]
-#
-#             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-#
-#             roomType = form.cleaned_data["roomType"]
-#
-#             for item in hotels:
-#                 name = db.hotel_by_index(item["index"])
-#                 amenity = db.amenities_by_index(item["index"])
-#                 # price = db.room_by_type_index(roomType, item["index"])
-#                 process = [
-#                     k for k, v in amenity[0].items() if v == True and k != "index"
-#                 ]
-#                 amenity_string = " ".join(process)
-#                 item["amenity"] = amenity_string
-#                 item["price"] = "{:.2f}".format(
-#                     db.get_price(dbcheckin, dbcheckout, item["index"], roomType)
-#                     / number_of_days
-#                 )
-#                 item["name"] = name[0]["name"]
-#             list_of_hotels = hotels
-#
-#         properties = Property.objects.all()  # get list of all property objects
-#         reservations = Reservation.objects.all()  # get list of all reservation objects
-#         return render(
-#             response,
-#             "main/filter.html",
-#             {
-#                 "form": form,
-#                 "properties": properties,
-#                 "reservations": reservations,
-#                 "hotels": list_of_hotels,
-#             },
-#         )
-#end bens code
-
 def home(request):
 	form = Search(request.GET)
 	if form.is_valid():
@@ -212,72 +108,10 @@ def filterHotels(response):
 			dbcheckout = form.cleaned_data["checkout"]
 
 			number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-
-
-#start bens code
-# def makeReservation(response):
-#     if response.method == "POST":
-#         form = Filter(response.POST)
-#         # form = response.POST
-#         # print(form.cleaned_data["checkin"])
-#         # roomType = form.get("roomType")
-#         # checkin = form.get("checkin")
-#         # checkout = form.get("checkout")
-#         # numRooms = form.get("numRooms")
-#         # numGuests = form.get("numGuests")
-#         if form.is_valid():
-#             roomType = form.cleaned_data["roomType"]
-#             propertyId = form.cleaned_data["checkin"]
-#             checkin = form.cleaned_data("checkin")
-#             checkout = form.cleaned_data("checkout")
-#             numRooms = form.cleaned_data("numRooms")
-#             numGuests = form.cleaned_data("numGuests")
-#             propertyId = form.cleaned_data("propertyId")
-#             property = Property.objects.get(id=propertyId)
-#             numNights = "X"  # calculate from checkin and checkout
-#             avgRate = "Y"  # calculate from property info
-#             total = "Z"  # calculate from property info
-#             # user = #pass in object of logged in user
-#             # query database for room type's nightly price and weekend dif
-#             # calculate weekend dif and nightly rate to get and average and total price
-#             # pass current user information to the page
-#             return render(
-#                 response,
-#                 "main/makeReservation.html",
-#                 {
-#                     "form": form,
-#                     "numGuests": numGuests,
-#                     "property": property,
-#                     "numNights": numNights,
-#                     "avgRate": avgRate,
-#                     "total": total,
-#                     "numRooms": numRooms,
-#                     "roomType": roomType,
-#                     "checkin": checkin,
-#                     "checkout": checkout,
-#                 },
-#             )
-#     return render(response, "main/makeReservation.html")
-#
-#
-# def confirmReservation(response):
-#     if response.method == "POST":
-#         # create reservation object with new id and add it to the database
-#         form = response.POST
-#         # reservation = reservation object that was just created
-#         # property = property for which reservation was made
-#         return render(
-#             response, "main/confirmReservation.html"
-#         )  # "reservation": reservation, "property": property)
-#
-#
-# def viewReservations(response):
-#     return HttpResponse("View my reservations")
-
-#end bens code
-
 			roomType = form.cleaned_data["roomType"]
+
 		for item in hotels:
+			print(item)
 			name = db.hotel_by_index(item["index"])
 			amenity = db.amenities_by_index(item["index"])
 			price = db.room_by_type_index("Standard", item["index"])
@@ -291,14 +125,9 @@ def filterHotels(response):
 			item["name"] = name[0]["name"]
 		properties = hotels
 
-	return render(response, "main/filter.html",
-				  {"form": form, "checkin": checkin, "numGuests": numGuests, "roomType": roomType, "numRooms": numRooms,
-				   "checkout": checkout, "properties": properties})
 
-		#properties = Property.objects.all() #get list of all property objects
-		#reservations = Reservation.objects.all() #get list of all reservation objects
+		return render(response, "main/filter.html", {"form": form, "checkin": checkin, "numGuests": numGuests, "roomType": roomType, "numRooms": numRooms, "checkout": checkout, "properties": properties})
 
-		#return render(response, "main/filter.html", {"form":form, "checkin":checkin, "numGuests":numGuests, "roomType":roomType, "numRooms":numRooms, "checkout": checkout, "properties":properties}) #, "reservations":reservations})
 
 
 def makeReservation(response):
