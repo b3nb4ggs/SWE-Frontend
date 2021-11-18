@@ -1,8 +1,10 @@
+{% extends 'main/base.html' %}
 {% block title %}
         Filter Hotels
 {% endblock %}
 
 {% block content %}
+{% load crispy_forms_tags %}
 
 <h1>{{ properties.name }}</h1>
 <table>

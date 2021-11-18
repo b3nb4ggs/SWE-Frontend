@@ -5,47 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    <table>
-    <tr>
-        <td>
-         <h3>
-             <form method=""get" action="/viewReservations/">
-                <button type="submit" name="view">My Reservations</button>
-            </form>
-         </h3>
-        </td>
-        <td>
-            {% if user != "anonymous" %}
-             <h3>
-                 <form method=""get" action="/login/">
-                  <button type="submit" name="login">Login Here</button>
-                  </form>
-                </h3>
-                        </td>
-            {% else %}
-                <td>
-                    <h3>
-                      <form method=""get" action="/login/">
-                     <button type="submit" name="login">Login Here</button>
-                     </form>
-                     </h3>
-                </td>
-                <td>
-                  <h3>
-                      <form method=""get" action="/register/">
-                     <button type="submit" name="register">Create Account</button>
-                      </form>
-                 </h3>
-                </td>
 
-            {% endif %}
-
-
-    </tr>
-
-
-    </table>
-    	<h1>Find a hotel </h1>
+    <h1>Find a hotel </h1>
 	<form method="get" action="/home/">
 		{% csrf_token %}
 		{{form.as_p}}
