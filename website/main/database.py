@@ -124,6 +124,14 @@ def search_hotel(name: str):
     return list(result)
 
 
+def get_hotel_by_index(index):
+    query = {"index": index}
+    result = Hotel.find_one(query)
+    return result
+
+
+print(get_hotel_by_index(0))
+
 # helper function for date time where you just enter year month day
 def date_maker(day, month, year):
     return datetime(year, month, day)
@@ -140,51 +148,6 @@ def weekdays_between(in_date: datetime, out_date: datetime):
     )
     delta_days = sum(1 for day in day_generator if day.weekday() < 5)
     return delta_days
-
-
-# def make_reservation(
-#     in_date: datetime,
-#     out_date: datetime,
-#     hotel_index: int,
-#     user_index: int,
-#     room_type: str,
-# ):
-
-#     weekday_price = 0
-#     weekend_price = 0
-#     total_cost = 0
-
-#     result = rooms_by_index(hotel_index)
-#     for i in range(len(result)):
-#         if result[i]["type"] == room_type:
-#             weekday_price, weekend_price = (
-#                 result[i]["price"],
-#                 result[i]["weekend_price"],
-#             )
-#     total_days = number_of_days(in_date, out_date)
-#     total_weekdays = weekdays_between(in_date, out_date)
-#     total_weekend_days = total_days - total_weekdays
-
-#     total_cost = (total_weekdays * weekday_price) + (total_weekend_days * weekend_price)
-
-#     index = Reservation.count_documents({})
-
-#     post = {
-#         "index": index,
-#         "made_on": datetime.utcnow(),
-#         "in": in_date,
-#         "out": out_date,
-#         "hotel": hotel_index,
-#         "user": user_index,
-#         "type": room_type,
-#         "total_days": total_days,
-#         "weekdays": total_weekdays,
-#         "weekends": total_days - total_weekdays,
-#         "price": total_cost,
-#     }
-
-#     result = Reservation.insert_one(post)
-#     return result
 
 
 def make_reservation(
@@ -216,6 +179,22 @@ def make_reservation(
     }
     result = Reservation.insert_one(post)
     return result
+
+
+def get_reservation_by_index(index):
+    query = {"index": index}
+    result = Reservation.find_one(query)
+    return result
+
+
+def get_reservation_by_id(id):
+    query = {"_id": id}
+    result = Reservation.find_one(query)
+    return result
+
+
+def get_reservations_by_userid():
+    pass
 
 
 def rooms_by_index(index):
@@ -331,9 +310,6 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     return number_of_reservations
 
 
-# print(hotel_has_vacancy(date_maker(11, 11, 2021), 0, "Standard"))
-
-
 def hotel_vacancy_range(
     in_date: datetime, out_date: datetime, hotel_index: int, type: str
 ):
@@ -412,7 +388,7 @@ def amenities_by_index(index):
 # print(number_of_days(date_maker(22, 10, 2021), date_maker(28, 10, 2021)))
 # print(weekdays_between(date_maker(22, 10, 2021), date_maker(28, 10, 2021)))
 # -------------------------------------------NEW RESERVATION FUNCTION------------------------------------------------------------------------
-# make_reservation(
+# variable = make_reservation(
 #     date_maker(11, 11, 2021),
 #     date_maker(12, 11, 2021),
 #     0,
@@ -424,6 +400,8 @@ def amenities_by_index(index):
 #     100,
 #     200,
 # )
+# pprint.pprint(variable.inserted_id)
+# print(get_reservation_by_id(variable.inserted_id))
 # ------------------------------------------(year,month,day) for datetime-------------------------------------------------
 
 # in_date = datetime(2021, 11, 5)

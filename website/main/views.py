@@ -217,10 +217,9 @@ def makeReservation(response):
 def confirmReservation(response):
     if response.method == "POST":
         form_data = response.POST.dict()
-        print(form_data)
+
         if response.method == "POST":
             form_data = response.POST.dict()
-        print(form_data)
 
         in_date = datetime.fromisoformat(form_data["in"])
         out_date = datetime.fromisoformat(form_data["out"])
@@ -245,16 +244,13 @@ def confirmReservation(response):
             rate,
             cost,
         )
-
-        # db.make_reservation()
-        # propertyId = form_data.get("id", None)
-        # property = Property.objects.get(id=propertyId)
-        # user = get current user that is logged in
-        # add new reservation to database
-        # reservation = reservation object that was just created, pass reservation id to page
+        confirmation = db.get_reservation_by_id(result.inserted_id)
+        hotel = db.get_hotel_by_index(int(index))
         return render(
-            response, "main/confirmReservation.html", {"property": property}
-        )  # "reservation": reservation, "property": property)
+            response,
+            "main/confirmReservation.html",
+            {"confirmation": confirmation, "hotel": hotel},
+        )
 
 
 def viewReservations(response):

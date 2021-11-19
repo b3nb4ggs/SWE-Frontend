@@ -5,9 +5,10 @@
 
 {% block content %}
 <h1>Thank you for booking with us!</h1>
+<p>{{user.index}}</p>
 <table>
-<tr> <h3>Reservation Confirmed for {{ property.name }}</h3></tr> <br>
-    <tr> Reservation ID: < Reservation ID > {{ reservation.id }}</tr>
+<tr> <h3>Your reservation is confirmed for {{ hotel.name }}</h3></tr> <br>
+    <tr> Reservation ID: {{ confirmation.index }}</tr>
     	<td>
 	<form method="post" action="/home/">
         {% csrf_token %}
