@@ -32,7 +32,7 @@
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
               <td>{{property.cost}}</td>
-              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
+              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}&days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">Book </a> </td>
           </tr>
 		{% endfor %}
         </tbody>
@@ -40,30 +40,7 @@
 	</td>
 </table>
 {% endblock %}
-<!--
-            <td>{{property.name}}</td>
-            <td>{{property.priceStandard}}</td>
-            <td>{{property.amenities}}</td>
-            <td>{{property.name}}</td>
-            <td>
-              {{property.price}}
-            </td>
 
-            <td>
-              {{property.amenity}}
-            </td>
-
-
-            <td> 	<form method="POST" id="bookRoom" action="/makeReservation/">
-                    {#% csrf_token %#}
-                    <input type="hidden" name="propertyId" value={{property.id }}>
-                    <input type="hidden" name="roomType" value={{roomType }}>
-                    <input type="hidden" name="checkin" value={{checkin }}>
-                    <input type="hidden" name="checkout" value={{checkout }} >
-                    <input type="hidden" name="numRooms" value={{numRooms }}>
-		            <button type="submit", name="book">Book Room</button>
-	                </form>
--->
 
 
 

@@ -72,14 +72,14 @@ def filterHotels(response):
 
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
-            price = db.room_by_type_index("Standard", item["index"])
+            price = db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
             process = [k for k, v in amenity[0].items() if v == True and k != "index"]
             amenity_string = " ".join(process)
             item["amenity"] = amenity_string
-            item["price"] = "{:.2f}".format(
-                db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
-                / number_of_days
-            )
+            item["price"] = "{:.2f}".format(price / number_of_days)
+            item["cost"] = price
+            item["days"] = number_of_days
+
         properties = hotels
 
         form = Filter(
@@ -146,6 +146,7 @@ def filterHotels(response):
             item["price"] = "{:.2f}".format(price / number_of_days)
             item["name"] = name[0]["name"]
             item["cost"] = "{:.2f}".format(price)
+            item["days"] = number_of_days
         properties = hotels
 
         return render(
@@ -172,25 +173,27 @@ def makeReservation(response):
         # return render(response, "main/makeReservation.html", {"form": form, "roomType": roomType,"property": property})
         context = {}
         checkin = response.GET.get("checkin", None)
-        print(checkin)
+
         checkout = response.GET.get("checkout", None)
-        print(checkout)
+
         numRooms = response.GET.get("numRooms", None)
-        print(numRooms)
+
         numGuests = response.GET.get("numGuests", None)
-        print(numGuests)
+
         roomType = response.GET.get("roomType", None)
-        print(roomType)
+
         propertyId = response.GET.get("id", None)
-        print(propertyId)
+
         property = Property.objects.get(
             id=propertyId
         )  # query for property with given id and return property object
-        numNights = "X"  # calculate number of nights here
+        numNights = response.GET.get("days", None)  # calculate number of nights here
 
-        avgRate = "Y"  # query for rate of roomType and weekend differential, calculate total/numNights
+        avgRate = response.GET.get(
+            "avgRate", None
+        )  # query for rate of roomType and weekend differential, calculate total/numNights
 
-        totalCost = "Z"  # use data from previous query
+        totalCost = response.GET.get("totalCost", None)  # use data from previous query
 
         context["checkin"] = checkin
         context["checkout"] = checkout
