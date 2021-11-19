@@ -216,10 +216,39 @@ def makeReservation(response):
 
 def confirmReservation(response):
     if response.method == "POST":
-        # create reservation object with new id and add it to the database
         form_data = response.POST.dict()
-        propertyId = form_data.get("id", None)
-        property = Property.objects.get(id=propertyId)
+        print(form_data)
+        if response.method == "POST":
+            form_data = response.POST.dict()
+        print(form_data)
+
+        in_date = datetime.fromisoformat(form_data["in"])
+        out_date = datetime.fromisoformat(form_data["out"])
+        index = form_data["hotel_id"]
+        user_index = form_data["user_id"]
+        room_type = form_data["room_type"]
+        number_of_rooms = form_data["number_of_rooms"]
+        number_of_guests = form_data["number_of_guest"]
+        total_days = form_data["total_days"]
+        rate = form_data["rate"]
+        cost = form_data["cost"]
+
+        result = db.make_reservation(
+            in_date,
+            out_date,
+            index,
+            user_index,
+            room_type,
+            number_of_rooms,
+            number_of_guests,
+            total_days,
+            rate,
+            cost,
+        )
+
+        # db.make_reservation()
+        # propertyId = form_data.get("id", None)
+        # property = Property.objects.get(id=propertyId)
         # user = get current user that is logged in
         # add new reservation to database
         # reservation = reservation object that was just created, pass reservation id to page

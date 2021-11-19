@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<!-- <p>{{user_info}}</p> -->
+
 
 {% if user.is_authenticated %}
     	<table>
@@ -37,7 +37,16 @@
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
         <!---Add reservation to database--->
-        <input type="hidden", name="id" value={{ property.id }}>
+        <input type="hidden", name="hotel_id" value={{ property.id }}>
+        <input type="hidden", name="in" value={{context.checkin}}>
+        <input type="hidden", name="out" value={{context.checkout}}>
+        <input type="hidden", name="user_id" value={{user_info.index}}>
+        <input type="hidden", name="room_type" value={{context.roomType}}>
+        <input type="hidden", name="number_of_rooms" value={{context.numRooms}}>
+        <input type="hidden", name="number_of_guest" value={{context.numGuests}}>
+        <input type="hidden", name="total_days" value={{context.numNights}}>
+        <input type="hidden", name="rate" value={{context.avgRate}}>
+        <input type="hidden", name="cost" value={{context.total}}>
 		<button type="submit", name="confirm">Confirm Reservation</button>
 	</form>
     </td>
