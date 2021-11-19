@@ -235,7 +235,8 @@ def manage(response):
 
 
 def manageProperties(response):
-    return render(response, "main/manageProperties.html")
+    properties = db.get_all_hotels()
+    return render(response, "main/manageProperties.html", {"properties": properties})
 
 
 def addProperty(response):
