@@ -130,8 +130,6 @@ def get_hotel_by_index(index):
     return result
 
 
-print(get_hotel_by_index(0))
-
 # helper function for date time where you just enter year month day
 def date_maker(day, month, year):
     return datetime(year, month, day)
@@ -193,8 +191,10 @@ def get_reservation_by_id(id):
     return result
 
 
-def get_reservations_by_userid():
-    pass
+def get_reservations_by_userid(index: int):
+    query = {"user": index}
+    result = Reservation.find(query)
+    return list(result)
 
 
 def rooms_by_index(index):

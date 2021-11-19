@@ -114,9 +114,6 @@ def filterHotels(response):
         form_data = response.POST.dict()
         checkin = form_data.get("checkin")
         checkout = form_data.get("checkout")
-        # numRooms = form_data.get("numRooms")
-        # numGuests = form_data.get("numGuests")
-        # roomType = form_data.get("roomType")
 
         if form.is_valid():
             # print(form.cleaned_data)
@@ -223,14 +220,14 @@ def confirmReservation(response):
 
         in_date = datetime.fromisoformat(form_data["in"])
         out_date = datetime.fromisoformat(form_data["out"])
-        index = form_data["hotel_id"]
-        user_index = form_data["user_id"]
+        index = int(form_data["hotel_id"])
+        user_index = int(form_data["user_id"])
         room_type = form_data["room_type"]
-        number_of_rooms = form_data["number_of_rooms"]
-        number_of_guests = form_data["number_of_guest"]
-        total_days = form_data["total_days"]
-        rate = form_data["rate"]
-        cost = form_data["cost"]
+        number_of_rooms = int(form_data["number_of_rooms"])
+        number_of_guests = int(form_data["number_of_guest"])
+        total_days = int(form_data["total_days"])
+        rate = float(form_data["rate"])
+        cost = float(form_data["cost"])
 
         result = db.make_reservation(
             in_date,
@@ -254,12 +251,16 @@ def confirmReservation(response):
 
 
 def viewReservations(response):
-    # User = ****get user that is curently logged in from import ****
-    reservations = (
-        Reservation.objects.all()
-    )  # get list of all reservation objects for the given user
+    user = response.user
+    user_info = db.get_user_by_username(user.username)
+    reservations = db.get_reservations_by_userid(user_info["index"])
+    for item in reservations:
+        name = db.hotel_by_index(item["index"])
+        item["name"] = name[0]["name"]
     return render(
-        response, "main/viewReservations.html", {"reservations": reservations}
+        response,
+        "main/viewReservations.html",
+        {"user": user_info, "reservations": reservations},
     )
 
 
