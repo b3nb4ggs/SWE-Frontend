@@ -26,32 +26,6 @@ def home(request):
     return render(request, "main/home.html", {"form": form})
 
 
-def register(response):
-    if response.method == "POST":
-        form = CreateAccount(response.POST)
-        if form.is_valid():
-            u = form.cleaned_data["username"]
-            user = User(username=u)
-            user.save()
-            return redirect("/login", {"user": user})
-    else:
-        form = CreateAccount()
-
-    return render(response, "main/register.html", {"form": form})
-
-
-def login(response):
-    # user = User.objects.get(username=username)
-    form = Login(response.POST)
-    # if login == successful && login = admin:
-    #      route to admin page
-    # if login == successful && login == customer:
-    #      route to home page
-    # else
-    #      display error page, reroute to login
-    return render(response, "main/login.html", {"form": form})
-
-
 def filterHotels(response):
     # if request is coming from Search page
     if response.method == "GET":
@@ -61,17 +35,14 @@ def filterHotels(response):
         numRooms = form_data.get("numRooms")
         numGuests = form_data.get("numGuests")
         roomType = "Standard"
-        # properties = Property.objects.all() #get list of all property objects
-        # reservations = Reservation.objects.all() #get list of all reservation objects
 
         hotels = db.get_all_hotels()
         hotels = strip_off_id(hotels)
-
         dbcheckin = datetime.fromisoformat(checkin)
         dbcheckout = datetime.fromisoformat(checkout)
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-
+        no_vacancy = []
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
             price = db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
@@ -81,7 +52,15 @@ def filterHotels(response):
             item["price"] = "{:.2f}".format(price / number_of_days)
             item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
-
+            if (
+                db.hotel_vacancy_range(
+                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
+                )
+                == False
+            ):
+                no_vacancy.append(item)
+        for item in no_vacancy:
+            hotels.pop(item)
         properties = hotels
 
         form = Filter(
@@ -116,9 +95,9 @@ def filterHotels(response):
         checkout = form_data.get("checkout")
 
         if form.is_valid():
-            # print(form.cleaned_data)
+
             low = 0
-            high = 200
+            high = 250
 
             amenity_list = form.cleaned_data["amenities"]
             type = form.cleaned_data["roomType"]
@@ -257,10 +236,11 @@ def viewReservations(response):
     for item in reservations:
         name = db.hotel_by_index(item["index"])
         item["name"] = name[0]["name"]
+
     return render(
         response,
         "main/viewReservations.html",
-        {"user": user_info, "reservations": reservations},
+        {"reservations": reservations},
     )
 
 

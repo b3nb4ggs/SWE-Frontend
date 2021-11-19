@@ -310,15 +310,27 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     return number_of_reservations
 
 
+def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
+    query = {"index": hotel}
+    result = Hotel.find_one(query)
+    number_rooms = result[type]
+    return number_rooms
+
+
 def hotel_vacancy_range(
-    in_date: datetime, out_date: datetime, hotel_index: int, type: str
+    in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int
 ):
     room_vacancy_by_day = []
     iterable_days = number_of_days(in_date, out_date)
     for day in range(iterable_days):
         room_vacancy_by_day.append(hotel_has_vacancy(in_date, hotel_index, type))
         in_date += timedelta(days=1)
-    return room_vacancy_by_day
+    rooms_available = number_of_rooms_by_hotel_and_type(hotel_index, type)
+    for day in room_vacancy_by_day:
+        if int(day) + int(num_rooms) > int(rooms_available):
+            return False
+        else:
+            return True
 
 
 def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
