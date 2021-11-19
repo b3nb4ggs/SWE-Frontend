@@ -34,6 +34,12 @@ def get_user_by_index(index: int):
     return result
 
 
+def get_user_by_username(name: str):
+    query = {"username": name}
+    result = Customer.find_one(query)
+    return result
+
+
 def make_hotel(
     name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
 ):

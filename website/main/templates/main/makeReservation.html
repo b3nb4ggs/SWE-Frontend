@@ -5,6 +5,8 @@
 
 {% block content %}
 
+<!-- <p>{{user_info}}</p> -->
+
 {% if user.is_authenticated %}
     	<table>
         <td>
@@ -22,10 +24,10 @@
         </td>
         <td>
             <tr><h2>Your Information</h2></tr>
-            <tr>Username:  </tr> <br>
-            <tr>Name: </tr> <br>
-            <tr>Email: </tr> <br>
-            <tr>Phone Number: </tr>
+            <tr>Username:{{user_info.username}}  </tr> <br>
+            <tr>Name:{{user_info.first_name}} {{user_info.last_name}} </tr> <br>
+            <tr>Email:{{user_info.email}} </tr> <br>
+            <tr>Phone Number:{{user_info.phone}} </tr>
 
         </td>
         </table>

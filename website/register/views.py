@@ -15,6 +15,7 @@ def register(response):
                     form.cleaned_data["first"],
                     form.cleaned_data["last"],
                     form.cleaned_data["phone"],
+                    form.cleaned_data["email"],
                 )
                 return redirect("/")
             except:

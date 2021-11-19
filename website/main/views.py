@@ -1,3 +1,4 @@
+from re import U
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
@@ -8,6 +9,7 @@ import datetime
 from django.forms import widgets
 from main import database as db
 from datetime import datetime
+from django.contrib.auth.models import User
 
 
 def strip_off_id(processthis):
@@ -171,19 +173,18 @@ def makeReservation(response):
         # roomType = form.get("roomType")
         # property = Property.objects.get(id=propertyId)
         # return render(response, "main/makeReservation.html", {"form": form, "roomType": roomType,"property": property})
+
+        user = response.user
+
+        user_data = db.get_user_by_username(user.username)
+
         context = {}
         checkin = response.GET.get("checkin", None)
-
         checkout = response.GET.get("checkout", None)
-
         numRooms = response.GET.get("numRooms", None)
-
         numGuests = response.GET.get("numGuests", None)
-
         roomType = response.GET.get("roomType", None)
-
         propertyId = response.GET.get("id", None)
-
         property = Property.objects.get(
             id=propertyId
         )  # query for property with given id and return property object
@@ -209,7 +210,7 @@ def makeReservation(response):
         return render(
             response,
             "main/makeReservation.html",
-            {"context": context, "property": property},
+            {"context": context, "property": property, "user_info": user_data},
         )
 
 
