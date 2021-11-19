@@ -34,10 +34,6 @@ def get_user_by_index(index: int):
     return result
 
 
-variable = get_user_by_index(1)
-print(variable[0]["username"])
-
-
 def make_hotel(
     name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
 ):
