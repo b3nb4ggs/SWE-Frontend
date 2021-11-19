@@ -20,8 +20,9 @@
 	<thead>
           <tr>
             <th>Name</th>
-            <th>Price {{ roomType }}</th>
+            <th>Rate {{ roomType }}</th>
 	    <th>Amenities</th>
+      <th>Total Cost</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@
               <td>{{property.name}} </td>
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
+              <td>{{property.cost}}</td>
               <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}">Book </a> </td>
           </tr>
 		{% endfor %}
