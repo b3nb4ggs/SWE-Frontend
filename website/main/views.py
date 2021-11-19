@@ -95,7 +95,7 @@ def filterHotels(response):
         checkout = form_data.get("checkout")
 
         if form.is_valid():
-
+            # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
             high = 250
 
@@ -113,6 +113,8 @@ def filterHotels(response):
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
 
+            no_vacancy = []
+
         for item in hotels:
 
             name = db.hotel_by_index(item["index"])
@@ -125,6 +127,15 @@ def filterHotels(response):
             item["name"] = name[0]["name"]
             item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
+            if (
+                db.hotel_vacancy_range(
+                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
+                )
+                == False
+            ):
+                no_vacancy.append(item)
+        for item in no_vacancy:
+            hotels.pop(item)
         properties = hotels
 
         return render(
