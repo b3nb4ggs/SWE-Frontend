@@ -1,10 +1,26 @@
-{% extends 'main/base.html' %}
+{% extends 'main/baseAdmin.html' %}
 
 {% block title %} Manage Properties Page {% endblock %}
 
 {% block content %}
-     <table>
-        <tr> <a href="/editProperty/" >Edit Property</a> </tr> <br>
-        <tr> <a href="/addProperty/" >Add New Property </a> </tr> <br>
-     <table>
+
+    <table>
+    <tbody>
+	    {% for property in properties %}
+          <tr>
+              <td>{{property.name}} </td>
+              <td> {{property.price}} </td>
+              <td>{{property.amenity}} </td>
+              <td> <a href="/editProperty/?id={{property.index}}" >Edit</a> </td>
+          </tr>
+		{% endfor %}
+    </tbody>
+        <td>
+            <form method="post" action="/addProperty/">
+                {% csrf_token %}
+                <button type="submit" class="btn">Add New Property </button>
+            </form>
+        </td>
+     </table>
+
 {% endblock %}
