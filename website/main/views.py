@@ -77,7 +77,7 @@ def filterHotels(response):
             amenity_string = " ".join(process)
             item["amenity"] = amenity_string
             item["price"] = "{:.2f}".format(price / number_of_days)
-            item["cost"] = price
+            item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
 
         properties = hotels
