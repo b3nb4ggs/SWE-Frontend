@@ -5,7 +5,7 @@
 
 {% block content %}
 
-
+{% if user.is_authenticated %}
     	<table>
         <td>
             <tr><h2>Reservation Info</h2></tr>
@@ -29,6 +29,7 @@
 
         </td>
         </table>
+        
 <table>
 	<td>
 	<form method="post" action="/confirmReservation/">
@@ -39,5 +40,13 @@
 	</form>
     </td>
 </table>
+
+{% else %}
+        <br>
+        <a href="/register/">Create Account</a>
+        <br>
+        <a href="/login/">Login</a>
+        <br>
+        {% endif %}
 
 {% endblock %}

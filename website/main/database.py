@@ -124,9 +124,7 @@ def weekdays_between(in_date: datetime, out_date: datetime):
     day_generator = (
         in_date + timedelta(x + 1) for x in range((out_date - in_date).days)
     )
-    delta_days = sum(
-        1 for day in day_generator if day.weekday() < 5 and day.weekday() > 1
-    )
+    delta_days = sum(1 for day in day_generator if day.weekday() < 5)
     return delta_days
 
 
