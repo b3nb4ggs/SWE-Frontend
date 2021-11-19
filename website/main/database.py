@@ -317,11 +317,15 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
         "type": type,
     }
 
-    number_of_reservations = Reservation.count_documents(query)
+    reservations = Reservation.find(query)
+    number_of_reservations = 0
+    for reservation in reservations:
+        number_of_reservations += reservation["number_rooms"]
 
-    result = Hotel.find_one({"index": hotel_index})
-    number_of_rooms = result[type]
-    return number_of_rooms - number_of_reservations
+    return number_of_reservations
+
+
+# print(hotel_has_vacancy(date_maker(11, 11, 2021), 0, "Standard"))
 
 
 def hotel_vacancy_range(
@@ -405,7 +409,7 @@ def amenities_by_index(index):
 #     date_maker(11, 11, 2021),
 #     date_maker(12, 11, 2021),
 #     0,
-#     0,
+#     1,
 #     "Standard",
 #     1,
 #     2,
