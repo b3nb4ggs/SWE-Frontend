@@ -345,7 +345,7 @@ def hotel_vacancy_range(
     return room_vacancy_by_day
 
 
-def make_customer(uname: str, fname: str, lname: str, phone: str):
+def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
     index = Customer.count_documents({})
     id = int(index)
     post = {
@@ -354,6 +354,7 @@ def make_customer(uname: str, fname: str, lname: str, phone: str):
         "first_name": fname,
         "last_name": lname,
         "phone": phone,
+        "email": email,
     }
     Customer.insert_one(post)
 
