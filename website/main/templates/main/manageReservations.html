@@ -5,7 +5,6 @@
 {% block content %}
 
     <table>
-    	<table>
 	<thead>
           <tr>
             <th>Reservation Id</th>
@@ -44,13 +43,20 @@
               <td></td>
 
               <td> <a href="/editReservation/?id={{reservation.index}}" >Edit</a> </td>
+             <!--- <td> <a href="/manageReservations/" >Delete</a> </td> --->
+            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
+                {%  csrf_token %}
+                <input type="hidden" name="reservationId" value={{ reservation.index }}/>
+                <input type="Submit" name="action" value="delete" />
+            </form>
+            </td>
           </tr>
 		{% endfor %}
     </tbody>
         <td>
             <form method="post" action="/addReservation/">
                 {% csrf_token %}
-                <button type="submit" class="btn">Create New Reservation </button>
+                <button type="submit" class="btn" name="action" value="add">Create New Reservation </button>
             </form>
         </td>
      </table>

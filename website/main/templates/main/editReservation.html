@@ -2,6 +2,18 @@
 
 {% block title %} Edit Reservation Page {% endblock %}
 
+<table>
+	<tr>
+	<td>
+	<form method="POST" class="form-group" id="editReservation" action="/manageReservations/">
+		{% csrf_token %}
+		{{form.as_p}}
+		<button type="submit", name="editReservation" class="btn">Save Changes </button>
+	</form>
+	</td>
+	<td>
+	</table>
+
 {% block content %}
 
 {% endblock %}

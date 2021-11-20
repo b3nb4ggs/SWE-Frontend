@@ -41,7 +41,7 @@ def get_user_by_username(name: str):
 
 
 def make_hotel(
-    name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
+        name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
 ):
     index = Hotel.count_documents({})
     id = int(index)
@@ -80,12 +80,12 @@ def delete_hotel(index: int):
 
 
 def update_hotel(
-    index: int,
-    name: str,
-    no_rooms: int,
-    differential: int,
-    amenities: list,
-    Rooms: dict,
+        index: int,
+        name: str,
+        no_rooms: int,
+        differential: int,
+        amenities: list,
+        Rooms: dict,
 ):
     delete_hotel(index)
     id = int(index)
@@ -149,16 +149,16 @@ def weekdays_between(in_date: datetime, out_date: datetime):
 
 
 def make_reservation(
-    in_date: datetime,
-    out_date: datetime,
-    hotel_index: int,
-    user_index: int,
-    room_type: str,
-    number_of_rooms: int,
-    number_of_guests: int,
-    total_days: int,
-    rate: float,
-    cost: float,
+        in_date: datetime,
+        out_date: datetime,
+        hotel_index: int,
+        user_index: int,
+        room_type: str,
+        number_of_rooms: int,
+        number_of_guests: int,
+        total_days: int,
+        rate: float,
+        cost: float,
 ):
     index = Reservation.count_documents({})
     post = {
@@ -176,6 +176,47 @@ def make_reservation(
         "cost": cost,
     }
     result = Reservation.insert_one(post)
+    return result
+
+
+def delete_reservation(index: int):
+    status = Reservation.delete_one({"index": index})
+    return status
+
+
+def update_reservation(
+        index: int,
+        in_date: datetime,
+        out_date: datetime,
+        hotel_index: int,
+        user_index: int,
+        room_type: str,
+        number_of_rooms: int,
+        number_of_guests: int,
+        total_days: int,
+        rate: float,
+        cost: float,
+):
+    delete = delete_reservation(index)
+    if delete.deleted_count != 1:
+        print("Unable to delete reservation")
+
+    post = {
+        "index": index,
+        "made_on": datetime.utcnow(),
+        "in": in_date,
+        "out": out_date,
+        "hotel": hotel_index,
+        "user": user_index,
+        "type": room_type,
+        "number_guests": number_of_guests,
+        "number_rooms": number_of_rooms,
+        "total_days": total_days,
+        "rate": rate,
+        "cost": cost,
+    }
+    result = Reservation.insert_one(post)
+    #insert error check to see if reservation was create successfully
     return result
 
 
@@ -204,12 +245,11 @@ def rooms_by_index(index):
 
 
 def get_price(
-    in_date: datetime,
-    out_date: datetime,
-    hotel_index: int,
-    room_type: str,
+        in_date: datetime,
+        out_date: datetime,
+        hotel_index: int,
+        room_type: str,
 ):
-
     weekday_price = 0
     weekend_price = 0
     total_cost = 0
@@ -233,9 +273,11 @@ def get_all_hotels():
     result = list(Hotel.find({}))
     return result
 
+
 def get_all_reservations():
     result = list(Reservation.find({}))
     return result
+
 
 def hotel_by_index(index):
     result = list(Hotel.find({"index": index}))
@@ -321,7 +363,7 @@ def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
 
 
 def hotel_vacancy_range(
-    in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int
+        in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int
 ):
     room_vacancy_by_day = []
     iterable_days = number_of_days(in_date, out_date)
@@ -364,7 +406,6 @@ def amenities_by_index(index):
     query = {"index": index}
     result = Amenities.find(query)
     return list(result)
-
 
 # Line change
 # ----------------------------------------------CUSTOMER FUNCTIONS------------------------------------------------------------------------------------------
