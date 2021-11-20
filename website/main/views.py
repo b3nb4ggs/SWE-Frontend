@@ -247,6 +247,8 @@ def viewReservations(response):
     for item in reservations:
         name = db.hotel_by_index(item["index"])
         item["name"] = name[0]["name"]
+        item["checkin"] = item["in"].date
+        item["checkout"] = item["out"].date
 
     return render(
         response,
@@ -290,7 +292,15 @@ def editUser(response):
 
 def manageReservations(response):
     reservations = db.get_all_reservations()
-    print(reservations)
+    for reservation in reservations:
+        user = db.get_user_by_index(reservation["user"])
+        reservation["username"] = user[0]["username"]
+        reservation["first"] = user[0]["first_name"]
+        reservation["last"] = user[0]["last_name"]
+        reservation["email"] = user[0]["email"]
+        reservation["phone"] = user[0]["phone"]
+        reservation["checkin"] = reservation["in"].date
+        reservation["checkout"] = reservation["out"].date
     return render(response, "main/manageReservations.html", {"reservations": reservations})
 
 

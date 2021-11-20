@@ -5,18 +5,45 @@
 {% block content %}
 
     <table>
+    	<table>
+	<thead>
+          <tr>
+            <th>Reservation Id</th>
+              <th>Username</th>
+              <th> First Name </th>
+              <th>Last Name</th>
+              <th> Email </th>
+              <th>Phone Number</th>
+            <th>Hotel</th>
+	        <th>Room Type</th>
+              <th> Rooms</th>
+              <th>Guests</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+            <th>Rate</th>
+              <th>Total Cost</th>
+          </tr>
+        </thead>
     <tbody>
 	    {% for reservation in reservations %}
           <tr>
-              <td>Reservation Id: {{reservation.index}} </td>
-              <td>Hotel:  </td>
-              <td>Room Type: </td>
-              <td>Username:  </td>
-              <td>Checkin: </td>
-              <td>Checkout: </td>
-              <td>Number of Rooms: </td>
-              <td>Number of Guests: </td>
-              <td> <a href="/editReservation/?id={{property.index}}" >Edit</a> </td>
+              <td>{{reservation.index}} </td>
+              <td> {{ reservation.username }}  </td>
+              <td> {{ reservation.first }}  </td>
+              <td> {{ reservation.last }}  </td>
+              <td> {{ reservation.email }}  </td>
+              <td> {{ reservation.phone }}  </td>
+              <td> {{ reservation.hotel }}</td>
+              <td>{{ reservation.type}} </td>
+              <td>{{ reservation.number_rooms }}</td>
+              <td>{{ reservation.number_guests }}</td>
+              <td>{{ reservation.checkin }} </td>
+              <td>{{ reservation.checkout }} </td>
+              <td> {{ reservation.rate }}</td>
+              <td> {{ reservation.cost }}</td>
+              <td></td>
+
+              <td> <a href="/editReservation/?id={{reservation.index}}" >Edit</a> </td>
           </tr>
 		{% endfor %}
     </tbody>
