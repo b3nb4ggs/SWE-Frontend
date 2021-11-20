@@ -271,7 +271,9 @@ def editUser(response):
 
 
 def manageReservations(response):
-    return render(response, "main/manageReservations.html")
+    reservations = db.get_all_reservations()
+    print(reservations)
+    return render(response, "main/manageReservations.html", {"reservations": reservations})
 
 
 def addReservation(response):

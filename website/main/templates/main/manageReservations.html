@@ -1,10 +1,31 @@
 {% extends 'main/baseAdmin.html' %}
 
-{% block title %} Manage Reservations Page {% endblock %}
+{% block title %} Manage Properties Page {% endblock %}
 
 {% block content %}
+
     <table>
-        <tr> <a href="/editReservation/" >Edit Reservation</a> </tr> <br>
-        <tr> <a href="/addReservation/" >Add New Reservation </a> </tr> <br>
-     <table>
+    <tbody>
+	    {% for reservation in reservations %}
+          <tr>
+              <td>Reservation Id: {{reservation.index}} </td>
+              <td>Hotel:  </td>
+              <td>Room Type: </td>
+              <td>Username:  </td>
+              <td>Checkin: </td>
+              <td>Checkout: </td>
+              <td>Number of Rooms: </td>
+              <td>Number of Guests: </td>
+              <td> <a href="/editReservation/?id={{property.index}}" >Edit</a> </td>
+          </tr>
+		{% endfor %}
+    </tbody>
+        <td>
+            <form method="post" action="/addReservation/">
+                {% csrf_token %}
+                <button type="submit" class="btn">Create New Reservation </button>
+            </form>
+        </td>
+     </table>
+
 {% endblock %}

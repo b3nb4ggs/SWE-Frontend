@@ -211,6 +211,9 @@ def get_all_hotels():
     result = list(Hotel.find({}))
     return result
 
+def get_all_reservations():
+    result = list(Reservation.find({}))
+    return result
 
 def hotel_by_index(index):
     result = list(Hotel.find({"index": index}))
