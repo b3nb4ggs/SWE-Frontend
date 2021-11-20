@@ -6,6 +6,8 @@
 {% block content %}
 
 
+
+{% if user.is_authenticated %}
     	<table>
         <td>
             <tr><h2>Reservation Info</h2></tr>
@@ -22,22 +24,40 @@
         </td>
         <td>
             <tr><h2>Your Information</h2></tr>
-            <tr>Username:  </tr> <br>
-            <tr>Name: </tr> <br>
-            <tr>Email: </tr> <br>
-            <tr>Phone Number: </tr>
+            <tr>Username:{{user_info.username}}  </tr> <br>
+            <tr>Name:{{user_info.first_name}} {{user_info.last_name}} </tr> <br>
+            <tr>Email:{{user_info.email}} </tr> <br>
+            <tr>Phone Number:{{user_info.phone}} </tr>
 
         </td>
         </table>
+        
 <table>
 	<td>
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
         <!---Add reservation to database--->
-        <input type="hidden", name="id" value={{ property.id }}>
+        <input type="hidden", name="hotel_id" value={{ property.id }}>
+        <input type="hidden", name="in" value={{context.checkin}}>
+        <input type="hidden", name="out" value={{context.checkout}}>
+        <input type="hidden", name="user_id" value={{user_info.index}}>
+        <input type="hidden", name="room_type" value={{context.roomType}}>
+        <input type="hidden", name="number_of_rooms" value={{context.numRooms}}>
+        <input type="hidden", name="number_of_guest" value={{context.numGuests}}>
+        <input type="hidden", name="total_days" value={{context.numNights}}>
+        <input type="hidden", name="rate" value={{context.avgRate}}>
+        <input type="hidden", name="cost" value={{context.total}}>
 		<button type="submit", name="confirm">Confirm Reservation</button>
 	</form>
     </td>
 </table>
+
+{% else %}
+        <br>
+        <a href="/register/">Create Account</a>
+        <br>
+        <a href="/login/">Login</a>
+        <br>
+        {% endif %}
 
 {% endblock %}

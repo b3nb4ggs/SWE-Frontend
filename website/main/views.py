@@ -1,3 +1,4 @@
+from re import U
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
@@ -8,6 +9,7 @@ import datetime
 from django.forms import widgets
 from main import database as db
 from datetime import datetime
+from django.contrib.auth.models import User
 
 
 def strip_off_id(processthis):
@@ -24,32 +26,6 @@ def home(request):
     return render(request, "main/home.html", {"form": form})
 
 
-def register(response):
-    if response.method == "POST":
-        form = CreateAccount(response.POST)
-        if form.is_valid():
-            u = form.cleaned_data["username"]
-            user = User(username=u)
-            user.save()
-            return redirect("/login", {"user": user})
-    else:
-        form = CreateAccount()
-
-    return render(response, "main/register.html", {"form": form})
-
-
-def login(response):
-    # user = User.objects.get(username=username)
-    form = Login(response.POST)
-    # if login == successful && login = admin:
-    #      route to admin page
-    # if login == successful && login == customer:
-    #      route to home page
-    # else
-    #      display error page, reroute to login
-    return render(response, "main/login.html", {"form": form})
-
-
 def filterHotels(response):
     # if request is coming from Search page
     if response.method == "GET":
@@ -59,17 +35,14 @@ def filterHotels(response):
         numRooms = form_data.get("numRooms")
         numGuests = form_data.get("numGuests")
         roomType = "Standard"
-        # properties = Property.objects.all() #get list of all property objects
-        # reservations = Reservation.objects.all() #get list of all reservation objects
 
         hotels = db.get_all_hotels()
         hotels = strip_off_id(hotels)
-
         dbcheckin = datetime.fromisoformat(checkin)
         dbcheckout = datetime.fromisoformat(checkout)
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-
+        no_vacancy = []
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
             price = db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
@@ -77,9 +50,17 @@ def filterHotels(response):
             amenity_string = " ".join(process)
             item["amenity"] = amenity_string
             item["price"] = "{:.2f}".format(price / number_of_days)
-            item["cost"] = price
+            item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
-
+            if (
+                db.hotel_vacancy_range(
+                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
+                )
+                == False
+            ):
+                no_vacancy.append(item)
+        for item in no_vacancy:
+            hotels.pop(item)
         properties = hotels
 
         form = Filter(
@@ -112,14 +93,11 @@ def filterHotels(response):
         form_data = response.POST.dict()
         checkin = form_data.get("checkin")
         checkout = form_data.get("checkout")
-        # numRooms = form_data.get("numRooms")
-        # numGuests = form_data.get("numGuests")
-        # roomType = form_data.get("roomType")
 
         if form.is_valid():
-            # print(form.cleaned_data)
+            # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
-            high = 200
+            high = 250
 
             amenity_list = form.cleaned_data["amenities"]
             type = form.cleaned_data["roomType"]
@@ -135,6 +113,8 @@ def filterHotels(response):
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
 
+            no_vacancy = []
+
         for item in hotels:
 
             name = db.hotel_by_index(item["index"])
@@ -147,6 +127,15 @@ def filterHotels(response):
             item["name"] = name[0]["name"]
             item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
+            if (
+                db.hotel_vacancy_range(
+                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
+                )
+                == False
+            ):
+                no_vacancy.append(item)
+        for item in no_vacancy:
+            hotels.pop(item)
         properties = hotels
 
         return render(
@@ -171,19 +160,18 @@ def makeReservation(response):
         # roomType = form.get("roomType")
         # property = Property.objects.get(id=propertyId)
         # return render(response, "main/makeReservation.html", {"form": form, "roomType": roomType,"property": property})
+
+        user = response.user
+
+        user_data = db.get_user_by_username(user.username)
+
         context = {}
         checkin = response.GET.get("checkin", None)
-
         checkout = response.GET.get("checkout", None)
-
         numRooms = response.GET.get("numRooms", None)
-
         numGuests = response.GET.get("numGuests", None)
-
         roomType = response.GET.get("roomType", None)
-
         propertyId = response.GET.get("id", None)
-
         property = Property.objects.get(
             id=propertyId
         )  # query for property with given id and return property object
@@ -209,31 +197,61 @@ def makeReservation(response):
         return render(
             response,
             "main/makeReservation.html",
-            {"context": context, "property": property},
+            {"context": context, "property": property, "user_info": user_data},
         )
 
 
 def confirmReservation(response):
     if response.method == "POST":
-        # create reservation object with new id and add it to the database
         form_data = response.POST.dict()
-        propertyId = form_data.get("id", None)
-        property = Property.objects.get(id=propertyId)
-        # user = get current user that is logged in
-        # add new reservation to database
-        # reservation = reservation object that was just created, pass reservation id to page
+
+        if response.method == "POST":
+            form_data = response.POST.dict()
+
+        in_date = datetime.fromisoformat(form_data["in"])
+        out_date = datetime.fromisoformat(form_data["out"])
+        index = int(form_data["hotel_id"])
+        user_index = int(form_data["user_id"])
+        room_type = form_data["room_type"]
+        number_of_rooms = int(form_data["number_of_rooms"])
+        number_of_guests = int(form_data["number_of_guest"])
+        total_days = int(form_data["total_days"])
+        rate = float(form_data["rate"])
+        cost = float(form_data["cost"])
+
+        result = db.make_reservation(
+            in_date,
+            out_date,
+            index,
+            user_index,
+            room_type,
+            number_of_rooms,
+            number_of_guests,
+            total_days,
+            rate,
+            cost,
+        )
+        confirmation = db.get_reservation_by_id(result.inserted_id)
+        hotel = db.get_hotel_by_index(int(index))
         return render(
-            response, "main/confirmReservation.html", {"property": property}
-        )  # "reservation": reservation, "property": property)
+            response,
+            "main/confirmReservation.html",
+            {"confirmation": confirmation, "hotel": hotel},
+        )
 
 
 def viewReservations(response):
-    # User = ****get user that is curently logged in from import ****
-    reservations = (
-        Reservation.objects.all()
-    )  # get list of all reservation objects for the given user
+    user = response.user
+    user_info = db.get_user_by_username(user.username)
+    reservations = db.get_reservations_by_userid(user_info["index"])
+    for item in reservations:
+        name = db.hotel_by_index(item["index"])
+        item["name"] = name[0]["name"]
+
     return render(
-        response, "main/viewReservations.html", {"reservations": reservations}
+        response,
+        "main/viewReservations.html",
+        {"reservations": reservations},
     )
 
 

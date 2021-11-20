@@ -12,10 +12,10 @@ def register(response):
                 form.save()
                 db.make_customer(
                     form.cleaned_data["username"],
-                    form.cleaned_data["password1"],
                     form.cleaned_data["first"],
                     form.cleaned_data["last"],
                     form.cleaned_data["phone"],
+                    form.cleaned_data["email"],
                 )
                 return redirect("/")
             except:

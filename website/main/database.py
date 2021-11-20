@@ -7,6 +7,8 @@ from datetime import timedelta
 import pprint
 import re
 
+from pymongo.common import validate_readable
+
 cluster = MongoClient(
     "mongodb://localhost:27017",
     ssl_cert_reqs=ssl.CERT_NONE,
@@ -24,6 +26,18 @@ def strip_off_id(processthis):
     for element in processthis:
         element.pop("_id")
     return processthis
+
+
+def get_user_by_index(index: int):
+    query = {"index": index}
+    result = list(Customer.find(query))
+    return result
+
+
+def get_user_by_username(name: str):
+    query = {"username": name}
+    result = Customer.find_one(query)
+    return result
 
 
 def make_hotel(
@@ -110,6 +124,12 @@ def search_hotel(name: str):
     return list(result)
 
 
+def get_hotel_by_index(index):
+    query = {"index": index}
+    result = Hotel.find_one(query)
+    return result
+
+
 # helper function for date time where you just enter year month day
 def date_maker(day, month, year):
     return datetime(year, month, day)
@@ -124,9 +144,7 @@ def weekdays_between(in_date: datetime, out_date: datetime):
     day_generator = (
         in_date + timedelta(x + 1) for x in range((out_date - in_date).days)
     )
-    delta_days = sum(
-        1 for day in day_generator if day.weekday() < 5 and day.weekday() > 1
-    )
+    delta_days = sum(1 for day in day_generator if day.weekday() < 5)
     return delta_days
 
 
@@ -136,27 +154,13 @@ def make_reservation(
     hotel_index: int,
     user_index: int,
     room_type: str,
+    number_of_rooms: int,
+    number_of_guests: int,
+    total_days: int,
+    rate: float,
+    cost: float,
 ):
-
-    weekday_price = 0
-    weekend_price = 0
-    total_cost = 0
-
-    result = rooms_by_index(hotel_index)
-    for i in range(len(result)):
-        if result[i]["type"] == room_type:
-            weekday_price, weekend_price = (
-                result[i]["price"],
-                result[i]["weekend_price"],
-            )
-    total_days = number_of_days(in_date, out_date)
-    total_weekdays = weekdays_between(in_date, out_date)
-    total_weekend_days = total_days - total_weekdays
-
-    total_cost = (total_weekdays * weekday_price) + (total_weekend_days * weekend_price)
-
     index = Reservation.count_documents({})
-
     post = {
         "index": index,
         "made_on": datetime.utcnow(),
@@ -165,14 +169,32 @@ def make_reservation(
         "hotel": hotel_index,
         "user": user_index,
         "type": room_type,
+        "number_guests": number_of_guests,
+        "number_rooms": number_of_rooms,
         "total_days": total_days,
-        "weekdays": total_weekdays,
-        "weekends": total_days - total_weekdays,
-        "price": total_cost,
+        "rate": rate,
+        "cost": cost,
     }
-
     result = Reservation.insert_one(post)
     return result
+
+
+def get_reservation_by_index(index):
+    query = {"index": index}
+    result = Reservation.find_one(query)
+    return result
+
+
+def get_reservation_by_id(id):
+    query = {"_id": id}
+    result = Reservation.find_one(query)
+    return result
+
+
+def get_reservations_by_userid(index: int):
+    query = {"user": index}
+    result = Reservation.find(query)
+    return list(result)
 
 
 def rooms_by_index(index):
@@ -282,34 +304,48 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
         "out": {"$gte": day_before},
         "type": type,
     }
-    number_of_reservations = Reservation.count_documents(query)
 
-    result = Hotel.find_one({"index": hotel_index})
-    number_of_rooms = result[type]
-    return number_of_rooms - number_of_reservations
+    reservations = Reservation.find(query)
+    number_of_reservations = 0
+    for reservation in reservations:
+        number_of_reservations += reservation["number_rooms"]
+
+    return number_of_reservations
+
+
+def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
+    query = {"index": hotel}
+    result = Hotel.find_one(query)
+    number_rooms = result[type]
+    return number_rooms
 
 
 def hotel_vacancy_range(
-    in_date: datetime, out_date: datetime, hotel_index: int, type: str
+    in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int
 ):
     room_vacancy_by_day = []
     iterable_days = number_of_days(in_date, out_date)
     for day in range(iterable_days):
         room_vacancy_by_day.append(hotel_has_vacancy(in_date, hotel_index, type))
         in_date += timedelta(days=1)
-    return room_vacancy_by_day
+    rooms_available = number_of_rooms_by_hotel_and_type(hotel_index, type)
+    for day in room_vacancy_by_day:
+        if int(day) + int(num_rooms) > int(rooms_available):
+            return False
+        else:
+            return True
 
 
-def make_customer(uname: str, pw: str, fname: str, lname: str, phone: str):
+def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
     index = Customer.count_documents({})
     id = int(index)
     post = {
         "index": id,
         "username": uname,
-        "password": pw,
         "first_name": fname,
         "last_name": lname,
         "phone": phone,
+        "email": email,
     }
     Customer.insert_one(post)
 
@@ -366,7 +402,21 @@ def amenities_by_index(index):
 # ---------------------------------------------------MAKE RESERVATION------------------------------------------------------------------------------------
 # print(number_of_days(date_maker(22, 10, 2021), date_maker(28, 10, 2021)))
 # print(weekdays_between(date_maker(22, 10, 2021), date_maker(28, 10, 2021)))
-
+# -------------------------------------------NEW RESERVATION FUNCTION------------------------------------------------------------------------
+# variable = make_reservation(
+#     date_maker(11, 11, 2021),
+#     date_maker(12, 11, 2021),
+#     0,
+#     1,
+#     "Standard",
+#     1,
+#     2,
+#     2,
+#     100,
+#     200,
+# )
+# pprint.pprint(variable.inserted_id)
+# print(get_reservation_by_id(variable.inserted_id))
 # ------------------------------------------(year,month,day) for datetime-------------------------------------------------
 
 # in_date = datetime(2021, 11, 5)

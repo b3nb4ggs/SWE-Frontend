@@ -1,5 +1,6 @@
+{% extends 'main/base.html' %}
 {% block title %}
-        <h1> My Reservations </h1>
+        My Reservations
 {% endblock %}
 
 {% block content %}
@@ -15,10 +16,10 @@
         <tbody>
 	    {% for reservation in reservations %}
           <tr>
-            <td>{{reservation.id}}</td>
-            <td>{{ reservation.property.name }}</td>
-            <td>Checkin: {{reservation.checkin}} Checkout: {{ reservation.checkout }}</td>
-            <td> Num Rooms: < > Room Type: < > Num Guests: < > Nightly Rate: < > Total Cost: < > </td>
+            <td>{{reservation.index}}</td>
+            <td>{{ reservation.name }}</td>
+            <td>Checkin: {{reservation.in}} Checkout: {{ reservation.out }}</td>
+            <td> Num Rooms: {{reservation.number_rooms}} Room Type:{{reservation.type}}  Num Guests: {{reservation.number_guests}} Nightly Rate:${{reservation.rate}} Total Cost:${{reservation.cost}} </td>
 		{% endfor %}
         </tbody>
       </table>
