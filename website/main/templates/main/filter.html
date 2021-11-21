@@ -12,6 +12,14 @@
 	<form method="POST" class="form-group" id="filter" action="/filter/">
 		{% csrf_token %}
 		{{form.as_p}}
+        <label for="minRange">Min Price: </label>
+        <input name="minRange" id="minRange" type="range" min="0" max="600" value=0 oninput="this.nextElementSibling.value = this.value" />
+        <output>0</output> <br>
+
+        <label for="maxRange">Max Price: </label>
+        <input name="maxRange" id="maxRange" type="range" min="0" max="600" value=600 oninput="this.nextElementSibling.value = this.value" />
+        <output>600</output><br>
+
 		<button type="submit", name="filter" class="btn btn-success">Filter </button>
 	</form>
 	</td>

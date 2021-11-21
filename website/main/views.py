@@ -98,7 +98,7 @@ def filterHotels(response):
             # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
             high = 250
-
+            #high = form_data.get("maxRange")
             amenity_list = form.cleaned_data["amenities"]
             type = form.cleaned_data["roomType"]
             numGuests = form.cleaned_data["numGuests"]
