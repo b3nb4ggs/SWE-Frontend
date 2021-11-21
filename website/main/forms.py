@@ -94,3 +94,4 @@ class EditReservation(forms.Form):
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
 
 
+

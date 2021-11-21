@@ -1,7 +1,24 @@
-{% extends 'main/base.html' %}
+{% extends 'main/baseAdmin.html' %}
 
-{% block title %} Add Reservation Page {% endblock %}
+{% block title %} Create New Reservation {% endblock %}
 
 {% block content %}
-
+	<form method="POST"  action="/addReservation/" >
+		{% csrf_token %}
+        <label for="hotel">Hotel: </label>
+        <select name = "hotel" id = "hotel">
+            {% for hotel in hotels %}
+                <option value={{ hotel.index }}>{{ hotel.name }}</option>
+            {% endfor %}
+         </select>
+        <br>
+        <label for="user">Customer: </label>
+        <select name="user" id ="user">
+            {% for user in users %}
+                <option value={{ user.index }}>{{ user.username }}</option>
+            {% endfor %}
+         </select>
+		{{form.as_p}}
+		<button type="submit", name="action" value="save" class="btn">Create Reservation </button>
+	</form>
 {% endblock %}

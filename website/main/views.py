@@ -302,7 +302,9 @@ def manageReservations(response):
         reservation["username"] = user[0]["username"]
         reservation["first"] = user[0]["first_name"]
         reservation["last"] = user[0]["last_name"]
-        reservation["email"] = user[0]["email"]
+        #reservation["email"] = user[0]["email"]
+        hotelname = db.get_hotel_by_index(reservation["hotel"])
+        reservation["hotelName"] = hotelname["name"]
         reservation["phone"] = user[0]["phone"]
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
@@ -310,7 +312,53 @@ def manageReservations(response):
 
 
 def addReservation(response):
-    return render(response, "main/addReservation.html")
+    if response.method == "POST":
+        form_data = response.POST.dict()
+        if response.POST["action"] == "save":
+            checkin = datetime.fromisoformat(form_data["checkin"])
+            checkout = datetime.fromisoformat(form_data["checkout"])
+            numRooms = int(form_data["numRooms"])
+            numGuests = int(form_data["numGuests"])
+            roomType = form_data["roomType"]
+            hotelId = int(form_data["hotel"])
+            user = int(form_data["user"])
+
+            #calculuate number of days
+            numDays = db.number_of_days(checkin, checkout)
+            total = db.get_price(checkin, checkout, hotelId, roomType)
+            rate = round((total/numDays), 2)
+
+            # check if new hotel reservation is valid
+            # check if dates are a valid range
+            # check for vacancy
+
+            # if everything is valid, call db.update_reservation:
+            # else:
+            # give specific error ex: "No rooms available at this hotel", "invalid date range", etc
+            # errors = {}
+
+            result = db.make_reservation(
+                checkin,
+                checkout,
+                hotelId,
+                user,
+                roomType,
+                numRooms,
+                numGuests,
+                numDays,
+                rate,
+                total,
+             )
+            # if result is successful, then redirect back to manage reservations
+            return redirect("/manageReservations")
+             # if there are any errors
+             # return render(response, "main/editReservations.html", {"errors": errors})
+        else:
+            form = EditReservation()
+            hotels = db.get_all_hotels()
+            users = db.get_all_users()
+            return render(response, "main/addReservation.html", {"form": form, "hotels": hotels, "users": users})
+
 
 
 def editReservation(response):
@@ -345,7 +393,7 @@ def editReservation(response):
             index = int(form_data["index"])
             #calculuate number of days
             numDays = db.number_of_days(checkin, checkout)
-            total = db.get_price(checkin, checkout, index, roomType)
+            total = db.get_price(checkin, checkout, hotelId, roomType)
             rate = round((total/numDays), 2)
             # check if new hotel reservation is valid
             # check if dates are a valid range
@@ -369,7 +417,7 @@ def editReservation(response):
                 rate,
                 total,
              )
-            # if result is successful, then return result to page
+            # if result is successful, then redirect back to manage reservations
             return redirect("/manageReservations")
 
             # if there are any errors
