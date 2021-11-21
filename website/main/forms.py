@@ -87,8 +87,6 @@ class ReadOnlyWidget(widgets.Widget):
         return value
 
 class EditReservation(forms.Form):
-    #user = forms.CharField(label="Customer", widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-    #hotel = forms.CharField(label="Hotel", widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     checkin = forms.DateField(widget=dateinput, required=True)
     checkout = forms.DateField(widget=dateinput, required=True)
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)

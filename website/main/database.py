@@ -197,12 +197,12 @@ def update_reservation(
         rate: float,
         cost: float,
 ):
-    delete = delete_reservation(index)
-    if delete.deleted_count != 1:
-        print("Unable to delete reservation")
+    #delete = delete_reservation(index)
+    #if delete.deleted_count != 1:
+    #print("Unable to delete reservation")
 
-    post = {
-        "index": index,
+    post = {"$set":
+        { "index": index,
         "made_on": datetime.utcnow(),
         "in": in_date,
         "out": out_date,
@@ -213,9 +213,9 @@ def update_reservation(
         "number_rooms": number_of_rooms,
         "total_days": total_days,
         "rate": rate,
-        "cost": cost,
+        "cost": cost }
     }
-    result = Reservation.insert_one(post)
+    result = Reservation.update({"index":index}, post)
     #insert error check to see if reservation was create successfully
     return result
 

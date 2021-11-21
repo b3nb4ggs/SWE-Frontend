@@ -335,52 +335,54 @@ def editReservation(response):
                       })
             return render(response, "main/editReservation.html", {"form": form, "reservation": reservation, "hotels": hotels})
         if response.POST["action"] == "save":
-            #check if form is valid first
-            return redirect("/manageReservations")
-    #form = EditReservation()
-    #return render(response, "main/editReservation.html", {"form": form})
-    #if response.method == "POST":
-        #form = EditReservation(response.POST)
-        #id = response.POST.get("id", None)
-        #reservation = db.get_reservation_by_index(id)
-        #form_data = response.POST.dict()
-        #checkin = datetime.fromisoformat(form_data["in"])
-        #checkout = datetime.fromisoformat(form_data["out"])
-        #index = int(form_data["hotel_id"])
-        #user_index = int(form_data["user_id"])
-        #roomType = form_data["room_type"]
-        #numRooms = int(form_data["number_of_rooms"])
-        #numGuests = int(form_data["number_of_guest"])
-        #numDays = int(form_data["total_days"])
+            checkin = datetime.fromisoformat(form_data["checkin"])
+            checkout = datetime.fromisoformat(form_data["checkout"])
+            numRooms = int(form_data["numRooms"])
+            numGuests = int(form_data["numGuests"])
+            roomType = form_data["roomType"]
+            hotelId = int(form_data["hotel"])
+            user = int(form_data["user"])
+            index = int(form_data["index"])
+            #calculuate number of days
+            numDays = db.number_of_days(checkin, checkout)
+            total = db.get_price(checkin, checkout, index, roomType)
+            rate = round((total/numDays), 2)
+            # check if new hotel reservation is valid
+            # check if dates are a valid range
+            # check for vacancy
 
-       #check if new hotel reservation is valid
-       #check if dates are a valid range
-       #check for vacancy
-       #recalculate nightly rate and cost
+            # if everything is valid, call db.update_reservation:
+            # else:
+            # give specific error ex: "No rooms available at this hotel", "invalid date range", etc
+            # errors = {}
+
+            result = db.update_reservation(
+                index,
+                checkin,
+                checkout,
+                hotelId,
+                user,
+                roomType,
+                numRooms,
+                numGuests,
+                numDays,
+                rate,
+                total,
+             )
+            # if result is successful, then return result to page
+            return redirect("/manageReservations")
+
+            # if there are any errors
+            # return render(response, "main/editReservations.html", {"errors": errors})
+
+
+
+
         #cost = db.get_price(checkin, checkout, index, roomType)
         #rate = cost/numDays
 
-       #if everything is valid, call db.update_reservation:
-        #else:
-        #give specific error ex: "No rooms available at this hotel", "invalid date range", etc
-        #errors = {}
 
-        #result = db.update_reservation(
-        #   checkin,
-        #    checkout,
-        #     index,
-        #   # user_index,
-        #    roomType,
-        #    numRooms,
-        #    numGuests,
-        #    numDays,
-        #    rate,
-        #    cost,
-        #)
-        #if result is successful, then return result to page
-        #return render(response, "main/manageReservations.html", {"form": form})
-        #if there are any errors
-        #return render(response, "main/editReservations.html", {"errors": errors})
+
 
 
 
