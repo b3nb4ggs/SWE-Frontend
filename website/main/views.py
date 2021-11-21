@@ -134,6 +134,7 @@ def filterHotels(response):
                 == False
             ):
                 no_vacancy.append(item)
+        print(no_vacancy)
         for item in no_vacancy:
             hotels.pop(item)
         properties = hotels

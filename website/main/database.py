@@ -43,7 +43,7 @@ def get_user_by_username(name: str):
 def make_hotel(
     name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
 ):
-    index = Hotel.count_documents({})
+    index = Hotel.find_one(sort=[("index", -1)])
     id = int(index)
     post = {
         "index": id,
@@ -160,7 +160,8 @@ def make_reservation(
     rate: float,
     cost: float,
 ):
-    index = Reservation.count_documents({})
+    # index = Reservation.count_documents({})
+    index = Reservation.find_one(sort=[("index", -1)])
     post = {
         "index": index,
         "made_on": datetime.utcnow(),
@@ -334,7 +335,7 @@ def hotel_vacancy_range(
 
 
 def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
-    index = Customer.count_documents({})
+    index = Customer.find_one(sort=[("index", -1)])
     id = int(index)
     post = {
         "index": id,
