@@ -1,7 +1,37 @@
 {% extends 'main/baseAdmin.html' %}
 
-{% block title %} Edit Reservation Page {% endblock %}
+{% block title %} Edit Reservation {% endblock %}
 
 {% block content %}
+    <table>
+        <tr>Reservation Id: {{ reservation.index }}</tr> <br>
+        <tr>Customer Name: {{ reservation.first }} {{ reservation.last }}</tr> <br>
+        <tr>
+	<form method="POST"  onsubmit="return confirm('Are you sure you want to make these changes?')" action="/editReservation/" >
+		{% csrf_token %}
+        <label for="hotel">Hotel: </label>
+        <select name = "hotel" id = "hotel">
+            {% for hotel in hotels %}
+                {% if hotel.name == reservation.hotelName %}
+                    <option value={{ hotel.index }} selected>{{ hotel.name }}</option>
+                {% else %}
+                     <option value={{ hotel.index }}>{{ hotel.name }}</option>
+                {% endif %}
+            {% endfor %}
+         </select>
+		{{form.as_p}}
+        <input type="hidden", name="user" value={{reservation.user}}>
+        <input type="hidden", name="made_on" value={{reservation.made_on}}>
+        <input type="hidden", name="index" value={{reservation.index}}>
+		<button type="submit", name="action" value="save" class="btn">Update Reservation </button>
+	</form>
+    </tr>
+    <tr>
+        <form method="POST"  action="/manageReservations/">
+            {% csrf_token %}
+            <button type="submit", name="action" value="back" class="btn">Back </button>
+        </form>
+    </tr>
+    </table>
 
 {% endblock %}
