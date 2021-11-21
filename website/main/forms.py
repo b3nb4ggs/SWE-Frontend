@@ -4,6 +4,7 @@ import re
 from django.forms import widgets
 from django.forms.fields import DateField
 from datetime import date
+from main import database as db
 
 INTEGER_CHOICES=[tuple([x,x]) for x in range(1,10)]
 #DATE_FORMAT 
@@ -80,4 +81,18 @@ class Reserve(forms.Form):
 
     class Meta(forms.Form):
         widgets = {'checkin': forms.HiddenInput(), 'checkout': forms.HiddenInput(), 'numRooms': forms.HiddenInput(), 'numGuests': forms.HiddenInput(), 'roomType': forms.HiddenInput  }
+
+class ReadOnlyWidget(widgets.Widget):
+    def render(self, _, value, attrs=None):
+        return value
+
+class EditReservation(forms.Form):
+    #user = forms.CharField(label="Customer", widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    #hotel = forms.CharField(label="Hotel", widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    checkin = forms.DateField(widget=dateinput, required=True)
+    checkout = forms.DateField(widget=dateinput, required=True)
+    numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
+    numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES, required=True)
+    roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
+
 

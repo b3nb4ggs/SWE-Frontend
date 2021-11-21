@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
 from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter, Reserve
+from .forms import CreateAccount, Search, Login, Filter, Reserve, EditReservation
 from django import forms
 import datetime
 from django.forms import widgets
@@ -314,52 +314,73 @@ def addReservation(response):
 
 
 def editReservation(response):
-    if response.method == "GET":
-        id = response.GET.get("id", None)
-        reservation = db.get_reservation_by_index(id)
-
-        return render(response, "main/editReservation.html",
-            {"reservation": reservation},
-        )
     if response.method == "POST":
         form_data = response.POST.dict()
-        checkin = datetime.fromisoformat(form_data["in"])
-        checkout = datetime.fromisoformat(form_data["out"])
-        index = int(form_data["hotel_id"])
-        user_index = int(form_data["user_id"])
-        roomType = form_data["room_type"]
-        numRooms = int(form_data["number_of_rooms"])
-        numGuests = int(form_data["number_of_guest"])
-        numDays = int(form_data["total_days"])
+        if response.POST["action"] == "edit":
+            index = int(form_data.get("reservationId").strip("/"))
+            reservation = db.get_reservation_by_index(index)
+            hotel = db.get_hotel_by_index(reservation["hotel"])
+            hotels =db.get_all_hotels()
+            user = db.get_user_by_index(int(reservation["user"]))
+            reservation["username"] = user[0]["username"]
+            reservation["hotelName"] = hotel["name"]
+            reservation["first"] = user[0]["first_name"]
+            reservation["last"] = user[0]["last_name"]
+            form = EditReservation(initial=
+                    { "checkin": reservation["in"],
+                      "checkout": reservation["out"],
+                      "numRooms": reservation["number_rooms"],
+                      "numGuests": reservation["number_guests"],
+                      "roomType": reservation["type"],
+                      })
+            return render(response, "main/editReservation.html", {"form": form, "reservation": reservation, "hotels": hotels})
+        if response.POST["action"] == "save":
+            #check if form is valid first
+            return redirect("/manageReservations")
+    #form = EditReservation()
+    #return render(response, "main/editReservation.html", {"form": form})
+    #if response.method == "POST":
+        #form = EditReservation(response.POST)
+        #id = response.POST.get("id", None)
+        #reservation = db.get_reservation_by_index(id)
+        #form_data = response.POST.dict()
+        #checkin = datetime.fromisoformat(form_data["in"])
+        #checkout = datetime.fromisoformat(form_data["out"])
+        #index = int(form_data["hotel_id"])
+        #user_index = int(form_data["user_id"])
+        #roomType = form_data["room_type"]
+        #numRooms = int(form_data["number_of_rooms"])
+        #numGuests = int(form_data["number_of_guest"])
+        #numDays = int(form_data["total_days"])
 
        #check if new hotel reservation is valid
        #check if dates are a valid range
        #check for vacancy
        #recalculate nightly rate and cost
-        cost = db.get_price(checkin, checkout, index, roomType)
-        rate = cost/numDays
+        #cost = db.get_price(checkin, checkout, index, roomType)
+        #rate = cost/numDays
 
        #if everything is valid, call db.update_reservation:
         #else:
         #give specific error ex: "No rooms available at this hotel", "invalid date range", etc
-        errors = {}
+        #errors = {}
 
-        result = db.update_reservation(
-            checkin,
-            checkout,
-            index,
-            user_index,
-            roomType,
-            numRooms,
-            numGuests,
-            numDays,
-            rate,
-            cost,
-        )
+        #result = db.update_reservation(
+        #   checkin,
+        #    checkout,
+        #     index,
+        #   # user_index,
+        #    roomType,
+        #    numRooms,
+        #    numGuests,
+        #    numDays,
+        #    rate,
+        #    cost,
+        #)
         #if result is successful, then return result to page
-        return render(response, "main/manageReservations.html")
+        #return render(response, "main/manageReservations.html", {"form": form})
         #if there are any errors
-        return render(response, "main/editReservations.html", {"errors": errors})
+        #return render(response, "main/editReservations.html", {"errors": errors})
 
 
 

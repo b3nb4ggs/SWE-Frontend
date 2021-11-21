@@ -16,14 +16,13 @@
     </div>
   </div>
 </nav>
-	<title> {% block title %} Hotel Management {% endblock %} </title>
 
 <body>
 
     <div class="main" id="content", name="content" >
         <div class="row justify-content center">
         <div class = "col-8">
-            <h1 class ="mt-2">Hotel Management</h1>
+            <h1 class ="mt-2">{% block title %} {% endblock %} </h1>
             <hr class= "mt-0 mb-4">
 
         {% block content %}

@@ -1,19 +1,34 @@
 {% extends 'main/baseAdmin.html' %}
 
-{% block title %} Edit Reservation Page {% endblock %}
-
-<table>
-	<tr>
-	<td>
-	<form method="POST" class="form-group" id="editReservation" action="/manageReservations/">
-		{% csrf_token %}
-		{{form.as_p}}
-		<button type="submit", name="editReservation" class="btn">Save Changes </button>
-	</form>
-	</td>
-	<td>
-	</table>
+{% block title %} Edit Reservation {% endblock %}
 
 {% block content %}
+    <table>
+        <tr>Reservation Id: {{ reservation.index }}</tr> <br>
+        <tr>Customer Name: {{ reservation.first }} {{ reservation.last }}</tr> <br>
+        <tr>
+	<form method="POST"  action="/editReservation/">
+		{% csrf_token %}
+        <label for="hotels">Hotel: </label>
+        <select name = "hotels" id = "hotels">
+            {% for hotel in hotels %}
+                {% if hotel.name == reservation.hotelName %}
+                    <option value={{ hotel.index }} selected>{{ hotel.name }}</option>
+                {% else %}
+                     <option value={{ hotel.index }}>{{ hotel.name }}</option>
+                {% endif %}
+            {% endfor %}
+         </select>
+		{{form.as_p}}
+		<button type="submit", name="action" value="save" class="btn">Update Reservation </button>
+	</form>
+    </tr>
+    <tr>
+        <form method="POST"  action="/manageReservations/">
+            {% csrf_token %}
+            <button type="submit", name="action" value="back" class="btn">Back </button>
+        </form>
+    </tr>
+    </table>
 
 {% endblock %}

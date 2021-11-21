@@ -273,6 +273,9 @@ def get_all_hotels():
     result = list(Hotel.find({}))
     return result
 
+def get_all_users():
+    result = list(Customer.find())
+    return result
 
 def get_all_reservations():
     result = list(Reservation.find({}))

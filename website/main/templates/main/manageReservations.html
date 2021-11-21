@@ -42,8 +42,13 @@
               <td> {{ reservation.cost }}</td>
               <td></td>
 
-              <td> <a href="/editReservation/?id={{reservation.index}}" >Edit</a> </td>
-             <!--- <td> <a href="/manageReservations/" >Delete</a> </td> --->
+            <td> <form id="delete" method="POST" action="/editReservation/" >
+                  {%  csrf_token %}
+                    <input type="hidden" name="reservationId" value={{ reservation.index }}/>
+                    <input type="Submit" name="action" value="edit" />
+                  </form>
+              </td>
+             <!--- <td> <a href="/editReservation/" >Edit</a> </td> --->
             <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
                 {%  csrf_token %}
                 <input type="hidden" name="reservationId" value={{ reservation.index }}/>
