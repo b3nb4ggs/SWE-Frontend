@@ -161,7 +161,7 @@ def make_reservation(
     rate: float,
     cost: float,
 ):
-    # index = Reservation.count_documents({})
+
     index = Reservation.find_one(sort=[("index", -1)])
     index += 1
     post = {
@@ -348,7 +348,7 @@ def find_reservation_in_range(hotel_index: int, in_date: datetime, out_date: dat
 
 def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     day_before = datetime(day.year, day.month, day.day, 23, 59, 59)
-    day_after = date_maker(day.day + 1, day.month, day.year)
+    day_after = day_before + timedelta(days=1)
 
     query = {
         "hotel": hotel_index,
@@ -363,6 +363,9 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
         number_of_reservations += reservation["number_rooms"]
 
     return number_of_reservations
+
+
+print(hotel_has_vacancy(date_maker(19, 11, 2021), 7, "Standard"))
 
 
 def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
