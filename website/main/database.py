@@ -512,3 +512,5 @@ def amenities_by_index(index):
 # print(amenity)
 # process = [k for k, v in amenity[0].items() if v == True and k != "index"]
 # print(process)
+
+# pprint.pprint(room_amenity_range_type(0, 500, [], "King"))
