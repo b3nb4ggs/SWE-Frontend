@@ -386,8 +386,7 @@ def hotel_vacancy_range(
     for day in room_vacancy_by_day:
         if int(day) + int(num_rooms) > int(rooms_available):
             return False
-        else:
-            return True
+    return True
 
 
 def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
