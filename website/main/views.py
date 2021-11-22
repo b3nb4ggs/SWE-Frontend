@@ -353,7 +353,7 @@ def addReservation(response):
             return redirect("/manageReservations")
              # if there are any errors
              # return render(response, "main/editReservations.html", {"errors": errors})
-        else:
+    else:
             form = EditReservation()
             hotels = db.get_all_hotels()
             users = db.get_all_users()
