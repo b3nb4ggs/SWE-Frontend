@@ -43,7 +43,7 @@ def filterHotels(response):
         dbcheckout = datetime.fromisoformat(checkout)
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
-        no_vacancy = []
+
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
             price = db.get_price(dbcheckin, dbcheckout, item["index"], "Standard")
@@ -91,6 +91,7 @@ def filterHotels(response):
         checkout = form_data.get("checkout")
 
         if form.is_valid():
+            print(form.cleaned_data)
             # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
             high = 300
@@ -105,6 +106,11 @@ def filterHotels(response):
 
             dbcheckin = form.cleaned_data["checkin"]
             dbcheckout = form.cleaned_data["checkout"]
+            error = {}
+            if dbcheckin < datetime.date(
+                datetime.today()
+            ) or dbcheckout < datetime.date(datetime.today()):
+                error["error"] = "Date is not possible"
 
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
@@ -136,6 +142,7 @@ def filterHotels(response):
                 "numRooms": numRooms,
                 "checkout": checkout,
                 "properties": properties,
+                "error": error,
             },
         )
 
