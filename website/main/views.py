@@ -10,6 +10,7 @@ from django.forms import widgets
 from main import database as db
 from datetime import datetime
 from django.contrib.auth.models import User
+import pprint
 
 
 def strip_off_id(processthis):
@@ -98,7 +99,7 @@ def filterHotels(response):
             # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
             high = 250
-            #high = form_data.get("maxRange")
+            # high = form_data.get("maxRange")
             amenity_list = form.cleaned_data["amenities"]
             type = form.cleaned_data["roomType"]
             numGuests = form.cleaned_data["numGuests"]
@@ -244,7 +245,7 @@ def confirmReservation(response):
 def viewReservations(response):
     user = response.user
     user_info = db.get_user_by_username(user.username)
-    reservations = db.get_reservations_by_userid(user_info["index"])
+    reservations = db.get_reservations_by_userid(int(user_info["index"]))
     for item in reservations:
         name = db.hotel_by_index(item["index"])
         item["name"] = name[0]["name"]
@@ -299,17 +300,19 @@ def manageReservations(response):
             db.delete_reservation(index)
     reservations = db.get_all_reservations()
     for reservation in reservations:
-        user = db.get_user_by_index(reservation["user"])
+        user = db.get_user_by_index(int(reservation["user"]))
         reservation["username"] = user[0]["username"]
         reservation["first"] = user[0]["first_name"]
         reservation["last"] = user[0]["last_name"]
-        #reservation["email"] = user[0]["email"]
+        # reservation["email"] = user[0]["email"]
         hotelname = db.get_hotel_by_index(reservation["hotel"])
         reservation["hotelName"] = hotelname["name"]
         reservation["phone"] = user[0]["phone"]
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
-    return render(response, "main/manageReservations.html", {"reservations": reservations})
+    return render(
+        response, "main/manageReservations.html", {"reservations": reservations}
+    )
 
 
 def addReservation(response):
@@ -324,10 +327,10 @@ def addReservation(response):
             hotelId = int(form_data["hotel"])
             user = int(form_data["user"])
 
-            #calculuate number of days
+            # calculuate number of days
             numDays = db.number_of_days(checkin, checkout)
             total = db.get_price(checkin, checkout, hotelId, roomType)
-            rate = round((total/numDays), 2)
+            rate = round((total / numDays), 2)
 
             # check if new hotel reservation is valid
             # check if dates are a valid range
@@ -349,17 +352,20 @@ def addReservation(response):
                 numDays,
                 rate,
                 total,
-             )
+            )
             # if result is successful, then redirect back to manage reservations
             return redirect("/manageReservations")
-             # if there are any errors
-             # return render(response, "main/editReservations.html", {"errors": errors})
+            # if there are any errors
+            # return render(response, "main/editReservations.html", {"errors": errors})
         else:
             form = EditReservation()
             hotels = db.get_all_hotels()
             users = db.get_all_users()
-            return render(response, "main/addReservation.html", {"form": form, "hotels": hotels, "users": users})
-
+            return render(
+                response,
+                "main/addReservation.html",
+                {"form": form, "hotels": hotels, "users": users},
+            )
 
 
 def editReservation(response):
@@ -369,20 +375,26 @@ def editReservation(response):
             index = int(form_data.get("reservationId").strip("/"))
             reservation = db.get_reservation_by_index(index)
             hotel = db.get_hotel_by_index(reservation["hotel"])
-            hotels =db.get_all_hotels()
+            hotels = db.get_all_hotels()
             user = db.get_user_by_index(int(reservation["user"]))
             reservation["username"] = user[0]["username"]
             reservation["hotelName"] = hotel["name"]
             reservation["first"] = user[0]["first_name"]
             reservation["last"] = user[0]["last_name"]
-            form = EditReservation(initial=
-                    { "checkin": reservation["in"],
-                      "checkout": reservation["out"],
-                      "numRooms": reservation["number_rooms"],
-                      "numGuests": reservation["number_guests"],
-                      "roomType": reservation["type"],
-                      })
-            return render(response, "main/editReservation.html", {"form": form, "reservation": reservation, "hotels": hotels})
+            form = EditReservation(
+                initial={
+                    "checkin": reservation["in"],
+                    "checkout": reservation["out"],
+                    "numRooms": reservation["number_rooms"],
+                    "numGuests": reservation["number_guests"],
+                    "roomType": reservation["type"],
+                }
+            )
+            return render(
+                response,
+                "main/editReservation.html",
+                {"form": form, "reservation": reservation, "hotels": hotels},
+            )
         if response.POST["action"] == "save":
             checkin = datetime.fromisoformat(form_data["checkin"])
             checkout = datetime.fromisoformat(form_data["checkout"])
@@ -392,10 +404,10 @@ def editReservation(response):
             hotelId = int(form_data["hotel"])
             user = int(form_data["user"])
             index = int(form_data["index"])
-            #calculuate number of days
+            # calculuate number of days
             numDays = db.number_of_days(checkin, checkout)
             total = db.get_price(checkin, checkout, hotelId, roomType)
-            rate = round((total/numDays), 2)
+            rate = round((total / numDays), 2)
             # check if new hotel reservation is valid
             # check if dates are a valid range
             # check for vacancy
@@ -417,25 +429,15 @@ def editReservation(response):
                 numDays,
                 rate,
                 total,
-             )
+            )
             # if result is successful, then redirect back to manage reservations
             return redirect("/manageReservations")
 
             # if there are any errors
             # return render(response, "main/editReservations.html", {"errors": errors})
 
-
-
-
-        #cost = db.get_price(checkin, checkout, index, roomType)
-        #rate = cost/numDays
-
-
-
-
-
-
-
+        # cost = db.get_price(checkin, checkout, index, roomType)
+        # rate = cost/numDays
 
 
 def editProperty(response):
