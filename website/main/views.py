@@ -300,6 +300,8 @@ def manageReservations(response):
             db.delete_reservation(index)
     reservations = db.get_all_reservations()
     for reservation in reservations:
+        if user == []:
+            continue
         user = db.get_user_by_index(int(reservation["user"]))
         reservation["username"] = user[0]["username"]
         reservation["first"] = user[0]["first_name"]
