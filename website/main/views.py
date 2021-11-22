@@ -53,16 +53,11 @@ def filterHotels(response):
             item["price"] = "{:.2f}".format(price / number_of_days)
             item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
-            if (
-                db.hotel_vacancy_range(
-                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
-                )
-                == False
-            ):
-                no_vacancy.append(item)
-        for item in no_vacancy:
-            hotels.pop(item)
-        properties = hotels
+            item["vacancy"] = db.hotel_vacancy_range(
+                dbcheckin, dbcheckout, item["index"], roomType, numRooms
+            )
+
+        properties = [x for x in hotels if x.get("vacancy") == True]
 
         form = Filter(
             initial={
@@ -113,11 +108,7 @@ def filterHotels(response):
 
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
-
-            no_vacancy = []
-
         for item in hotels:
-
             name = db.hotel_by_index(item["index"])
             amenity = db.amenities_by_index(item["index"])
             price = db.get_price(dbcheckin, dbcheckout, item["index"], roomType)
@@ -128,17 +119,11 @@ def filterHotels(response):
             item["name"] = name[0]["name"]
             item["cost"] = "{:.2f}".format(price)
             item["days"] = number_of_days
-            if (
-                db.hotel_vacancy_range(
-                    dbcheckin, dbcheckout, item["index"], "Standard", numRooms
-                )
-                == False
-            ):
-                no_vacancy.append(item)
-        print(no_vacancy)
-        for item in no_vacancy:
-            hotels.pop(item)
-        properties = hotels
+            item["vacancy"] = db.hotel_vacancy_range(
+                dbcheckin, dbcheckout, item["index"], roomType, numRooms
+            )
+
+        properties = [x for x in hotels if x.get("vacancy") == True]
 
         return render(
             response,
