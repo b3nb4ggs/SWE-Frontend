@@ -44,13 +44,12 @@ def filterHotels(response):
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
 
-        error = {}
         if dbcheckin < datetime.date(datetime.today()) or dbcheckout < datetime.date(
             datetime.today()
         ):
-            error["error"] = "This date is in the past.  Please provide a valid date"
+            return redirect("/home/")
         if dbcheckin == dbcheckout:
-            return redirect("/home/", {"error": error})
+            return redirect("/home/")
 
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
@@ -88,7 +87,6 @@ def filterHotels(response):
                 "numGuests": numGuests,
                 "checkout": checkout,
                 "properties": properties,
-                "error": error,
             },
         )  # ,"reservations":reservations})
 
@@ -115,14 +113,12 @@ def filterHotels(response):
 
             dbcheckin = form.cleaned_data["checkin"]
             dbcheckout = form.cleaned_data["checkout"]
-            # THIS IS HOW I DID ERROR VALIDATION IT PASSES AN ERROR MESSAGE TO NEXT PAGE
-            error = {}
+            # THIS IS HOW I DID ERROR VALIDATION
+
             if dbcheckin < datetime.date(
                 datetime.today()
             ) or dbcheckout < datetime.date(datetime.today()):
-                error[
-                    "error"
-                ] = "This date is in the past.  Please provide a valid date"
+                return redirect("/home/")
             if dbcheckin == dbcheckout:
                 return redirect("/home/")
 
@@ -156,7 +152,6 @@ def filterHotels(response):
                 "numRooms": numRooms,
                 "checkout": checkout,
                 "properties": properties,
-                "error": error,
             },
         )
 
