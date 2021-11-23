@@ -39,10 +39,18 @@ def filterHotels(response):
 
         hotels = db.get_all_hotels()
         hotels = strip_off_id(hotels)
-        dbcheckin = datetime.fromisoformat(checkin)
-        dbcheckout = datetime.fromisoformat(checkout)
+        dbcheckin = datetime.date(datetime.fromisoformat(checkin))
+        dbcheckout = datetime.date(datetime.fromisoformat(checkout))
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
+
+        error = {}
+        if dbcheckin < datetime.date(datetime.today()) or dbcheckout < datetime.date(
+            datetime.today()
+        ):
+            error["error"] = "This date is in the past.  Please provide a valid date"
+        if dbcheckin == dbcheckout:
+            return redirect("/home/", {"error": error})
 
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
@@ -80,6 +88,7 @@ def filterHotels(response):
                 "numGuests": numGuests,
                 "checkout": checkout,
                 "properties": properties,
+                "error": error,
             },
         )  # ,"reservations":reservations})
 
@@ -106,7 +115,7 @@ def filterHotels(response):
 
             dbcheckin = form.cleaned_data["checkin"]
             dbcheckout = form.cleaned_data["checkout"]
-            # THIS IS HOW I DID ERROR VALIDATION IT PASSES AN ERROR TO NEXT PAGE
+            # THIS IS HOW I DID ERROR VALIDATION IT PASSES AN ERROR MESSAGE TO NEXT PAGE
             error = {}
             if dbcheckin < datetime.date(
                 datetime.today()
@@ -115,10 +124,7 @@ def filterHotels(response):
                     "error"
                 ] = "This date is in the past.  Please provide a valid date"
             if dbcheckin == dbcheckout:
-                dbcheckout = dbcheckout + timedelta(days=1)
-                error[
-                    "error"
-                ] = "Your checkin and checkout were the same I incremented checkout."
+                return redirect("/home/")
 
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
