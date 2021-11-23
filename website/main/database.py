@@ -44,6 +44,7 @@ def make_hotel(
     name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
 ):
     index = Hotel.find_one(sort=[("index", -1)])
+    index = int(index["index"])
     index += 1
     id = int(index)
     post = {
@@ -163,6 +164,7 @@ def make_reservation(
 ):
 
     index = Reservation.find_one(sort=[("index", -1)])
+    index = int(index["index"])
     index += 1
     post = {
         "index": index,
@@ -365,9 +367,6 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     return number_of_reservations
 
 
-print(hotel_has_vacancy(date_maker(19, 11, 2021), 7, "Standard"))
-
-
 def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
     query = {"index": hotel}
     result = Hotel.find_one(query)
@@ -387,12 +386,12 @@ def hotel_vacancy_range(
     for day in room_vacancy_by_day:
         if int(day) + int(num_rooms) > int(rooms_available):
             return False
-        else:
-            return True
+    return True
 
 
 def make_customer(uname: str, fname: str, lname: str, phone: str, email: str):
     index = Customer.find_one(sort=[("index", -1)])
+    index = int(index["index"])
     index += 1
     id = int(index)
     post = {
@@ -513,3 +512,5 @@ def amenities_by_index(index):
 # print(amenity)
 # process = [k for k, v in amenity[0].items() if v == True and k != "index"]
 # print(process)
+
+# pprint.pprint(room_amenity_range_type(0, 500, [], "King"))
