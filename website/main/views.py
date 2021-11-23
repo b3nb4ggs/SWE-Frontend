@@ -39,6 +39,7 @@ def filterHotels(response):
 
         hotels = db.get_all_hotels()
         hotels = strip_off_id(hotels)
+
         dbcheckin = datetime.date(datetime.fromisoformat(checkin))
         dbcheckout = datetime.date(datetime.fromisoformat(checkout))
 
