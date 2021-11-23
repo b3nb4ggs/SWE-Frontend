@@ -41,9 +41,9 @@
         </thead>
         <tbody>
 	    {% for property in properties %}
-     
+     <tr><td><img src="{% static ''%}{{property.index}}.jpg"width="200" height="200" style="vertical-align: bottom;"> </td></tr>
           <tr>
-              <td> <img src="{% static ''%}{{property.index}}.jpg"width="200" height="200"></td>
+              <td></td>
               <td>{{property.name}} </td>
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
