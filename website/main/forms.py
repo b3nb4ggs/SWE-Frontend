@@ -6,13 +6,11 @@ from django.forms.fields import DateField
 from datetime import date
 from main import database as db
 from django_filters.widgets import RangeWidget
+from datetime import datetime
 
-INTEGER_CHOICES=[tuple([x,x]) for x in range(1,10)]
-#DATE_FORMAT 
-ROOM_TYPES = ( ("Standard", "Standard"),
-		("Queen", "Queen"),
-		("King", "King")
-)
+INTEGER_CHOICES = [tuple([x, x]) for x in range(1, 10)]
+# DATE_FORMAT
+ROOM_TYPES = (("Standard", "Standard"), ("Queen", "Queen"), ("King", "King"))
 
 AMENITIES = (
     ("Pool", "Pool"),
@@ -23,7 +21,13 @@ AMENITIES = (
     ("Spa", "Spa"),
 )
 
-PRICE_RANGE = ( (1, "Less than $50"), (2,"$50 to $100"), (3,"$100 to $200"), (4, "$200 to $300"), (5, "Greater than $300")) 
+PRICE_RANGE = (
+    (1, "Less than $50"),
+    (2, "$50 to $100"),
+    (3, "$100 to $200"),
+    (4, "$200 to $300"),
+    (5, "Greater than $300"),
+)
 
 
 class CreateAccount(forms.Form):
@@ -62,16 +66,18 @@ class Filter(forms.Form):
     amenities = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=False
     )
-    #priceRange = forms.MultipleChoiceField(
-    #    label="Your Budget",
-    #    widget=forms.CheckboxSelectMultiple,
-    #    choices=PRICE_RANGE,
-    #    required=False,
-    #)
-    #priceRange = forms.IntegerField(widget=forms.NumberInput(attrs={'type':'range', 'step': '1', 'min': '0', 'max': '500'}))
 
     class Meta(forms.Form):
         widgets = {"checkin": dateinput()}
+
+    # I don't like django form validation it throws ugly errors.
+    # def clean_checkin(self):
+    #     checkin = str(self.cleaned_data.get("checkin"))
+    #     checkin = datetime.fromisoformat(checkin)
+    #     checkin = datetime.date(checkin)
+    #     if checkin < datetime.date(datetime.today()):
+    #         raise forms.ValidationError("Check in is in the past")
+    #     return checkin
 
 
 class Reserve(forms.Form):
@@ -82,18 +88,25 @@ class Reserve(forms.Form):
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES)
 
     class Meta(forms.Form):
-        widgets = {'checkin': forms.HiddenInput(), 'checkout': forms.HiddenInput(), 'numRooms': forms.HiddenInput(), 'numGuests': forms.HiddenInput(), 'roomType': forms.HiddenInput  }
+        widgets = {
+            "checkin": forms.HiddenInput(),
+            "checkout": forms.HiddenInput(),
+            "numRooms": forms.HiddenInput(),
+            "numGuests": forms.HiddenInput(),
+            "roomType": forms.HiddenInput,
+        }
+
 
 class ReadOnlyWidget(widgets.Widget):
     def render(self, _, value, attrs=None):
         return value
 
+
 class EditReservation(forms.Form):
     checkin = forms.DateField(widget=dateinput, required=True)
     checkout = forms.DateField(widget=dateinput, required=True)
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
-    numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES, required=True)
+    numGuests = forms.ChoiceField(
+        label="Guests", choices=INTEGER_CHOICES, required=True
+    )
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
-
-
-

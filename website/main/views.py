@@ -8,7 +8,7 @@ from django import forms
 import datetime
 from django.forms import widgets
 from main import database as db
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 import pprint
 
@@ -91,7 +91,7 @@ def filterHotels(response):
         checkout = form_data.get("checkout")
 
         if form.is_valid():
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             # THESE ARE WHERE THE SLIDER VALUES GO
             low = 0
             high = 300
@@ -106,11 +106,19 @@ def filterHotels(response):
 
             dbcheckin = form.cleaned_data["checkin"]
             dbcheckout = form.cleaned_data["checkout"]
+            # THIS IS HOW I DID ERROR VALIDATION IT PASSES AN ERROR TO NEXT PAGE
             error = {}
             if dbcheckin < datetime.date(
                 datetime.today()
             ) or dbcheckout < datetime.date(datetime.today()):
-                error["error"] = "Date is not possible"
+                error[
+                    "error"
+                ] = "This date is in the past.  Please provide a valid date"
+            if dbcheckin == dbcheckout:
+                dbcheckout = dbcheckout + timedelta(days=1)
+                error[
+                    "error"
+                ] = "Your checkin and checkout were the same I incremented checkout."
 
             number_of_days = db.number_of_days(dbcheckin, dbcheckout)
             roomType = form.cleaned_data["roomType"]
