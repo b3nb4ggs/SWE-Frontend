@@ -3,7 +3,15 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
 from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter, Reserve, EditReservation, AddProperty
+from .forms import (
+    CreateAccount,
+    Search,
+    Login,
+    Filter,
+    Reserve,
+    EditReservation,
+    AddProperty,
+)
 from django import forms
 import datetime
 from django.forms import widgets
@@ -21,7 +29,7 @@ def strip_off_id(processthis):
 
 def home(request):
     form = request.GET.dict()
-    if(form.get("action") == "filter"):
+    if form.get("action") == "filter":
         print("here")
         form = Search()
         render(request, "main/home.html", {"form": form})
@@ -44,13 +52,13 @@ def filterHotels(response):
     # if request is coming from Search page
     if response.method == "GET":
         form_data = response.session.pop("search_form", {})
-        if(form_data.get("action") == "search"):
+        if form_data.get("action") == "search":
             checkin = form_data.get("checkin")
             checkout = form_data.get("checkout")
             numRooms = form_data.get("numRooms")
             numGuests = form_data.get("numGuests")
 
-        #set default values for default refresh page
+        # set default values for default refresh page
         else:
             checkin = datetime.today()
             checkout = datetime.today() + timedelta(days=1)
@@ -65,17 +73,17 @@ def filterHotels(response):
 
         number_of_days = db.number_of_days(dbcheckin, dbcheckout)
 
-
-
         error = {}
-        if dbcheckin < datetime.date(datetime.today()) or dbcheckout < datetime.date(
-            datetime.today()) or dbcheckin == dbcheckout:
+        if (
+            dbcheckin < datetime.date(datetime.today())
+            or dbcheckout < datetime.date(datetime.today())
+            or dbcheckin == dbcheckout
+        ):
             error = "Invalid Date Range!"
 
         if error != {}:
             form = Search()
             return render(response, "main/home.html", {"form": form, "error": error})
-
 
         for item in hotels:
             amenity = db.amenities_by_index(item["index"])
@@ -100,15 +108,27 @@ def filterHotels(response):
                 "numRooms": numRooms,
                 "roomType": roomType,
                 "high": 600,
-                "low": 0
+                "low": 0,
             }
         )
 
-        return render( response, "main/filter.html",
-            {"form": form, "form_data": form_data, "checkin": checkin, "roomType": roomType,
-            "numRooms": numRooms,   "numGuests": numGuests, "checkout": checkout,
-            "properties": properties, "error": error, "high": 600, "low": 0} )
-
+        return render(
+            response,
+            "main/filter.html",
+            {
+                "form": form,
+                "form_data": form_data,
+                "checkin": checkin,
+                "roomType": roomType,
+                "numRooms": numRooms,
+                "numGuests": numGuests,
+                "checkout": checkout,
+                "properties": properties,
+                "error": error,
+                "high": 600,
+                "low": 0,
+            },
+        )
 
     # if response is coming from Filter page
     if response.method == "POST":
@@ -129,7 +149,7 @@ def filterHotels(response):
             numGuests = form.cleaned_data["numGuests"]
             numRooms = form.cleaned_data["numRooms"]
 
-            #takes in default low/high values and price filtering is done later
+            # takes in default low/high values and price filtering is done later
             hotels = db.room_amenity_range_type(low, high, amenity_list, type)
             hotels = strip_off_id(hotels)
 
@@ -140,12 +160,12 @@ def filterHotels(response):
             roomType = form.cleaned_data["roomType"]
 
             error = {}
-            if dbcheckin < datetime.date(datetime.today()) \
-                    or dbcheckout < datetime.date(datetime.today())\
-                    or dbcheckin >= dbcheckout:
-                error[
-                    "error"
-                ] = "ERROR: Invalid Date Range"
+            if (
+                dbcheckin < datetime.date(datetime.today())
+                or dbcheckout < datetime.date(datetime.today())
+                or dbcheckin >= dbcheckout
+            ):
+                error["error"] = "ERROR: Invalid Date Range"
                 form = Filter(
                     initial={
                         "checkin": checkin,
@@ -154,16 +174,20 @@ def filterHotels(response):
                         "numRooms": numRooms,
                         "roomType": roomType,
                         "high": int(maxPrice),
-                        "low": int(minPrice)
+                        "low": int(minPrice),
                     }
                 )
-                return render(response, "main/filter.html",{"form": form,"error": error})
+                return render(
+                    response, "main/filter.html", {"form": form, "error": error}
+                )
 
             for item in hotels:
                 name = db.hotel_by_index(item["index"])
                 amenity = db.amenities_by_index(item["index"])
                 price = db.get_price(dbcheckin, dbcheckout, item["index"], roomType)
-                process = [k for k, v in amenity[0].items() if v == True and k != "index"]
+                process = [
+                    k for k, v in amenity[0].items() if v == True and k != "index"
+                ]
                 amenity_string = " ".join(process)
                 item["amenity"] = amenity_string
                 item["price"] = "{:.2f}".format(price / number_of_days)
@@ -171,12 +195,15 @@ def filterHotels(response):
                 item["cost"] = "{:.2f}".format(price)
                 item["days"] = number_of_days
                 item["vacancy"] = db.hotel_vacancy_range(
-                dbcheckin, dbcheckout, item["index"], roomType, numRooms)
+                    dbcheckin, dbcheckout, item["index"], roomType, numRooms
+                )
 
-            #filters hotel list by vacancy and price
+            # filters hotel list by vacancy and price
             properties = [x for x in hotels if (x.get("vacancy") == True)]
 
-            filtered = [x for x in properties if minPrice <= float(x.get("price")) <= maxPrice]
+            filtered = [
+                x for x in properties if minPrice <= float(x.get("price")) <= maxPrice
+            ]
 
             return render(
                 response,
@@ -192,13 +219,12 @@ def filterHotels(response):
                     "high": int(maxPrice),
                     "low": int(minPrice),
                     "error": error,
-                }
+                },
             )
     # default return for edge cases
     else:
         form = Filter()
         return render(response, "main/filter.html", {"form": form})
-
 
 
 def makeReservation(response):
@@ -293,7 +319,7 @@ def viewReservations(response):
     user_info = db.get_user_by_username(user.username)
     reservations = db.get_reservations_by_userid(int(user_info["index"]))
     for item in reservations:
-        name = db.hotel_by_index(item["index"])
+        name = db.hotel_by_index(item["hotel"])
         item["name"] = name[0]["name"]
         item["checkin"] = item["in"].date
         item["checkout"] = item["out"].date
@@ -325,10 +351,12 @@ def manageProperties(response):
         rooms = db.rooms_by_index(index)
         prices = {}
         amenities = db.amenities_by_index(index)
-        property["amenities"] = ", ".join([k for k, v in amenities[0].items() if v == True and k != "index"])
+        property["amenities"] = ", ".join(
+            [k for k, v in amenities[0].items() if v == True and k != "index"]
+        )
         for type in ("Standard", "Queen", "King"):
             for room in rooms:
-                if (room["type"] == type):
+                if room["type"] == type:
                     property["price" + type] = room["price"]
             if ("price" + type) not in property:
                 property["price" + type] = "-"
@@ -348,7 +376,13 @@ def addProperty(response):
                 rooms = []
 
                 for type in ("Standard", "Queen", "King"):
-                    rooms.append({"type": type, "price": form.cleaned_data["price" + type], "number": form.cleaned_data["num" + type]})
+                    rooms.append(
+                        {
+                            "type": type,
+                            "price": form.cleaned_data["price" + type],
+                            "number": form.cleaned_data["num" + type],
+                        }
+                    )
                 print(rooms)
                 print(amenities)
                 print(name)
@@ -441,8 +475,8 @@ def addReservation(response):
             )
             # if result is successful, then redirect back to manage reservations
             return redirect("/manageReservations")
-             # if there are any errors
-             # return render(response, "main/editReservations.html", {"errors": errors})
+            # if there are any errors
+            # return render(response, "main/editReservations.html", {"errors": errors})
         else:
             form = EditReservation()
             hotels = db.get_all_hotels()
@@ -521,8 +555,7 @@ def editReservation(response):
             return redirect("/manageReservations")
 
             # if there are any errors
-            # return render(response, "main/editReservations.html", {"errors": errors})
-
+            return render(response, "main/editReservations.html", {"errors": errors})
 
 
 def editProperty(response):
@@ -536,7 +569,7 @@ def editProperty(response):
 
             for type in ("Standard", "Queen", "King"):
                 for room in rooms:
-                   if(room["type"] == type):
+                    if room["type"] == type:
                         prices[type] = room["price"]
                 if type not in prices:
                     prices[type] = 0
@@ -544,7 +577,9 @@ def editProperty(response):
                     property[type] = 0
 
             amenities = db.amenities_by_index(index)
-            amenityList = [k for k, v in amenities[0].items() if v == True and k != "index"]
+            amenityList = [
+                k for k, v in amenities[0].items() if v == True and k != "index"
+            ]
 
             form = AddProperty(
                 initial={
@@ -556,10 +591,12 @@ def editProperty(response):
                     "priceQueen": prices["Queen"],
                     "priceKing": prices["King"],
                     "amenities": amenityList,
-                    "weekendDiff": property["weekend_differential"]
+                    "weekendDiff": property["weekend_differential"],
                 }
             )
-            return render(response,"main/editProperty.html", {"form": form, "property": property})
+            return render(
+                response, "main/editProperty.html", {"form": form, "property": property}
+            )
     if response.POST["action"] == "save":
         form = AddProperty(response.POST)
         form_data = response.POST.dict()
@@ -571,8 +608,13 @@ def editProperty(response):
             rooms = []
 
             for type in ("Standard", "Queen", "King"):
-                rooms.append({"type": type, "price": form.cleaned_data["price" + type],
-                              "number": form.cleaned_data["num" + type]})
+                rooms.append(
+                    {
+                        "type": type,
+                        "price": form.cleaned_data["price" + type],
+                        "number": form.cleaned_data["num" + type],
+                    }
+                )
             print(index)
             print(rooms)
             print(amenities)

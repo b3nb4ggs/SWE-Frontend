@@ -510,3 +510,6 @@ def amenities_by_index(index):
 # print(process)
 
 # pprint.pprint(room_amenity_range_type(0, 500, [], "King"))
+
+# pprint.pprint(get_all_reservations())
+pprint.pprint(get_reservations_by_userid(0))
