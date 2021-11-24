@@ -5,9 +5,10 @@
 
 {% block content %}
 {% load crispy_forms_tags %}
+{% load static %}
 
+<!-- <p>{{properties}}</p> -->
 <p class="errorlist">{{error.error}}</p>
-
 <table>
 	<tr>
 	<td>
@@ -29,6 +30,7 @@
 	<table>
 	<thead>
           <tr>
+            <th></th>
             <th>Name</th>
             <th>Rate {{ roomType }}</th>
 	    <th>Amenities</th>
@@ -37,7 +39,9 @@
         </thead>
         <tbody>
 	    {% for property in properties %}
+     <tr><td><img src="{% static ''%}{{property.index}}.jpg"width="200" height="200" style="vertical-align: bottom;"> </td></tr>
           <tr>
+              <td></td>
               <td>{{property.name}} </td>
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
