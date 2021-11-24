@@ -81,7 +81,6 @@ def delete_hotel(index: int):
 def update_hotel(
     index: int,
     name: str,
-    no_rooms: int,
     differential: int,
     amenities: list,
     Rooms: dict,
@@ -92,7 +91,6 @@ def update_hotel(
         "index": id,
         "name": name,
         "weekend_differential": differential,
-        "rooms": no_rooms,
     }
     for type in Rooms:
         post[type["type"]] = type["number"]
