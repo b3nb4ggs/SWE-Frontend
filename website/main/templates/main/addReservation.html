@@ -3,6 +3,11 @@
 {% block title %} Create New Reservation {% endblock %}
 
 {% block content %}
+
+
+<p style="color:#FF0000";>{{error.error}} {{error.vacancy}}</p>
+
+
 	<form method="POST"  action="/addReservation/" >
 		{% csrf_token %}
         <label for="hotel">Hotel: </label>

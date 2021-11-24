@@ -199,7 +199,7 @@ def update_reservation(
 ):
     # delete = delete_reservation(index)
     # if delete.deleted_count != 1:
-    # print("Unable to delete reservation")
+    #     print("Unable to delete reservation")
 
     post = {
         "$set": {
@@ -217,7 +217,7 @@ def update_reservation(
             "cost": cost,
         }
     }
-    result = Reservation.update({"index": index}, post)
+    result = Reservation.update_one({"index": index}, post)
     # insert error check to see if reservation was create successfully
     return result
 
@@ -416,6 +416,9 @@ def amenities_by_index(index):
     return list(result)
 
 
+# def is_reservation_valid(user_index:int,hotel_index:int,):
+
+
 # Line change
 # ----------------------------------------------CUSTOMER FUNCTIONS------------------------------------------------------------------------------------------
 # -----------------------------------------------------ENTER HOTELS INTO DATABASE---------------------------------------------------------------------------
@@ -512,4 +515,4 @@ def amenities_by_index(index):
 # pprint.pprint(room_amenity_range_type(0, 500, [], "King"))
 
 # pprint.pprint(get_all_reservations())
-pprint.pprint(get_reservations_by_userid(0))
+# pprint.pprint(get_reservations_by_userid(0))

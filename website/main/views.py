@@ -424,7 +424,7 @@ def manageReservations(response):
         reservation["username"] = user[0]["username"]
         reservation["first"] = user[0]["first_name"]
         reservation["last"] = user[0]["last_name"]
-        # reservation["email"] = user[0]["email"]
+        reservation["email"] = user[0]["email"]
         hotelname = db.get_hotel_by_index(reservation["hotel"])
         reservation["hotelName"] = hotelname["name"]
         reservation["phone"] = user[0]["phone"]
@@ -437,6 +437,7 @@ def manageReservations(response):
 
 def addReservation(response):
     if response.method == "POST":
+        savedata = response.POST
         form_data = response.POST.dict()
         if response.POST["action"] == "save":
             checkin = datetime.fromisoformat(form_data["checkin"])
@@ -447,36 +448,50 @@ def addReservation(response):
             hotelId = int(form_data["hotel"])
             user = int(form_data["user"])
 
-            # calculuate number of days
-            numDays = db.number_of_days(checkin, checkout)
-            total = db.get_price(checkin, checkout, hotelId, roomType)
-            rate = round((total / numDays), 2)
+            errors = {}
+            # check if dates are a valid range
+            if (
+                datetime.date(checkin) < datetime.date(datetime.today())
+                or datetime.date(checkout) < datetime.date(datetime.today())
+                or datetime.date(checkin) >= datetime.date(checkout)
+            ):
+                errors["error"] = "ERROR: Invalid Date Range"
+
+            # check for vacancy
+            result = db.hotel_vacancy_range(
+                checkin, checkout, hotelId, roomType, numRooms
+            )
+            if result == False:
+                errors["vacancy"] = "No vacancy"
 
             # check if new hotel reservation is valid
-            # check if dates are a valid range
-            # check for vacancy
-
-            # if everything is valid, call db.update_reservation:
-            # else:
-            # give specific error ex: "No rooms available at this hotel", "invalid date range", etc
-            # errors = {}
-
-            result = db.make_reservation(
-                checkin,
-                checkout,
-                hotelId,
-                user,
-                roomType,
-                numRooms,
-                numGuests,
-                numDays,
-                rate,
-                total,
-            )
-            # if result is successful, then redirect back to manage reservations
-            return redirect("/manageReservations")
-            # if there are any errors
-            # return render(response, "main/editReservations.html", {"errors": errors})
+            if result and errors == {}:
+                # calculuate number of days
+                numDays = db.number_of_days(checkin, checkout)
+                total = db.get_price(checkin, checkout, hotelId, roomType)
+                rate = round((total / numDays), 2)
+                db.make_reservation(
+                    checkin,
+                    checkout,
+                    hotelId,
+                    user,
+                    roomType,
+                    numRooms,
+                    numGuests,
+                    numDays,
+                    rate,
+                    total,
+                )
+                return redirect("/manageReservations/")
+            else:
+                form = EditReservation()
+                hotels = db.get_all_hotels()
+                users = db.get_all_users()
+                return render(
+                    response,
+                    "main/addReservation.html",
+                    {"form": form, "hotels": hotels, "users": users, "error": errors},
+                )
         else:
             form = EditReservation()
             hotels = db.get_all_hotels()
@@ -516,6 +531,7 @@ def editReservation(response):
                 {"form": form, "reservation": reservation, "hotels": hotels},
             )
         if response.POST["action"] == "save":
+            form_data = response.POST.dict()
             checkin = datetime.fromisoformat(form_data["checkin"])
             checkout = datetime.fromisoformat(form_data["checkout"])
             numRooms = int(form_data["numRooms"])
@@ -524,38 +540,75 @@ def editReservation(response):
             hotelId = int(form_data["hotel"])
             user = int(form_data["user"])
             index = int(form_data["index"])
-            # calculuate number of days
-            numDays = db.number_of_days(checkin, checkout)
-            total = db.get_price(checkin, checkout, hotelId, roomType)
-            rate = round((total / numDays), 2)
 
+            errors = {}
             # check if new hotel reservation is valid
             # check if dates are a valid range
+            if (
+                datetime.date(checkin) < datetime.date(datetime.today())
+                or datetime.date(checkout) < datetime.date(datetime.today())
+                or datetime.date(checkin) >= datetime.date(checkout)
+            ):
+                errors["error"] = "ERROR: Invalid Date Range"
             # check for vacancy
-
-            # if everything is valid, call db.update_reservation:
-            # else:
-            # give specific error ex: "No rooms available at this hotel", "invalid date range", etc
-            # errors = {}
-
-            result = db.update_reservation(
-                index,
-                checkin,
-                checkout,
-                hotelId,
-                user,
-                roomType,
-                numRooms,
-                numGuests,
-                numDays,
-                rate,
-                total,
+            result = db.hotel_vacancy_range(
+                checkin, checkout, hotelId, roomType, numRooms
             )
-            # if result is successful, then redirect back to manage reservations
-            return redirect("/manageReservations")
+            if result == False:
+                errors["vacancy"] = "No vacancy"
+
+            if result and errors == {}:
+                # calculuate number of days
+                numDays = db.number_of_days(checkin, checkout)
+                total = db.get_price(checkin, checkout, hotelId, roomType)
+                rate = round((total / numDays), 2)
+
+                result = db.update_reservation(
+                    index,
+                    checkin,
+                    checkout,
+                    hotelId,
+                    user,
+                    roomType,
+                    numRooms,
+                    numGuests,
+                    numDays,
+                    rate,
+                    total,
+                )
+
+                # if result is successful, then redirect back to manage reservations
+                return redirect("/manageReservations")
 
             # if there are any errors
-            return render(response, "main/editReservations.html", {"errors": errors})
+            else:
+                form = EditReservation(
+                    initial={
+                        "checkin": checkin,
+                        "checkout": checkout,
+                        "numRooms": numRooms,
+                        "numGuests": numGuests,
+                        "roomType": roomType,
+                    }
+                )
+                reservation = db.get_reservation_by_index(index)
+                hotels = db.get_all_hotels()
+                user = db.get_user_by_index(user)
+                hotel = db.get_hotel_by_index(hotelId)
+                reservation["username"] = user[0]["username"]
+                reservation["hotelName"] = hotel["name"]
+                reservation["first"] = user[0]["first_name"]
+                reservation["last"] = user[0]["last_name"]
+                return render(
+                    response,
+                    "main/editReservation.html",
+                    {
+                        "form": form,
+                        "reservation": reservation,
+                        "hotels": hotels,
+                        "error": errors,
+                    },
+                )
 
 
 def editProperty(response):

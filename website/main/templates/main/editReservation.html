@@ -3,6 +3,9 @@
 {% block title %} Edit Reservation {% endblock %}
 
 {% block content %}
+
+<p style="color:#FF0000";>{{error.error}} {{error.vacancy}}</p>
+
     <table>
         <tr>Reservation Id: {{ reservation.index }}</tr> <br>
         <tr>Customer Name: {{ reservation.first }} {{ reservation.last }}</tr> <br>
