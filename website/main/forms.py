@@ -100,3 +100,18 @@ class EditReservation(forms.Form):
         label="Guests", choices=INTEGER_CHOICES, required=True
     )
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
+
+class AddProperty(forms.Form):
+    name = forms.CharField(label="Property Name", max_length=200)
+    amenities = forms.MultipleChoiceField(label="Amenities",
+        widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=True
+    )
+    numStandard = forms.IntegerField(label="Number of Standard Rooms", required=True)
+    priceStandard = forms.FloatField(label="Standard Rate", required=True)
+    numQueen = forms.IntegerField(label="Number of Queen Rooms", required=True)
+    priceQueen = forms.FloatField(label="Queen Rate", required=True)
+    numKing = forms.IntegerField(label="Number of King Rooms", required=True)
+    priceKing = forms.FloatField(label="King Rate", required=True)
+    weekendDiff = forms.IntegerField(label="Weekend Differential", required=True)
+
+

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
 from .models import User, Property, Reservation
-from .forms import CreateAccount, Search, Login, Filter, Reserve, EditReservation
+from .forms import CreateAccount, Search, Login, Filter, Reserve, EditReservation, AddProperty
 from django import forms
 import datetime
 from django.forms import widgets
@@ -314,12 +314,50 @@ def manage(response):
 
 
 def manageProperties(response):
+    if response.method == "POST":
+        if response.POST["action"] == "delete":
+            form_data = response.POST.dict()
+            index = int(form_data["propertyId"].strip("/"))
+            db.delete_hotel(index)
     properties = db.get_all_hotels()
+    for property in properties:
+        index = property["index"]
+        rooms = db.rooms_by_index(index)
+        prices = {}
+        amenities = db.amenities_by_index(index)
+        property["amenities"] = ", ".join([k for k, v in amenities[0].items() if v == True and k != "index"])
+        for type in ("Standard", "Queen", "King"):
+            for room in rooms:
+                if (room["type"] == type):
+                    property["price" + type] = room["price"]
+            if ("price" + type) not in property:
+                property["price" + type] = "-"
+            if type not in property:
+                property[type] = "-"
     return render(response, "main/manageProperties.html", {"properties": properties})
 
 
 def addProperty(response):
-    return render(response, "main/addProperty.html")
+    if response.method == "POST":
+        form = AddProperty(response.POST)
+        if response.POST["action"] == "add":
+            if form.is_valid():
+                name = form.cleaned_data["name"]
+                amenities = form.cleaned_data["amenities"]
+                weekendDiff = form.cleaned_data["weekendDiff"]
+                rooms = []
+
+                for type in ("Standard", "Queen", "King"):
+                    rooms.append({"type": type, "price": form.cleaned_data["price" + type], "number": form.cleaned_data["num" + type]})
+                print(rooms)
+                print(amenities)
+                print(name)
+
+                db.make_hotel(name, weekendDiff, amenities, rooms)
+                return redirect("/manageProperties")
+
+    form = AddProperty()
+    return render(response, "main/addProperty.html", {"form": form})
 
 
 def editProperty(response):
@@ -489,4 +527,60 @@ def editReservation(response):
 
 
 def editProperty(response):
-    return HttpResponse("Edit existing property page")
+    if response.method == "POST":
+        form_data = response.POST.dict()
+        if response.POST["action"] == "edit":
+            index = int(form_data.get("propertyId").strip("/"))
+            property = db.get_hotel_by_index(index)
+            rooms = db.rooms_by_index(index)
+            prices = {}
+
+            for type in ("Standard", "Queen", "King"):
+                for room in rooms:
+                   if(room["type"] == type):
+                        prices[type] = room["price"]
+                if type not in prices:
+                    prices[type] = 0
+                if type not in property:
+                    property[type] = 0
+
+            amenities = db.amenities_by_index(index)
+            amenityList = [k for k, v in amenities[0].items() if v == True and k != "index"]
+
+            form = AddProperty(
+                initial={
+                    "name": property["name"],
+                    "numStandard": property["Standard"],
+                    "numQueen": property["Queen"],
+                    "numKing": property["King"],
+                    "priceStandard": prices["Standard"],
+                    "priceQueen": prices["Queen"],
+                    "priceKing": prices["King"],
+                    "amenities": amenityList,
+                    "weekendDiff": property["weekend_differential"]
+                }
+            )
+            return render(response,"main/editProperty.html", {"form": form, "property": property})
+    if response.POST["action"] == "save":
+        form = AddProperty(response.POST)
+        form_data = response.POST.dict()
+        index = int(form_data["index"].strip("/"))
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            amenities = form.cleaned_data["amenities"]
+            weekendDiff = form.cleaned_data["weekendDiff"]
+            rooms = []
+
+            for type in ("Standard", "Queen", "King"):
+                rooms.append({"type": type, "price": form.cleaned_data["price" + type],
+                              "number": form.cleaned_data["num" + type]})
+            print(index)
+            print(rooms)
+            print(amenities)
+            print(name)
+
+            db.update_hotel(index, name, weekendDiff, amenities, rooms)
+            return redirect("/manageProperties")
+        db.update_hotel()
+        return redirect("/manageProperties")
+    return render(response, "main/editProperty.html")

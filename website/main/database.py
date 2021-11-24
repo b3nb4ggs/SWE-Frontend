@@ -40,9 +40,7 @@ def get_user_by_username(name: str):
     return result
 
 
-def make_hotel(
-    name: str, no_rooms: int, differential: int, amenities: list, Rooms: dict
-):
+def make_hotel(name: str, differential: int, amenities: list, Rooms: dict):
     index = Hotel.find_one(sort=[("index", -1)])
     index = int(index["index"])
     index += 1
@@ -51,7 +49,6 @@ def make_hotel(
         "index": id,
         "name": name,
         "weekend_differential": differential,
-        "rooms": no_rooms,
     }
     for type in Rooms:
         post[type["type"]] = type["number"]
@@ -84,7 +81,6 @@ def delete_hotel(index: int):
 def update_hotel(
     index: int,
     name: str,
-    no_rooms: int,
     differential: int,
     amenities: list,
     Rooms: dict,
@@ -95,7 +91,6 @@ def update_hotel(
         "index": id,
         "name": name,
         "weekend_differential": differential,
-        "rooms": no_rooms,
     }
     for type in Rooms:
         post[type["type"]] = type["number"]
@@ -426,7 +421,6 @@ def amenities_by_index(index):
 # -----------------------------------------------------ENTER HOTELS INTO DATABASE---------------------------------------------------------------------------
 # result = make_hotel(
 #     "Rio Inn",
-#     50,
 #     20,
 #     ["Pool"],
 #     [

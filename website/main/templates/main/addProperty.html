@@ -3,5 +3,10 @@
 {% block title %} Add New Property {% endblock %}
 
 {% block content %}
+    	<form method="POST"  action="/addProperty/" >
+            {% csrf_token %}
+            {{form.as_p}}
+		    <button type="Submit" name="action" value="add" class="btn">Add New Property </button>
+	    </form>
 
 {% endblock %}

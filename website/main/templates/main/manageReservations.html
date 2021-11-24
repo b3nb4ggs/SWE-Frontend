@@ -1,6 +1,6 @@
 {% extends 'main/baseAdmin.html' %}
 
-{% block title %} Manage Properties Page {% endblock %}
+{% block title %} Manage Reservations Page {% endblock %}
 
 {% block content %}
 
@@ -42,7 +42,7 @@
               <td> {{ reservation.cost }}</td>
               <td></td>
 
-            <td> <form id="delete" method="POST" action="/editReservation/" >
+            <td> <form id="edit" method="POST" action="/editReservation/" >
                   {%  csrf_token %}
                     <input type="hidden" name="reservationId" value={{ reservation.index }}/>
                     <input type="Submit" name="action" value="edit" />

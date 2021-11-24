@@ -1,6 +1,23 @@
-{% extends 'main/base.html' %}
+{% extends 'main/baseAdmin.html' %}
 
-{% block title %} Edit Property Page {% endblock %}
+{% block title %} Edit Property {% endblock %}
 
 {% block content %}
+    <table>
+        <tr>Property Id: {{ property.index }}</tr> <br>
+    	<form method="POST"  onsubmit="return confirm('Are you sure you want to make these changes?')" action="/editProperty/" >
+		    {% csrf_token %}
+		    {{form.as_p}}
+            <input type="hidden", name="index" value={{ property.index }}/>
+            <button type="submit" name="action" value="save" class="btn">Update Property </button>
+	    </form>
+    <tr>
+        <form method="POST"  action="/manageProperties/">
+            {% csrf_token %}
+            <button type="submit", name="action" value="back" class="btn">Back </button>
+        </form>
+    </tr>
+    </table>
+
+
 {% endblock %}>

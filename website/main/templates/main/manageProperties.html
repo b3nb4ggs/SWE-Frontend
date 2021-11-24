@@ -3,22 +3,54 @@
 {% block title %} Manage Properties Page {% endblock %}
 
 {% block content %}
-
     <table>
+	<thead>
+          <tr>
+              <th>Property ID</th>
+              <th>Property Name</th>
+              <th>Standard Rooms</th>
+              <th>Queen Rooms</th>
+              <th>King Rooms</th>
+              <th>Standard Rate</th>
+              <th>Queen Rate</th>
+              <th>King Rate</th>
+              <th>Weekend Differential</th>
+              <th>Amenities</th>
+          </tr>
+        </thead>
     <tbody>
 	    {% for property in properties %}
           <tr>
-              <td>{{property.name}} </td>
-              <td> {{property.price}} </td>
-              <td>{{property.amenity}} </td>
-              <td> <a href="/editProperty/?id={{property.index}}" >Edit</a> </td>
+              <td>{{property.index}} </td>
+              <td>{{ property.name }}</td>
+              <td>{{property.Standard}} </td>
+              <td>{{property.Queen}} </td>
+              <td>{{property.King}} </td>
+              <td>${{property.priceStandard}} </td>
+              <td>${{property.priceQueen}} </td>
+              <td>${{property.priceKing}} </td>
+              <td>{{ property.weekend_differential }}%</td>
+              <td>{{ property.amenities }}</td>
+              <!--- <td> <a href="/editProperty/?id={{property.index}}" >Edit</a> </td> --->
+          <td> <form id="edit" method="POST" action="/editProperty/" >
+                  {%  csrf_token %}
+                    <input type="hidden" name="propertyId" value={{ property.index }}/>
+                    <input type="Submit" name="action" value="edit" />
+                  </form>
+              </td>
+            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ property.name }}?')">
+                {%  csrf_token %}
+                <input type="hidden" name="propertyId" value={{ property.index }}/>
+                <input type="Submit" name="action" value="delete" />
+            </form>
+            </td>
           </tr>
 		{% endfor %}
     </tbody>
         <td>
             <form method="post" action="/addProperty/">
                 {% csrf_token %}
-                <button type="submit" class="btn">Add New Property </button>
+                <button type="submit" name="action" value="add" class="btn">Add New Property </button>
             </form>
         </td>
      </table>
