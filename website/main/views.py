@@ -494,6 +494,7 @@ def editReservation(response):
             numDays = db.number_of_days(checkin, checkout)
             total = db.get_price(checkin, checkout, hotelId, roomType)
             rate = round((total / numDays), 2)
+
             # check if new hotel reservation is valid
             # check if dates are a valid range
             # check for vacancy
@@ -522,8 +523,6 @@ def editReservation(response):
             # if there are any errors
             # return render(response, "main/editReservations.html", {"errors": errors})
 
-        # cost = db.get_price(checkin, checkout, index, roomType)
-        # rate = cost/numDays
 
 
 def editProperty(response):
