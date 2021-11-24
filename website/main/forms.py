@@ -6,7 +6,7 @@ from django.forms.fields import DateField
 from datetime import date
 from main import database as db
 from django_filters.widgets import RangeWidget
-from datetime import datetime
+from datetime import datetime, timedelta
 
 INTEGER_CHOICES = [tuple([x, x]) for x in range(1, 10)]
 # DATE_FORMAT
@@ -49,15 +49,16 @@ class Login(forms.Form):
 
 
 class Search(forms.Form):
-    checkin = forms.DateField(widget=dateinput, initial=date.today())
-    checkout = forms.DateField(widget=dateinput, initial=date.today())
+    checkin = forms.DateField(widget=dateinput, initial=datetime.today())
+    checkout = forms.DateField(widget=dateinput, initial=datetime.today() + timedelta(days=1))
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES)
     numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES)
 
 
+
 class Filter(forms.Form):
-    checkin = forms.DateField(widget=dateinput, required=True)
-    checkout = forms.DateField(widget=dateinput, required=True)
+    checkin = forms.DateField(widget=dateinput, required=True, initial=datetime.today())
+    checkout = forms.DateField(widget=dateinput, required=True, initial=datetime.today() + timedelta(days=1))
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
     numGuests = forms.ChoiceField(
         label="Guests", choices=INTEGER_CHOICES, required=True
@@ -67,17 +68,6 @@ class Filter(forms.Form):
         widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=False
     )
 
-    class Meta(forms.Form):
-        widgets = {"checkin": dateinput()}
-
-    # I don't like django form validation it throws ugly errors.
-    # def clean_checkin(self):
-    #     checkin = str(self.cleaned_data.get("checkin"))
-    #     checkin = datetime.fromisoformat(checkin)
-    #     checkin = datetime.date(checkin)
-    #     if checkin < datetime.date(datetime.today()):
-    #         raise forms.ValidationError("Check in is in the past")
-    #     return checkin
 
 
 class Reserve(forms.Form):

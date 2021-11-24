@@ -6,6 +6,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
     	<table>
         <td>
             <tr><h2>Reservation Info</h2></tr>
@@ -52,10 +53,10 @@
 
 {% else %}
         <br>
-        <a href="/register/">Create Account</a>
+        <a href="/register?action=redirect">Create Account</a>
         <br>
         <a href="/login/">Login</a>
         <br>
-        {% endif %}
+ {% endif %}
 
 {% endblock %}

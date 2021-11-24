@@ -6,7 +6,7 @@
 {% block content %}
 {% load crispy_forms_tags %}
 
-<p>{{error.error}}</p>
+<p class="errorlist">{{error.error}}</p>
 
 <table>
 	<tr>
@@ -15,14 +15,14 @@
 		{% csrf_token %}
 		{{form.as_p}}
         <label for="minRange">Min Price: </label>
-        <input name="minRange" id="minRange" type="range" min="0" max="600" value=0 oninput="this.nextElementSibling.value = this.value" />
-        <output>0</output> <br>
+        <input name="minRange" id="minRange" type="range" min="0" max="600" value={{ low }} oninput="this.nextElementSibling.value = this.value" />
+        <output>{{ low }}</output> <br>
 
         <label for="maxRange">Max Price: </label>
-        <input name="maxRange" id="maxRange" type="range" min="0" max="600" value=600 oninput="this.nextElementSibling.value = this.value" />
-        <output>600</output><br>
+        <input name="maxRange" id="maxRange" type="range" min="0" max="600" value={{ high }} oninput="this.nextElementSibling.value = this.value" />
+        <output>{{ high }}</output><br>
 
-		<button type="submit", name="filter" class="btn btn-success">Filter </button>
+		<button type="submit" name="action" value="filter" class="btn btn-success">Filter </button>
 	</form>
 	</td>
 	<td>
