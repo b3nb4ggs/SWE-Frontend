@@ -38,7 +38,8 @@ def home(request):
         if form.is_valid():
             request.session["search_form"] = request.GET.dict()
             form = request.GET.dict()
-            if form["checkin"] == form["checkout"]:
+            if (form["checkin"] >= form["checkout"]
+                    or form["checkin"] <= str(datetime.today()) or form["checkout"] <= str(datetime.today())):
                 error = "Invalid Date Range!"
                 form = Search()
                 return render(request, "main/home.html", {"form": form, "error": error})
@@ -77,7 +78,7 @@ def filterHotels(response):
         if (
             dbcheckin < datetime.date(datetime.today())
             or dbcheckout < datetime.date(datetime.today())
-            or dbcheckin == dbcheckout
+            or dbcheckin >= dbcheckout
         ):
             error = "Invalid Date Range!"
 
