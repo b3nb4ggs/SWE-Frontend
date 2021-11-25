@@ -23,8 +23,6 @@ from django.contrib.auth.views import PasswordResetView
 import pprint
 
 
-
-
 def strip_off_id(processthis):
     for element in processthis:
         element.pop("_id")
@@ -46,8 +44,11 @@ def home(request):
         if form.is_valid():
             request.session["search_form"] = request.GET.dict()
             form = request.GET.dict()
-            if (form["checkin"] >= form["checkout"]
-                    or form["checkin"] < str(datetime.now()).split()[0] or form["checkout"] < str(datetime.now()).split()[0]):
+            if (
+                form["checkin"] >= form["checkout"]
+                or form["checkin"] < str(datetime.now()).split()[0]
+                or form["checkout"] < str(datetime.now()).split()[0]
+            ):
                 error = "Invalid Date Range!"
                 form = Search()
                 return render(request, "main/home.html", {"form": form, "error": error})
@@ -343,7 +344,7 @@ def viewReservations(response):
     return render(
         response,
         "main/viewReservations.html",
-        {"reservations": reservations, "reservationCount": reservationCount}
+        {"reservations": reservations, "reservationCount": reservationCount},
     )
 
 
@@ -425,11 +426,43 @@ def addUser(response):
 def editUser(response):
     return render(response, "main/editUser.html")
 
+
 def viewAccount(response):
-    #import current values into form:
-    form = ViewAccount(initial={
-    })
-    return render(response, "main/viewAccount.html", {"form": form})
+    # import current values into form:
+    user = response.user
+    user_info = db.get_user_by_username(user.username)
+    if response.method == "POST":
+        errors = {}
+        data = response.POST.dict()
+        index = data["index"]
+        form = ViewAccount(response.POST)
+        if form.is_valid():
+            first = form.cleaned_data["first"]
+            print(first)
+            last = form.cleaned_data["last"]
+            print(last)
+            phone = form.cleaned_data["phone"]
+            print(phone)
+            email = form.cleaned_data["email"]
+            print(email)
+            print(index)
+            result = db.change_user_info(
+                int(index), str(first), str(last), str(phone), str(email)
+            )
+            if not result:
+                errors["error"] = "I could not change the info"
+            else:
+                return render(
+                    response,
+                    "main/viewAccount.html",
+                    {"form": form, "user_info": user_info, "error": errors},
+                )
+
+    form = ViewAccount(initial={})
+    return render(
+        response, "main/viewAccount.html", {"form": form, "user_info": user_info}
+    )
+
 
 def manageReservations(response):
     filterId = ""
@@ -452,12 +485,12 @@ def manageReservations(response):
             if form_data["reservationId"]:
                 filterId = int(form_data["reservationId"])
                 reservations = db.get_reservation_by_index(filterId)
-            #add in filtering for if both fields are set
+            # add in filtering for if both fields are set
 
         else:
             reservations = reservations = db.get_all_reservations()
     else:
-        reservations =  reservations = db.get_all_reservations()
+        reservations = reservations = db.get_all_reservations()
 
     for reservation in reservations:
         user = db.get_user_by_index(int(reservation["user"]))
@@ -473,7 +506,9 @@ def manageReservations(response):
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
     return render(
-        response, "main/manageReservations.html", {"reservations": reservations, "filterId": filterId, "filterName":filterName}
+        response,
+        "main/manageReservations.html",
+        {"reservations": reservations, "filterId": filterId, "filterName": filterName},
     )
 
 
