@@ -224,7 +224,7 @@ def update_reservation(
 
 def get_reservation_by_index(index):
     query = {"index": index}
-    result = Reservation.find_one(query)
+    result = list(Reservation.find(query))
     return result
 
 

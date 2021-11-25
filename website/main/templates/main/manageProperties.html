@@ -2,7 +2,9 @@
 
 {% block title %} Manage Properties Page {% endblock %}
 
+
 {% block content %}
+    {% if user.is_superuser %}
     <table>
 	<thead>
           <tr>
@@ -50,9 +52,12 @@
         <td>
             <form method="post" action="/addProperty/">
                 {% csrf_token %}
-                <button type="submit" name="action" value="add" class="btn">Add New Property </button>
+                <button type="submit" name="action" value="add" >Add New Property </button>
             </form>
         </td>
      </table>
+    {% else %}
+         <h3>You do not have the permissions required to view this page</h3>
+    {% endif %}
 
 {% endblock %}

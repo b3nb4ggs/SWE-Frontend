@@ -21,4 +21,5 @@ urlpatterns = [
     path("manageReservations/", views.manageReservations, name="manageReservations"),
     path("addReservation/", views.addReservation, name="addReservation"),
     path("editReservation/", views.editReservation, name="editReservation"),
+    path("viewAccount/", views.viewAccount, name="viewAccount"),
 ]

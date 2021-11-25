@@ -1,16 +1,18 @@
 {% extends 'main/base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}
         Home Page
 {% endblock %}
 
 {% block content %}
 	
-    <h1>Find a hotel </h1>
+    <h1>Find a hotel </h1><hr>
 	<p class="errorlist" >{{error}}</p>
+    <div class="form-group" >
 	<form method="get" action="/home/">
 		{% csrf_token %}
 		{{form.as_p}}
 		<button type="submit" name="action" value="search">Search</button>
-	</form>	
+	</form>
+    </div>
 {% endblock %}

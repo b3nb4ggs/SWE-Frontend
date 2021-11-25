@@ -3,7 +3,12 @@
         My Reservations
 {% endblock %}
 
+
 {% block content %}
+        <h1>My Reservations</h1><hr>
+{% if reservationCount == 0%}
+    <p>You haven't made any reservations yet!</p>
+{% else %}
 	<table>
 	<thead>
           <tr>
@@ -11,7 +16,10 @@
             <th>Hotel Name</th>
 	        <th>Check-In</th>
               <th>Check-Out</th>
-              <th>Details </th>
+              <th>Room Type</th>
+              <th>Guests </th>
+              <th>Nightly Rate</th>
+              <th>Total Cost</th>
           </tr>
         </thead>
         <tbody>
@@ -21,8 +29,26 @@
             <td>{{ reservation.name }}</td>
             <td>{{reservation.checkin}} </td>
             <td>{{ reservation.checkout }}</td>
-            <td> Num Rooms: {{reservation.number_rooms}} Room Type:{{reservation.type}}  Num Guests: {{reservation.number_guests}} Nightly Rate:${{reservation.rate}} Total Cost:${{reservation.cost}} </td>
+              <td>{{ reservation.type }}</td>
+              <td>{{ reservation.number_guests}}</td>
+              <td>{{ reservation.rate }}</td>
+            <td> {{reservation.cost}}  </td>
+              <td> <form id="edit" method="POST" action="/editReservation/" >
+                  {%  csrf_token %}
+                    <input type="hidden" name="reservationId" value={{ reservation.index }}/>
+                    <input type="Submit" name="action" value="edit" />
+                  </form>
+              </td>
+             <!--- <td> <a href="/editReservation/" >Edit</a> </td> --->
+            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
+                {%  csrf_token %}
+                <input type="hidden" name="reservationId" value={{ reservation.index }}/>
+                <input type="Submit" name="action" value="delete" />
+            </form>
+            </td>
+          </tr>
 		{% endfor %}
         </tbody>
       </table>
+    {% endif %}
 {% endblock %}

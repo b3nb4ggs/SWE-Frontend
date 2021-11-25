@@ -8,7 +8,7 @@ from .forms import (
     Search,
     Login,
     Filter,
-    Reserve,
+    ViewAccount,
     EditReservation,
     AddProperty,
 )
@@ -17,8 +17,12 @@ import datetime
 from django.forms import widgets
 from main import database as db
 from datetime import datetime, timedelta
+import re
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetView
 import pprint
+
+
 
 
 def strip_off_id(processthis):
@@ -28,6 +32,10 @@ def strip_off_id(processthis):
 
 
 def home(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        print(request.user.username)
+        print(request.user.is_superuser)
+        return redirect("/manage")
     form = request.GET.dict()
     if form.get("action") == "filter":
         print("here")
@@ -316,19 +324,26 @@ def confirmReservation(response):
 
 
 def viewReservations(response):
+    if response.method == "POST":
+        if response.POST["action"] == "delete":
+            form_data = response.POST.dict()
+            index = int(form_data["reservationId"].strip("/"))
+            db.delete_reservation(index)
     user = response.user
     user_info = db.get_user_by_username(user.username)
     reservations = db.get_reservations_by_userid(int(user_info["index"]))
+    reservationCount = 0
     for item in reservations:
         name = db.hotel_by_index(item["hotel"])
         item["name"] = name[0]["name"]
         item["checkin"] = item["in"].date
         item["checkout"] = item["out"].date
+        reservationCount += 1
 
     return render(
         response,
         "main/viewReservations.html",
-        {"reservations": reservations},
+        {"reservations": reservations, "reservationCount": reservationCount}
     )
 
 
@@ -410,14 +425,40 @@ def addUser(response):
 def editUser(response):
     return render(response, "main/editUser.html")
 
+def viewAccount(response):
+    #import current values into form:
+    form = ViewAccount(initial={
+    })
+    return render(response, "main/viewAccount.html", {"form": form})
 
 def manageReservations(response):
+    filterId = ""
+    filterName = ""
     if response.method == "POST":
         if response.POST["action"] == "delete":
             form_data = response.POST.dict()
             index = int(form_data["reservationId"].strip("/"))
             db.delete_reservation(index)
-    reservations = db.get_all_reservations()
+            reservations = db.get_all_reservations()
+        elif response.POST["action"] == "filter":
+            form_data = response.POST.dict()
+            filterName = re.escape(form_data["username"])
+            reservations = []
+
+            if filterName:
+                user = db.get_user_by_username(filterName)
+                if user:
+                    reservations = db.get_reservations_by_userid(user["index"])
+            if form_data["reservationId"]:
+                filterId = int(form_data["reservationId"])
+                reservations = db.get_reservation_by_index(filterId)
+            #add in filtering for if both fields are set
+
+        else:
+            reservations = reservations = db.get_all_reservations()
+    else:
+        reservations =  reservations = db.get_all_reservations()
+
     for reservation in reservations:
         user = db.get_user_by_index(int(reservation["user"]))
         if user == []:
@@ -432,7 +473,7 @@ def manageReservations(response):
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
     return render(
-        response, "main/manageReservations.html", {"reservations": reservations}
+        response, "main/manageReservations.html", {"reservations": reservations, "filterId": filterId, "filterName":filterName}
     )
 
 
@@ -509,7 +550,7 @@ def editReservation(response):
         form_data = response.POST.dict()
         if response.POST["action"] == "edit":
             index = int(form_data.get("reservationId").strip("/"))
-            reservation = db.get_reservation_by_index(index)
+            reservation = db.get_reservation_by_index(index)[0]
             hotel = db.get_hotel_by_index(reservation["hotel"])
             hotels = db.get_all_hotels()
             user = db.get_user_by_index(int(reservation["user"]))
@@ -579,7 +620,10 @@ def editReservation(response):
                 )
 
                 # if result is successful, then redirect back to manage reservations
-                return redirect("/manageReservations")
+                if response.user.is_superuser:
+                    return redirect("/manageReservations")
+                else:
+                    return redirect("/viewReservations")
 
             # if there are any errors
             else:
@@ -592,7 +636,7 @@ def editReservation(response):
                         "roomType": roomType,
                     }
                 )
-                reservation = db.get_reservation_by_index(index)
+                reservation = db.get_reservation_by_index(index)[0]
                 hotels = db.get_all_hotels()
                 user = db.get_user_by_index(user)
                 hotel = db.get_hotel_by_index(hotelId)

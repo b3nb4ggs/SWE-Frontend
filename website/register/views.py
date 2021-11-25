@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from main import database as db
-
+from django.contrib.auth.models import User
 
 # Create your views here.
 def register(response):
@@ -23,3 +23,4 @@ def register(response):
     else:
         form = RegisterForm()
     return render(response, "register/register.html", {"form": form})
+

@@ -5,8 +5,8 @@
 {% load crispy_forms_tags %}
 
 {% block content%}
-<h1>Make a user account</h1>
-<form method="POST" class="form-group">
+<h1>Create New Account</h1><hr>
+<form method="POST" class="form-group" action="/home/">
  {% csrf_token %}
  {{form|crispy}}
 

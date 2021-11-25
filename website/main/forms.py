@@ -7,6 +7,8 @@ from datetime import date
 from main import database as db
 from django_filters.widgets import RangeWidget
 from datetime import datetime, timedelta
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 
 INTEGER_CHOICES = [tuple([x, x]) for x in range(1, 10)]
 # DATE_FORMAT
@@ -37,6 +39,22 @@ class CreateAccount(forms.Form):
     email = forms.EmailField(label="Email Address", max_length=200)
     username = forms.CharField(label="User Name", max_length=200)
     password = forms.CharField(label="Password", max_length=200)
+
+class ViewAccount(UserChangeForm):
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=20, required=True, help_text="Phone number")
+    first = forms.CharField(max_length=20, required=True, help_text="First name")
+    last = forms.CharField(max_length=20, required=True, help_text="Last name")
+
+    class Meta:
+        model = User
+        fields = [
+            "first",
+            "last",
+            "phone",
+            "email",
+            "username",
+        ]
 
 
 class dateinput(forms.DateInput):

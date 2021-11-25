@@ -4,10 +4,14 @@
 
 {% block content %}
 
-<h2>Welcome, < username >{{ user.name }}</h2>
+ {% if user.is_superuser %}
+<h2>Welcome back, {{ user.first_name }}!</h2>
 
     <table>
         <tr> <a href="/manageReservations/" >Manage Reservations </a> </tr> <br>
         <tr> <a href="/manageProperties/" >Manage Properties </a> </tr> <br>
     </table>
+     {% else %}
+     <h3>You do not have the permissions required to view this page</h3>
+    {% endif %}
 {%  endblock %}
