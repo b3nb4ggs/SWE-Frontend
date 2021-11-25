@@ -32,6 +32,10 @@ PRICE_RANGE = (
 )
 
 
+class Password(PasswordChangeForm):
+    pass
+
+
 class CreateAccount(forms.Form):
     first = forms.CharField(label="First Name", max_length=200)
     last = forms.CharField(label="Last Name", max_length=200)

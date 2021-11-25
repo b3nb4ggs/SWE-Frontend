@@ -11,6 +11,7 @@ from .forms import (
     ViewAccount,
     EditReservation,
     AddProperty,
+    Password,
 )
 from django import forms
 import datetime
@@ -19,7 +20,6 @@ from main import database as db
 from datetime import datetime, timedelta
 import re
 from django.contrib.auth.models import User
-from django.contrib.auth.views import PasswordResetView
 import pprint
 
 
@@ -425,6 +425,32 @@ def addUser(response):
 
 def editUser(response):
     return render(response, "main/editUser.html")
+
+
+def password(response):
+    user = response.user
+    form = Password(user)
+    user_info = db.get_user_by_username(user.username)
+    errors = {}
+    if response.method == "POST":
+        data = response.POST.dict()
+        oldpassword = data["old_password"]
+        newpassword = data["new_password1"]
+        new_password2 = data["new_password2"]
+        if new_password2 == newpassword:
+            u = User.objects.get(username=str(user))
+            result = u.check_password(oldpassword)
+            if result:
+                u.set_password(newpassword)
+                return redirect("/viewAccount/")
+        else:
+            errors["error"] = "Passwords don't match"
+
+    return render(
+        response,
+        "main/password.html",
+        {"form": form, "user_info": user_info, "error": errors},
+    )
 
 
 def viewAccount(response):
