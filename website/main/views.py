@@ -443,8 +443,10 @@ def password(response):
             if result:
                 u.set_password(newpassword)
                 return redirect("/viewAccount/")
+            else:
+                errors["error"] = "Old password incorrect"
         else:
-            errors["error"] = "Passwords don't match"
+            errors["error"] += "Passwords don't match"
 
     return render(
         response,
