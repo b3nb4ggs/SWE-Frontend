@@ -39,7 +39,7 @@ def home(request):
             request.session["search_form"] = request.GET.dict()
             form = request.GET.dict()
             if (form["checkin"] >= form["checkout"]
-                    or form["checkin"] <= str(datetime.today()) or form["checkout"] <= str(datetime.today())):
+                    or form["checkin"] < str(datetime.now()).split()[0] or form["checkout"] < str(datetime.now()).split()[0]):
                 error = "Invalid Date Range!"
                 form = Search()
                 return render(request, "main/home.html", {"form": form, "error": error})
