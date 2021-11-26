@@ -1,8 +1,0 @@
-venv
-dj
-activate
-usernameandpassword.txt
-bin
-*.pyo
-*.pyc
-__pycache__/
