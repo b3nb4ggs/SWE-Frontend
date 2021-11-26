@@ -50,10 +50,11 @@
 		{% endfor %}
     </tbody>
         <td>
-            <form method="post" action="/addProperty/">
+            <!-- <form method="post" action="/addProperty/">
                 {% csrf_token %}
-                <button type="submit" name="action" value="add" >Add New Property </button>
-            </form>
+                <button type="submit" name="action" value="not-add" >Add New Property </button>
+            </form> -->
+            <a href="/addProperty/" class="button">Add a Property</a>
         </td>
      </table>
     {% else %}

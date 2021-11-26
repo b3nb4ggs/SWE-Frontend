@@ -57,6 +57,13 @@ def get_user_by_username(name: str):
     return result
 
 
+def get_next_hotel_index():
+    index = Hotel.find_one(sort=[("index", -1)])
+    index = int(index["index"])
+    index += 1
+    return index
+
+
 def make_hotel(name: str, differential: int, amenities: list, Rooms: dict):
     index = Hotel.find_one(sort=[("index", -1)])
     index = int(index["index"])

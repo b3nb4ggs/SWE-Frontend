@@ -386,7 +386,14 @@ def addProperty(response):
     if response.method == "POST":
         form = AddProperty(response.POST)
         if response.POST["action"] == "add":
+            form = AddProperty(response.POST, response.FILES)
+            downloadthis = response.FILES["file"]
             if form.is_valid():
+                next_index = db.get_next_hotel_index()
+                path = "./assets/" + str(next_index) + ".jpg"
+                with open(path, "wb+") as destination:
+                    for chunk in downloadthis.chunks():
+                        destination.write(chunk)
                 name = form.cleaned_data["name"]
                 amenities = form.cleaned_data["amenities"]
                 weekendDiff = form.cleaned_data["weekendDiff"]
