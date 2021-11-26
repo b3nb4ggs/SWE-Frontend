@@ -11,6 +11,7 @@ from .forms import (
     ViewAccount,
     EditReservation,
     AddProperty,
+    Password,
 )
 from django import forms
 import datetime
@@ -19,10 +20,7 @@ from main import database as db
 from datetime import datetime, timedelta
 import re
 from django.contrib.auth.models import User
-from django.contrib.auth.views import PasswordResetView
 import pprint
-
-
 
 
 def strip_off_id(processthis):
@@ -46,8 +44,11 @@ def home(request):
         if form.is_valid():
             request.session["search_form"] = request.GET.dict()
             form = request.GET.dict()
-            if (form["checkin"] >= form["checkout"]
-                    or form["checkin"] < str(datetime.now()).split()[0] or form["checkout"] < str(datetime.now()).split()[0]):
+            if (
+                form["checkin"] >= form["checkout"]
+                or form["checkin"] < str(datetime.now()).split()[0]
+                or form["checkout"] < str(datetime.now()).split()[0]
+            ):
                 error = "Invalid Date Range!"
                 form = Search()
                 return render(request, "main/home.html", {"form": form, "error": error})
@@ -343,7 +344,7 @@ def viewReservations(response):
     return render(
         response,
         "main/viewReservations.html",
-        {"reservations": reservations, "reservationCount": reservationCount}
+        {"reservations": reservations, "reservationCount": reservationCount},
     )
 
 
@@ -384,27 +385,35 @@ def manageProperties(response):
 def addProperty(response):
     if response.method == "POST":
         form = AddProperty(response.POST)
-        if response.POST["action"] == "add":
-            if form.is_valid():
-                name = form.cleaned_data["name"]
-                amenities = form.cleaned_data["amenities"]
-                weekendDiff = form.cleaned_data["weekendDiff"]
-                rooms = []
+        print(form)
+        # if response.POST["action"] == "add":
+        #     form = AddProperty(response.POST, response.FILES)
+        #     downloadthis = response.FILES["file"]
+        #     if form.is_valid():
+        #         next_index = db.get_next_hotel_index()
+        #         path = "./assets/" + str(next_index) + ".jpg"
+        #         with open(path, "wb+") as destination:
+        #             for chunk in downloadthis.chunks():
+        #                 destination.write(chunk)
+        #         name = form.cleaned_data["name"]
+        #         amenities = form.cleaned_data["amenities"]
+        #         weekendDiff = form.cleaned_data["weekendDiff"]
+        #         rooms = []
 
-                for type in ("Standard", "Queen", "King"):
-                    rooms.append(
-                        {
-                            "type": type,
-                            "price": form.cleaned_data["price" + type],
-                            "number": form.cleaned_data["num" + type],
-                        }
-                    )
-                print(rooms)
-                print(amenities)
-                print(name)
+        #         for type in ("Standard", "Queen", "King"):
+        #             rooms.append(
+        #                 {
+        #                     "type": type,
+        #                     "price": form.cleaned_data["price" + type],
+        #                     "number": form.cleaned_data["num" + type],
+        #                 }
+        #             )
+        #         print(rooms)
+        #         print(amenities)
+        #         print(name)
 
-                db.make_hotel(name, weekendDiff, amenities, rooms)
-                return redirect("/manageProperties")
+        #         db.make_hotel(name, weekendDiff, amenities, rooms)
+        #         return redirect("/manageProperties")
 
     form = AddProperty()
     return render(response, "main/addProperty.html", {"form": form})
@@ -425,11 +434,73 @@ def addUser(response):
 def editUser(response):
     return render(response, "main/editUser.html")
 
+
+def password(response):
+    user = response.user
+    form = Password(user)
+    user_info = db.get_user_by_username(user.username)
+    errors = {}
+    if response.method == "POST":
+        data = response.POST.dict()
+        oldpassword = data["old_password"]
+        newpassword = data["new_password1"]
+        new_password2 = data["new_password2"]
+        if new_password2 == newpassword:
+            u = User.objects.get(username=str(user))
+            result = u.check_password(oldpassword)
+            if result:
+                u.set_password(newpassword)
+                return redirect("/viewAccount/")
+            else:
+                errors["error"] = "Old password incorrect"
+        else:
+            errors["error"] += "Passwords don't match"
+
+    return render(
+        response,
+        "main/password.html",
+        {"form": form, "user_info": user_info, "error": errors},
+    )
+
+
 def viewAccount(response):
-    #import current values into form:
-    form = ViewAccount()
+    # import current values into form:
+    user = response.user
+    user_info = db.get_user_by_username(user.username)
+    if response.method == "POST":
+        errors = {}
+        data = response.POST.dict()
+        index = data["index"]
+        form = ViewAccount(response.POST)
+        form.fields['password'].widget = forms.HiddenInput()
+        if form.is_valid():
+            first = form.cleaned_data["first"]
+            print(first)
+            last = form.cleaned_data["last"]
+            print(last)
+            phone = form.cleaned_data["phone"]
+            print(phone)
+            email = form.cleaned_data["email"]
+            print(email)
+            print(index)
+            result = db.change_user_info(
+                int(index), str(first), str(last), str(phone), str(email)
+            )
+            if not result:
+                errors["error"] = "I could not change the info"
+            else:
+                return render(
+                    response,
+                    "main/viewAccount.html",
+                    {"form": form, "user_info": user_info, "error": errors},
+                )
+
+    form = ViewAccount(initial={})
     form.fields['password'].widget = forms.HiddenInput()
-    return render(response, "main/viewAccount.html", {"form": form})
+    return render(
+        response, "main/viewAccount.html", {"form": form, "user_info": user_info}
+    )
+
 
 def manageReservations(response):
     filterId = ""
@@ -452,12 +523,12 @@ def manageReservations(response):
             if form_data["reservationId"]:
                 filterId = int(form_data["reservationId"])
                 reservations = db.get_reservation_by_index(filterId)
-            #add in filtering for if both fields are set
+            # add in filtering for if both fields are set
 
         else:
             reservations = reservations = db.get_all_reservations()
     else:
-        reservations =  reservations = db.get_all_reservations()
+        reservations = reservations = db.get_all_reservations()
 
     for reservation in reservations:
         user = db.get_user_by_index(int(reservation["user"]))
@@ -473,7 +544,9 @@ def manageReservations(response):
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
     return render(
-        response, "main/manageReservations.html", {"reservations": reservations, "filterId": filterId, "filterName":filterName}
+        response,
+        "main/manageReservations.html",
+        {"reservations": reservations, "filterId": filterId, "filterName": filterName},
     )
 
 

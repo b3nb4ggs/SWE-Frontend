@@ -32,6 +32,10 @@ PRICE_RANGE = (
 )
 
 
+class Password(PasswordChangeForm):
+    pass
+
+
 class CreateAccount(forms.Form):
     first = forms.CharField(label="First Name", max_length=200)
     last = forms.CharField(label="Last Name", max_length=200)
@@ -39,6 +43,7 @@ class CreateAccount(forms.Form):
     email = forms.EmailField(label="Email Address", max_length=200)
     username = forms.CharField(label="User Name", max_length=200)
     password = forms.CharField(label="Password", max_length=200)
+
 
 class ViewAccount(UserChangeForm):
     email = forms.EmailField()
@@ -53,7 +58,6 @@ class ViewAccount(UserChangeForm):
             "last",
             "phone",
             "email",
-            "username",
         ]
 
 
@@ -68,15 +72,18 @@ class Login(forms.Form):
 
 class Search(forms.Form):
     checkin = forms.DateField(widget=dateinput, initial=datetime.today())
-    checkout = forms.DateField(widget=dateinput, initial=datetime.today() + timedelta(days=1))
+    checkout = forms.DateField(
+        widget=dateinput, initial=datetime.today() + timedelta(days=1)
+    )
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES)
     numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES)
 
 
-
 class Filter(forms.Form):
     checkin = forms.DateField(widget=dateinput, required=True, initial=datetime.today())
-    checkout = forms.DateField(widget=dateinput, required=True, initial=datetime.today() + timedelta(days=1))
+    checkout = forms.DateField(
+        widget=dateinput, required=True, initial=datetime.today() + timedelta(days=1)
+    )
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
     numGuests = forms.ChoiceField(
         label="Guests", choices=INTEGER_CHOICES, required=True
@@ -85,7 +92,6 @@ class Filter(forms.Form):
     amenities = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=False
     )
-
 
 
 class Reserve(forms.Form):
@@ -119,10 +125,15 @@ class EditReservation(forms.Form):
     )
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
 
+
 class AddProperty(forms.Form):
     name = forms.CharField(label="Property Name", max_length=200)
-    amenities = forms.MultipleChoiceField(label="Amenities",
-        widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=True
+    file = forms.FileField()
+    amenities = forms.MultipleChoiceField(
+        label="Amenities",
+        widget=forms.CheckboxSelectMultiple,
+        choices=AMENITIES,
+        required=True,
     )
     numStandard = forms.IntegerField(label="Number of Standard Rooms", required=True)
     priceStandard = forms.FloatField(label="Standard Rate", required=True)
@@ -131,5 +142,3 @@ class AddProperty(forms.Form):
     numKing = forms.IntegerField(label="Number of King Rooms", required=True)
     priceKing = forms.FloatField(label="King Rate", required=True)
     weekendDiff = forms.IntegerField(label="Weekend Differential", required=True)
-
-

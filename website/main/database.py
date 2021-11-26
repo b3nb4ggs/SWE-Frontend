@@ -34,10 +34,34 @@ def get_user_by_index(index: int):
     return result
 
 
+def change_user_info(
+    index: int, first_name: str, last_name: str, phone: str, email: str
+):
+    post = {
+        "$set": {
+            "first_name": first_name,
+            "last_name": last_name,
+            "phone": phone,
+            "email": email,
+        }
+    }
+    result = Customer.update_one({"index": index}, post)
+    return result
+
+
+
+
 def get_user_by_username(name: str):
     query = {"username": name}
     result = Customer.find_one(query)
     return result
+
+
+def get_next_hotel_index():
+    index = Hotel.find_one(sort=[("index", -1)])
+    index = int(index["index"])
+    index += 1
+    return index
 
 
 def make_hotel(name: str, differential: int, amenities: list, Rooms: dict):
