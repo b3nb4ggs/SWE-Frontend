@@ -427,8 +427,8 @@ def editUser(response):
 
 def viewAccount(response):
     #import current values into form:
-    form = ViewAccount(initial={
-    })
+    form = ViewAccount()
+    form.fields['password'].widget = forms.HiddenInput()
     return render(response, "main/viewAccount.html", {"form": form})
 
 def manageReservations(response):

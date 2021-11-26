@@ -13,6 +13,10 @@
     {% csrf_token %}
     {{form|crispy}}
 
-    <button type="submit" class="btn btn-success"> Update Account Info </button>
+    <button type="submit" class="btn btn-dark"> Update Account Info </button>
 </form>
+
+    <form action="/password/">
+            <button type="submit" class="btn btn-dark" > Change Password </button>
+    </form>
 {% endblock %}

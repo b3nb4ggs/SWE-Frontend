@@ -37,13 +37,13 @@
           <td> <form id="edit" method="POST" action="/editProperty/" >
                   {%  csrf_token %}
                     <input type="hidden" name="propertyId" value={{ property.index }}/>
-                    <input type="Submit" name="action" value="edit" />
+                    <input type="Submit" name="action" value="edit" class="btn btn-dark" />
                   </form>
               </td>
             <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ property.name }}?')">
                 {%  csrf_token %}
                 <input type="hidden" name="propertyId" value={{ property.index }}/>
-                <input type="Submit" name="action" value="delete" />
+                <input type="Submit" name="action" value="delete" class="btn btn-dark" />
             </form>
             </td>
           </tr>
@@ -52,7 +52,7 @@
         <td>
             <form method="post" action="/addProperty/">
                 {% csrf_token %}
-                <button type="submit" name="action" value="add" >Add New Property </button>
+                <button type="submit" name="action" value="add" class="btn btn-dark" >Add New Property </button>
             </form>
         </td>
      </table>

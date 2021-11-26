@@ -61,14 +61,14 @@
             <td> <form id="edit" method="POST" action="/editReservation/" >
                   {%  csrf_token %}
                     <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                    <input type="Submit" name="action" value="edit" />
+                    <input type="Submit" name="action" value="edit" class="btn btn-dark"/>
                   </form>
               </td>
              <!--- <td> <a href="/editReservation/" >Edit</a> </td> --->
             <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
                 {%  csrf_token %}
                 <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                <input type="Submit" name="action" value="delete" />
+                <input type="Submit" name="action" value="delete" class="btn btn-dark"/>
             </form>
             </td>
           </tr>
@@ -77,7 +77,7 @@
         <td>
             <form method="post" action="/addReservation/">
                 {% csrf_token %}
-                <button type="submit"  name="action" value="add">Create New Reservation </button>
+                <button type="submit"  name="action" value="add" class="btn btn-dark">Create New Reservation </button>
             </form>
         </td>
      </table>
