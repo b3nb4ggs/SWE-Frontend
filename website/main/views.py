@@ -13,6 +13,7 @@ from .forms import (
     EditReservation,
     AddProperty,
     Password,
+    AddUser
 )
 from django import forms
 import datetime
@@ -32,12 +33,9 @@ def strip_off_id(processthis):
 
 def home(request):
     if request.user.is_authenticated and request.user.is_superuser:
-        print(request.user.username)
-        print(request.user.is_superuser)
         return redirect("/manage")
     form = request.GET.dict()
     if form.get("action") == "filter":
-        print("here")
         form = Search()
         render(request, "main/home.html", {"form": form})
     else:
@@ -250,9 +248,7 @@ def makeReservation(response):
         numGuests = response.GET.get("numGuests", None)
         roomType = response.GET.get("roomType", None)
         propertyId = response.GET.get("id", None)
-        print(propertyId)
         property = db.get_hotel_by_index(int(propertyId))
-        print(property)
         # query for property with given id and return property object
         numNights = response.GET.get("days", None)  # calculate number of nights here
 
@@ -422,11 +418,45 @@ def addProperty(response):
 
 def manageUsers(response):
     users = db.get_all_users()
-    return render(response, "main/manageUsers.html")
+    if response.method == "POST" and response.POST["action"] == 'delete':
+        form_data = response.POST.dict()
+        index = int(form_data["userId"].strip("/"))
+        username = db.get_user_by_index(index)[0]["username"]
+        #print(username)
+        user = User.objects.filter(username=username)
+        try:
+            user.delete()
+            db.delete_user(index)
+            #delete reservations of deleted user
+            reservations = db.get_reservations_by_userid(index)
+            for reservation in reservations:
+                db.delete_reservation(reservation["index"])
+        except:
+            print("Error when deleting user")
+        users = db.get_all_users()
+        return render(response, "main/manageUsers.html", {"users": users})
+    return render(response, "main/manageUsers.html", {"users": users})
 
 
 def addUser(response):
-    return render(response, "main/addUser.html")
+    if response.method == "POST" and response.POST["action"] == "add":
+        #print("here")
+        form = AddUser(response.POST)
+        try:
+            form.save()
+            db.make_customer(
+                form.cleaned_data["username"],
+                form.cleaned_data["first"],
+                form.cleaned_data["last"],
+                form.cleaned_data["phone"],
+                form.cleaned_data["email"],
+            )
+            return redirect("/manageUsers")
+        except:
+            return render(response, "main/addUser.html", {"form": form})
+    else:
+        form = AddUser()
+        return render(response, "main/addUser.html", {"form": form})
 
 
 def editUser(response):
@@ -468,26 +498,21 @@ def viewAccount(response):
     if response.method == "POST":
         errors = {}
         data = response.POST.dict()
-        index = data["index"]
+        index = response.POST["index"]
         form = ViewAccount(response.POST)
         form.fields['password'].widget = forms.HiddenInput()
         if form.is_valid():
             first = form.cleaned_data["first"]
-            print(first)
             last = form.cleaned_data["last"]
-            print(last)
             phone = form.cleaned_data["phone"]
-            print(phone)
             email = form.cleaned_data["email"]
-            print(email)
-            print(index)
             result = db.change_user_info(
                 int(index), str(first), str(last), str(phone), str(email)
             )
             if not result:
                 errors["error"] = "I could not change the info"
             else:
-                user_info = db.get_user_by_username(user.username)
+                user_info = db.get_user_by_username(user_info["username"])
                 return render(
                     response,
                     "main/viewAccount.html",
@@ -500,6 +525,53 @@ def viewAccount(response):
     return render(
         response, "main/viewAccount.html", {"form": form, "user_info": user_info}
     )
+
+def viewUserAccount(response):
+    if response.method == "POST":
+        user_info = db.get_user_by_username(response.POST["username"])
+        errors = {}
+        data = response.POST.dict()
+        index = response.POST["index"]
+        form = ViewAccount(response.POST)
+        form.fields['password'].widget = forms.HiddenInput()
+        if form.is_valid():
+            first = form.cleaned_data["first"]
+            last = form.cleaned_data["last"]
+            phone = form.cleaned_data["phone"]
+            email = form.cleaned_data["email"]
+            result = db.change_user_info(
+                int(index), str(first), str(last), str(phone), str(email)
+            )
+            if not result:
+                errors["error"] = "I could not change the info"
+            else:
+                user_info = db.get_user_by_username(user_info["username"])
+                return render(
+                    response,
+                    "main/viewUserAccount.html",
+                    {"form": form, "user_info": user_info, "error": errors},
+                )
+
+        form = ViewAccount(initial={"first": user_info["first_name"], "last": user_info["last_name"],
+                                    "email": user_info["email"], "phone": user_info["phone"]})
+        form.fields['password'].widget = forms.HiddenInput()
+        return render(
+            response, "main/viewUserAccount.html", {"form": form, "user_info": user_info}
+        )
+    if response.method == "GET" and response.user.is_superuser:
+        user = response.user
+        user_info = db.get_user_by_username(user.username)
+        errors = {}
+        form = ViewAccount(response.POST)
+        form = ViewAccount(initial={"first": user_info["first_name"], "last": user_info["last_name"],
+                                    "email": user_info["email"], "phone": user_info["phone"]})
+        form.fields['password'].widget = forms.HiddenInput()
+        return render(
+            response, "main/viewUserAccount.html", {"form": form, "user_info": user_info}
+        )
+
+    return render(response, "main/viewUserAccount.html")
+
 
 
 def manageReservations(response):
@@ -791,7 +863,6 @@ def editProperty(response):
                     "weekendDiff": property["weekend_differential"],
                 }
             )
-            #form.fields['file'].initial = static(str(index) + ".jpg")
             return render(
                 response, "main/editProperty.html", {"form": form, "property": property}
             )
@@ -819,14 +890,9 @@ def editProperty(response):
                         "number": form.cleaned_data["num" + type],
                     }
                 )
-            print(index)
-            print(rooms)
-            print(amenities)
-            print(name)
+
 
             db.update_hotel(index, name, weekendDiff, amenities, rooms)
             return redirect("/manageProperties")
-        #db.update_hotel()
-        #return redirect("/manageProperties")
     form = AddProperty()
     return render(response, "main/editProperty.html")

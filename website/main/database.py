@@ -101,6 +101,8 @@ def delete_hotel(index: int):
     Room.delete_many({"index": index})
     Amenities.delete_many({"index": index})
 
+def delete_user(index: int):
+    Customer.delete_many({"index": index})
 
 def update_hotel(
     index: int,

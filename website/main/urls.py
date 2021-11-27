@@ -23,4 +23,5 @@ urlpatterns = [
     path("editReservation/", views.editReservation, name="editReservation"),
     path("viewAccount/", views.viewAccount, name="viewAccount"),
     path("password/", views.password, name="password"),
+    path("viewUserAccount/", views.viewUserAccount, name="viewUserAccount"),
 ]

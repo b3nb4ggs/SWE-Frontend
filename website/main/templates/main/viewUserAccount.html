@@ -1,0 +1,46 @@
+{% extends 'main/baseAdmin.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<p style="color:#FF0000";>{{error.error}}</p>
+    {% if user.is_authenticated %}
+    
+<h1>User Account </h1><hr>
+    <table>
+        <tr>
+            <th>User Id: </th><td>{{user_info.index}}</td>
+        </tr>
+        <tr> <th>Username: </th><td>{{user_info.username}}</td>
+        </tr>
+        <tr>
+            <th>First Name: </th><td>{{user_info.first_name}}</td>
+        </tr>
+        <tr>
+            <th>Last Name: </th><td>{{user_info.last_name}}</td>
+        </tr>
+        <tr>
+            <th>Phone:</th><td>{{user_info.phone}}</td>
+        </tr>
+        <tr>
+            <th>Email: </th><td>{{user_info.email}}</td>
+        </tr>
+    </table>
+<br>
+
+
+<h2>Update Account</h2><hr>
+    <form method="POST" class="form-group" action="/viewUserAccount/">
+    {% csrf_token %}
+    {{form|crispy}}
+        <input type="hidden", name="index" value={{user_info.index}}>
+        <input type="hidden", name="username" value={{user_info.username}}>
+         <button type="submit" name="action" value="admin" class="btn btn-dark"> Update </button>
+
+</form>
+            <form action="/manageUsers/">
+                    <button type="submit" class="btn btn-dark"> Back </button>
+            </form>
+
+        {% else %}
+        <p>You need to have an account to view this page!</p>
+    {% endif %}
+{% endblock %}

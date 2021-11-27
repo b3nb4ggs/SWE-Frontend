@@ -9,6 +9,9 @@ from django_filters.widgets import RangeWidget
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from django.contrib.auth.models import User
 
 INTEGER_CHOICES = [tuple([x, x]) for x in range(1, 10)]
 # DATE_FORMAT
@@ -142,3 +145,21 @@ class AddProperty(forms.Form):
     numKing = forms.IntegerField(label="Number of King Rooms", required=True)
     priceKing = forms.FloatField(label="King Rate", required=True)
     weekendDiff = forms.IntegerField(label="Weekend Differential", required=True)
+
+class AddUser(UserCreationForm):
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=20, required=True, help_text="Phone number")
+    first = forms.CharField(max_length=20, required=True, help_text="First name")
+    last = forms.CharField(max_length=20, required=True, help_text="Last name")
+
+    class Meta:
+        model = User
+        fields = [
+            "first",
+            "last",
+            "phone",
+            "email",
+            "username",
+            "password1",
+            "password2",
+        ]
