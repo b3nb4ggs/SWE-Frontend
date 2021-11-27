@@ -26,13 +26,13 @@
         <input type="hidden", name="user" value={{reservation.user}}>
         <input type="hidden", name="made_on" value={{reservation.made_on}}>
         <input type="hidden", name="index" value={{reservation.index}}>
-		<button type="submit", name="action" value="save" >Update Reservation </button>
+		<button type="submit", name="action" value="save" class="btn btn-dark" >Update Reservation </button>
 	</form>
     </tr>
     <tr>
         <form method="POST"  {% if user.is_superuser %}action="/manageReservations/" {% else %} action="/viewReservations/" {% endif %}>
             {% csrf_token %}
-            <button type="submit", name="action" value="back" >Back </button>
+            <button type="submit", name="action" value="back"class="btn btn-dark"  >Back </button>
         </form>
     </tr>
     </table>

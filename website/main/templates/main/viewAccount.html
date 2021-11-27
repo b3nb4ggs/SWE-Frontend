@@ -37,7 +37,7 @@
     <form method="POST" class="form-group" action="/viewAccount/">
     {% csrf_token %}
     {{form|crispy}}
-    <input type="hidden", name="index" value={{user_info.index}}>
+    <input type="hidden", name="index" value={{user_info.index}}><br>
         <div class="inner">
         <button type="submit" class="btn btn-dark"> Update </button>
         </div>
