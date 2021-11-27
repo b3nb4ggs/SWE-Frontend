@@ -128,7 +128,7 @@ class EditReservation(forms.Form):
 
 class AddProperty(forms.Form):
     name = forms.CharField(label="Property Name", max_length=200)
-    file = forms.FileField()
+    file = forms.FileField(required=False)
     amenities = forms.MultipleChoiceField(
         label="Amenities",
         widget=forms.CheckboxSelectMultiple,

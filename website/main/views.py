@@ -392,13 +392,14 @@ def addProperty(response):
         form = AddProperty(response.POST)
         if response.POST["action"] == "add":
             form = AddProperty(response.POST, response.FILES)
-            downloadthis = response.FILES["file"]
+            downloadthis = response.FILES.get("file", False)
             if form.is_valid():
                 next_index = db.get_next_hotel_index()
-                path = "./assets/" + str(next_index) + ".jpg"
-                with open(path, "wb+") as destination:
-                    for chunk in downloadthis.chunks():
-                        destination.write(chunk)
+                if(downloadthis):
+                    path = "./assets/" + str(next_index) + ".jpg"
+                    with open(path, "wb+") as destination:
+                        for chunk in downloadthis.chunks():
+                            destination.write(chunk)
                 name = form.cleaned_data["name"]
                 amenities = form.cleaned_data["amenities"]
                 weekendDiff = form.cleaned_data["weekendDiff"]
@@ -796,14 +797,15 @@ def editProperty(response):
             )
     if response.POST["action"] == "save":
         form = AddProperty(response.POST, response.FILES)
-        downloadthis = response.FILES["file"]
+        downloadthis = response.FILES.get("file", False)
         form_data = response.POST.dict()
         index = int(form_data["index"].strip("/"))
         if form.is_valid():
-            path = "./assets/" + str(index) + ".jpg"
-            with open(path, "wb+") as destination:
-                for chunk in downloadthis.chunks():
-                                 destination.write(chunk)
+            if (downloadthis):
+                path = "./assets/" + str(index) + ".jpg"
+                with open(path, "wb+") as destination:
+                    for chunk in downloadthis.chunks():
+                                     destination.write(chunk)
             name = form.cleaned_data["name"]
             amenities = form.cleaned_data["amenities"]
             weekendDiff = form.cleaned_data["weekendDiff"]
