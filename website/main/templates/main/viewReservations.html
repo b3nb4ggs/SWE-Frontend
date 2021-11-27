@@ -13,7 +13,7 @@
     {% if currentCount == 0%}
     <p>No current reservations</p>
         {% else %}
-	<table>
+	<table class="table table-light">
 	<thead>
           <tr>
             <th>Reservation Id</th>
@@ -60,7 +60,7 @@
     {% if pastCount == 0%}
     <p>No past reservations</p>
         {% else %}
-        	<table>
+        	<table class="table table-light">
 	<thead>
           <tr>
             <th>Reservation Id</th>
@@ -87,10 +87,10 @@
 		{% endfor %}
         </tbody>
       </table>
-        <form action="/home/">
-            <button type="submit" class="btn btn-dark" > Back </button>
-    </form>
 
         {% endif %}
+            <form action="/home/">
+            <button type="submit" class="btn btn-dark" > Back </button>
+    </form>
     {% endif %}
 {% endblock %}

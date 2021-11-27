@@ -1,8 +1,9 @@
 {% extends 'main/baseAdmin.html' %}
 {% load crispy_forms_tags %}
-{% block title %} Manage Reservations Page {% endblock %}
+{% block title %} Manage Reservations  {% endblock %}
 
 {% block content %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 {% if not user.is_superuser %}
         <h3> You do not have the permissions required to view this page</h3>
 {% else %}
@@ -14,8 +15,8 @@
             <input type="number" name="reservationId" value="{{ filterId }}">
             <label for="username">Username</label>
             <input type="text" name="username" value="{{ filterName }}"/>
-            <button type="submit" name="action" value="filter">Filter </button>
-            <button type="submit" name="action" value="clear" action="/">Clear Filter </button>
+            <button type="submit" name="action" value="filter" class="btn btn-dark">Filter </button>
+            <button type="submit" name="action" value="clear" class="btn btn-dark" action="/">Clear Filter </button>
     </form>
 </div>
         <h2>Current Reservations</h2><hr>
@@ -23,7 +24,7 @@
              <h3>No current reservations found</h3>
         {% else %}
 
-    <table>
+    <table class="table table-light">
 	<thead>
           <tr>
             <th>Reservation Id</th>
@@ -40,6 +41,9 @@
               <th>Check-out</th>
             <th>Rate</th>
               <th>Total Cost</th>
+              <th></th>
+              <th></th>
+              <th></th>
           </tr>
         </thead>
     <tbody>
@@ -88,7 +92,7 @@
              <h3>No past reservations found</h3>
         {% else %}
 
-                <table>
+                <table class="table table-light">
 	            <thead>
                     <tr>
                     <th>Reservation Id</th>
@@ -134,18 +138,14 @@
             </td>--->
                         {% endif %}
              		{% endfor %}
-
-
-          </tr>
                 </tbody>
-                        <td>
+                </table>
+
             <form method="post" action="/addReservation/">
                 {% csrf_token %}
                 <button type="submit"  name="action" value="add" class="btn btn-dark">Create New Reservation </button>
-            </form>
-        </td>
-                </table>
-
+            </form><br>
+               <a href="/manage" <button type="submit"  class="btn btn-dark">Back </button></a>
 
 
     {% endif %}

@@ -6,9 +6,10 @@
 {% block content %}
 {% load crispy_forms_tags %}
 {% load static %}
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <p class="errorlist">{{error.error}}</p>
-<table>
+
+<table class="table table-light">
     <h3>Filter Hotels</h3><hr>
 	<td style="vertical-align: top">
 	<form method="POST" class="form-group" id="filter" action="/filter/">
@@ -26,15 +27,14 @@
 	</form>
 	</td>
 <td>
-
-<table>
+<table class=" table">
 	<thead>
           <tr>
             <th></th>
-            <th>Name</th>
-            <th>Rate {{ roomType }}</th>
-	    <th>Amenities</th>
-      <th>Total Cost</th>
+            <th scope="col">Name</th>
+            <th scope="col" >Rate {{ roomType }}</th>
+	    <th scope="col" >Amenities</th>
+      <th scope="col" >Total Cost</th>
           </tr>
         </thead>
         <tbody>

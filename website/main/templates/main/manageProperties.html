@@ -1,12 +1,12 @@
 {% extends 'main/baseAdmin.html' %}
 
-{% block title %} Manage Properties Page {% endblock %}
+{% block title %} Manage Properties{% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
     {% if user.is_superuser %}
-    <table>
+    <table class="table table-light">
 	<thead>
           <tr>
               <th> </th>
@@ -20,6 +20,8 @@
               <th>King Rate</th>
               <th>Weekend Differential</th>
               <th>Amenities</th>
+              <th></th>
+              <th></th>
           </tr>
         </thead>
     <tbody>
@@ -52,14 +54,11 @@
           </tr>
 		{% endfor %}
     </tbody>
-        <td>
-            <!-- <form method="post" action="/addProperty/">
-                {% csrf_token %}
-                <button type="submit" name="action" value="not-add" class="btn btn-dark">Add New Property </button>
-            </form> -->
-            <a href="/addProperty/" <button type="submit" name="action" value="not-add" class="btn btn-dark">Add New Property </button></a>
-        </td>
-     </table>
+             </table>
+
+        <a href="/addProperty/" <button type="submit" name="action" value="not-add" class="btn btn-dark">Add New Property </button></a>
+
+
     {% else %}
          <h3>You do not have the permissions required to view this page</h3>
     {% endif %}

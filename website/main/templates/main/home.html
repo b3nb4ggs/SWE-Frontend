@@ -1,5 +1,8 @@
 {% extends 'main/base.html' %}
 {% load crispy_forms_tags %}
+<style>
+
+    </style>
 {% block title %}
         Home Page
 {% endblock %}
@@ -8,11 +11,26 @@
 	
     <h1>Find a hotel </h1><hr>
 	<p class="errorlist" >{{error}}</p>
-    <div class="form-group" >
+    <div style="border-style: solid">
 	<form method="get" action="/home/">
-		{% csrf_token %}
-		{{form.as_p}}
-		<button type="submit" name="action" value="search">Search</button>
+        		{% csrf_token %}
+        <div class="row align-items-center g-6">
+            <div class="col-auto">
+                Check-in: {{ form.checkin}}
+            </div>
+            <div class="col-auto">
+                Check-Out: {{ form.checkout }}
+            </div>
+            <div class="col-auto">
+                Rooms: {{ form.numRooms }}
+            </div>
+            <div class="col-auto">
+                Guests: {{ form.numGuests }}
+            </div>
+            <div class="col-auto">
+                <button type="submit" name="action" value="search" class="btn btn-small btn-dark">Search</button>
+            </div>
+            </div>
 	</form>
     </div>
 {% endblock %}

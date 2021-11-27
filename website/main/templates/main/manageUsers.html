@@ -1,11 +1,11 @@
 {% extends 'main/baseAdmin.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %} Manage Users Page {% endblock %}
+{% block title %} Manage Users  {% endblock %}
 
 {% block content %}
     {% if user.is_superuser %}
-    <table>
+    <table class="table table-light">
 	<thead>
           <tr>
               <th>User ID</th>
@@ -14,6 +14,8 @@
               <th>Last Name</th>
               <th>Email</th>
               <th>Phone</th>
+              <th></th>
+              <th></th>
           </tr>
         </thead>
     <tbody>
@@ -42,18 +44,15 @@
           </tr>
 		{% endfor %}
     </tbody>
-        <td>
-            <!-- <form method="post" action="/addProperty/">
-                {% csrf_token %}
-                <button type="submit" name="action" value="not-add" class="btn btn-dark">Add New Property </button>
-            </form> -->
-            <!--- <a href="/addUser/" <button type="submit" name="action" value="not-add" class="btn btn-dark">Add New User</button></a> --->
-            <form method="post" action="/addUser/">
-                {% csrf_token %}
-                <button type="submit" name="action" value="redirect" class="btn btn-dark">Add New User </button>
-            </form>
-        </td>
-     </table>
+             </table>
+
+        <form method="post" action="/addUser/">
+            {% csrf_token %}
+            <button type="submit" name="action" value="redirect" class="btn btn-dark">Add New User </button>
+        </form>
+        <br>
+        <a href="/manage" <button type="submit"  class="btn btn-dark">Back </button></a>
+
     {% else %}
          <h3>You do not have the permissions required to view this page</h3>
     {% endif %}

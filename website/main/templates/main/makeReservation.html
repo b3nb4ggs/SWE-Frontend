@@ -31,7 +31,7 @@
         </td>
         </table>
         
-<table>
+<table class="table table-light">
 	<td>
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
@@ -46,16 +46,17 @@
         <input type="hidden", name="total_days" value={{context.numNights}}>
         <input type="hidden", name="rate" value={{context.avgRate}}>
         <input type="hidden", name="cost" value={{context.total}}>
-		<button type="submit", name="confirm">Confirm Reservation</button>
+		<button type="submit", name="confirm" class="btn btn-dark">Confirm Reservation</button>
 	</form>
     </td>
 </table>
 
 {% else %}
+    <h3>You must login or create an account to book a room!</h3>
         <br>
-        <a href="/register?action=redirect">Create Account</a>
+        <a href="/register?action=redirect"><button type="submit" class="btn btn-dark" >Create Account</button></a>
         <br>
-        <a href="/login/">Login</a>
+        <a href="/login/"><button type="submit" class="btn btn-dark" >Login</button></a>
         <br>
  {% endif %}
 
