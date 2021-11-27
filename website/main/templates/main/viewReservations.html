@@ -5,10 +5,14 @@
 
 
 {% block content %}
-        <h1>My Reservations</h1><hr>
 {% if reservationCount == 0%}
     <p>You haven't made any reservations yet!</p>
 {% else %}
+
+    <h2>Current Reservations</h2><hr>
+    {% if currentCount == 0%}
+    <p>No current reservations</p>
+        {% else %}
 	<table>
 	<thead>
           <tr>
@@ -23,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-	    {% for reservation in reservations %}
+	    {% for reservation in currentreservations %}
           <tr>
             <td>{{reservation.index}}</td>
             <td>{{ reservation.name }}</td>
@@ -36,19 +40,59 @@
               <td> <form id="edit" method="POST" action="/editReservation/" >
                   {%  csrf_token %}
                     <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                    <input type="Submit" name="action" value="edit" />
+                    <input type="Submit" name="action" value="edit" class="btn btn-dark"/>
                   </form>
               </td>
              <!--- <td> <a href="/editReservation/" >Edit</a> </td> --->
-            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
+            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to cancel this reservation for {{ reservation.name }}?')">
                 {%  csrf_token %}
                 <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                <input type="Submit" name="action" value="delete" />
+                <input type="Submit" name="action" value="cancel" class="btn btn-dark"/>
             </form>
             </td>
           </tr>
 		{% endfor %}
         </tbody>
       </table>
+        <form action="/home/">
+            <button type="submit" class="btn btn-dark" > Back </button>
+    </form>
+    {% endif %}
+        <h2>Past Reservations</h2><hr>
+    {% if pastCount == 0%}
+    <p>No past reservations</p>
+        {% else %}
+        	<table>
+	<thead>
+          <tr>
+            <th>Reservation Id</th>
+            <th>Hotel Name</th>
+	        <th>Check-In</th>
+              <th>Check-Out</th>
+              <th>Room Type</th>
+              <th>Guests </th>
+              <th>Nightly Rate</th>
+              <th>Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+	    {% for reservation in pastreservations %}
+          <tr>
+            <td>{{reservation.index}}</td>
+            <td>{{ reservation.name }}</td>
+            <td>{{reservation.checkin}} </td>
+            <td>{{ reservation.checkout }}</td>
+              <td>{{ reservation.type }}</td>
+              <td>{{ reservation.number_guests}}</td>
+              <td>{{ reservation.rate }}</td>
+            <td> {{reservation.cost}}  </td>
+		{% endfor %}
+        </tbody>
+      </table>
+        <form action="/home/">
+            <button type="submit" class="btn btn-dark" > Back </button>
+    </form>
+
+        {% endif %}
     {% endif %}
 {% endblock %}

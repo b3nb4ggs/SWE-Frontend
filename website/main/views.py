@@ -326,7 +326,7 @@ def confirmReservation(response):
 
 def viewReservations(response):
     if response.method == "POST":
-        if response.POST["action"] == "delete":
+        if response.POST["action"] == "cancel":
             form_data = response.POST.dict()
             index = int(form_data["reservationId"].strip("/"))
             db.delete_reservation(index)
@@ -334,17 +334,27 @@ def viewReservations(response):
     user_info = db.get_user_by_username(user.username)
     reservations = db.get_reservations_by_userid(int(user_info["index"]))
     reservationCount = 0
+    pastCount = 0
+    currentCount = 0
+    pastreservations = []
+    currentreservations = []
     for item in reservations:
         name = db.hotel_by_index(item["hotel"])
         item["name"] = name[0]["name"]
         item["checkin"] = item["in"].date
         item["checkout"] = item["out"].date
         reservationCount += 1
-
+        if item["out"] <= datetime.now():
+            pastreservations.append(item)
+            pastCount += 1
+        else:
+            currentreservations.append(item)
+            currentCount += 1
     return render(
         response,
         "main/viewReservations.html",
-        {"reservations": reservations, "reservationCount": reservationCount},
+        {"reservations": reservations, "reservationCount": reservationCount, "currentCount": currentCount,
+         "pastCount": pastCount, "pastreservations": pastreservations, "currentreservations": currentreservations},
     )
 
 
@@ -385,35 +395,30 @@ def manageProperties(response):
 def addProperty(response):
     if response.method == "POST":
         form = AddProperty(response.POST)
-        print(form)
-        # if response.POST["action"] == "add":
-        #     form = AddProperty(response.POST, response.FILES)
-        #     downloadthis = response.FILES["file"]
-        #     if form.is_valid():
-        #         next_index = db.get_next_hotel_index()
-        #         path = "./assets/" + str(next_index) + ".jpg"
-        #         with open(path, "wb+") as destination:
-        #             for chunk in downloadthis.chunks():
-        #                 destination.write(chunk)
-        #         name = form.cleaned_data["name"]
-        #         amenities = form.cleaned_data["amenities"]
-        #         weekendDiff = form.cleaned_data["weekendDiff"]
-        #         rooms = []
+        if response.POST["action"] == "add":
+            form = AddProperty(response.POST, response.FILES)
+            downloadthis = response.FILES["file"]
+            if form.is_valid():
+                next_index = db.get_next_hotel_index()
+                path = "./assets/" + str(next_index) + ".jpg"
+                with open(path, "wb+") as destination:
+                    for chunk in downloadthis.chunks():
+                        destination.write(chunk)
+                name = form.cleaned_data["name"]
+                amenities = form.cleaned_data["amenities"]
+                weekendDiff = form.cleaned_data["weekendDiff"]
+                rooms = []
 
-        #         for type in ("Standard", "Queen", "King"):
-        #             rooms.append(
-        #                 {
-        #                     "type": type,
-        #                     "price": form.cleaned_data["price" + type],
-        #                     "number": form.cleaned_data["num" + type],
-        #                 }
-        #             )
-        #         print(rooms)
-        #         print(amenities)
-        #         print(name)
-
-        #         db.make_hotel(name, weekendDiff, amenities, rooms)
-        #         return redirect("/manageProperties")
+                for type in ("Standard", "Queen", "King"):
+                    rooms.append(
+                        {
+                            "type": type,
+                            "price": form.cleaned_data["price" + type],
+                            "number": form.cleaned_data["num" + type],
+                        }
+                    )
+                db.make_hotel(name, weekendDiff, amenities, rooms)
+                return redirect("/manageProperties")
 
     form = AddProperty()
     return render(response, "main/addProperty.html", {"form": form})
@@ -489,13 +494,15 @@ def viewAccount(response):
             if not result:
                 errors["error"] = "I could not change the info"
             else:
+                user_info = db.get_user_by_username(user.username)
                 return render(
                     response,
                     "main/viewAccount.html",
                     {"form": form, "user_info": user_info, "error": errors},
                 )
 
-    form = ViewAccount(initial={})
+    form = ViewAccount(initial={"first": user_info["first_name"], "last": user_info["last_name"],
+                                "email": user_info["email"], "phone": user_info["phone"]})
     form.fields['password'].widget = forms.HiddenInput()
     return render(
         response, "main/viewAccount.html", {"form": form, "user_info": user_info}
@@ -529,7 +536,8 @@ def manageReservations(response):
             reservations = reservations = db.get_all_reservations()
     else:
         reservations = reservations = db.get_all_reservations()
-
+    currentCount = 0
+    pastCount = 0
     for reservation in reservations:
         user = db.get_user_by_index(int(reservation["user"]))
         if user == []:
@@ -543,10 +551,17 @@ def manageReservations(response):
         reservation["phone"] = user[0]["phone"]
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
+        if reservation["out"] <= datetime.now():
+            reservation["current"] = 0
+            pastCount += 1
+        else:
+            reservation["current"] = 1
+            currentCount += 1
     return render(
         response,
         "main/manageReservations.html",
-        {"reservations": reservations, "filterId": filterId, "filterName": filterName},
+        {"reservations": reservations, "filterId": filterId, "filterName": filterName, "currentCount": currentCount,
+         "pastCount": pastCount},
     )
 
 
@@ -631,6 +646,11 @@ def editReservation(response):
             reservation["hotelName"] = hotel["name"]
             reservation["first"] = user[0]["first_name"]
             reservation["last"] = user[0]["last_name"]
+
+            if(reservation["in"] < datetime.now()):
+                pastCheckin = 1
+            else:
+                pastCheckin = 0
             form = EditReservation(
                 initial={
                     "checkin": reservation["in"],
@@ -643,7 +663,7 @@ def editReservation(response):
             return render(
                 response,
                 "main/editReservation.html",
-                {"form": form, "reservation": reservation, "hotels": hotels},
+                {"form": form, "reservation": reservation, "hotels": hotels, "pastCheckin": pastCheckin},
             )
         if response.POST["action"] == "save":
             form_data = response.POST.dict()
@@ -659,15 +679,22 @@ def editReservation(response):
             errors = {}
             # check if new hotel reservation is valid
             # check if dates are a valid range
-            if (
-                datetime.date(checkin) < datetime.date(datetime.today())
-                or datetime.date(checkout) < datetime.date(datetime.today())
-                or datetime.date(checkin) >= datetime.date(checkout)
-            ):
-                errors["error"] = "ERROR: Invalid Date Range"
+            if(response.user.is_superuser):
+                if (
+                    datetime.date(checkout) < datetime.date(datetime.today())
+                    or datetime.date(checkin) >= datetime.date(checkout)
+                ):
+                    errors["error"] = "ERROR: Invalid Date Range"
+            else:
+                if (
+                    datetime.date(checkin) < datetime.date(datetime.now())
+                    or datetime.date(checkout) < datetime.date(datetime.today())
+                    or datetime.date(checkin) >= datetime.date(checkout)
+                ):
+                    errors["error"] = "ERROR: Invalid Date Range"
             # check for vacancy
             result = db.hotel_vacancy_range(
-                checkin, checkout, hotelId, roomType, numRooms
+            checkin, checkout, hotelId, roomType, numRooms
             )
             if result == False:
                 errors["vacancy"] = "No vacancy"
@@ -727,6 +754,12 @@ def editReservation(response):
                         "error": errors,
                     },
                 )
+    else:
+        if response.user.is_superuser:
+            return redirect("/manageReservations")
+        else:
+            return redirect("/viewReservations")
+
 
 
 def editProperty(response):

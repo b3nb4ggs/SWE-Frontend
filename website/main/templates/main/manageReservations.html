@@ -18,7 +18,11 @@
             <button type="submit" name="action" value="clear" action="/">Clear Filter </button>
     </form>
 </div>
-    {% if reservations %}
+        <h2>Current Reservations</h2><hr>
+        {% if currentCount == 0 %}
+             <h3>No current reservations found</h3>
+        {% else %}
+
     <table>
 	<thead>
           <tr>
@@ -41,6 +45,7 @@
     <tbody>
 
 	    {% for reservation in reservations %}
+            {% if reservation.current == 1 %}
           <tr>
               <td>{{reservation.index}} </td>
               <td> {{ reservation.username }}  </td>
@@ -61,29 +66,85 @@
             <td> <form id="edit" method="POST" action="/editReservation/" >
                   {%  csrf_token %}
                     <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                    <input type="Submit" name="action" value="edit" class="btn btn-dark"/>
+                    <button type="Submit" name="action" value="edit" class="btn btn-dark">Edit</button>
                   </form>
               </td>
              <!--- <td> <a href="/editReservation/" >Edit</a> </td> --->
-            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation {{ reservation.index }}?')">
+            <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to cancel reservation {{ reservation.index }}?')">
                 {%  csrf_token %}
                 <input type="hidden" name="reservationId" value={{ reservation.index }}/>
-                <input type="Submit" name="action" value="delete" class="btn btn-dark"/>
+                <button type="Submit" name="action" value="delete" class="btn btn-dark">Cancel</button>
             </form>
             </td>
           </tr>
+            {% endif %}
 		{% endfor %}
     </tbody>
-        <td>
+
+     </table>
+        {% endif %}
+    <h2>Past Reservations</h2><hr>
+            {% if pastCount == 0 %}
+             <h3>No past reservations found</h3>
+        {% else %}
+
+                <table>
+	            <thead>
+                    <tr>
+                    <th>Reservation Id</th>
+                     <th>Username</th>
+                    <th> First Name </th>
+                    <th>Last Name</th>
+                    <th> Email </th>
+                    <th>Phone Number</th>
+                    <th>Hotel</th>
+	                <th>Room Type</th>
+                    <th> Rooms</th>
+                     <th>Guests</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Rate</th>
+                    <th>Total Cost</th>
+                </tr>
+                </thead>
+                <tbody>
+
+             	    {% for reservation in reservations %}
+            {% if reservation.current == 0 %}
+          <tr>
+              <td>{{reservation.index}} </td>
+              <td> {{ reservation.username }}  </td>
+              <td> {{ reservation.first }}  </td>
+              <td> {{ reservation.last }}  </td>
+              <td> {{ reservation.email }}  </td>
+              <td> {{ reservation.phone }}  </td>
+              <td> {{ reservation.hotelName }}</td>
+              <td>{{ reservation.type}} </td>
+              <td>{{ reservation.number_rooms }}</td>
+              <td>{{ reservation.number_guests }}</td>
+              <td>{{ reservation.checkin }} </td>
+              <td>{{ reservation.checkout }} </td>
+              <td> {{ reservation.rate }}</td>
+              <td> {{ reservation.cost }}</td>
+
+                        {% endif %}
+             		{% endfor %}
+
+
+          </tr>
+                </tbody>
+                        <td>
             <form method="post" action="/addReservation/">
                 {% csrf_token %}
                 <button type="submit"  name="action" value="add" class="btn btn-dark">Create New Reservation </button>
             </form>
         </td>
-     </table>
-        {% else %}
-        <h3>No Reservations Found!</h3>
+                </table>
+
+
+
     {% endif %}
+
     {% endif %}
 
 {% endblock %}
