@@ -37,6 +37,9 @@
     <input type="hidden", name="index" value={{user_info.index}}>
         <button type="submit" class="btn btn-dark"> Update </button>
 </form>
+        <form action="/viewAccount/" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+            <button type="submit" name="action" value = "delete" class="btn btn-dark"  > Delete Account </button>
+    </form>
 
     <form action="/password/">
             <button type="submit" class="btn btn-dark" > Change Password </button>
@@ -44,6 +47,7 @@
     <form action="/home/">
             <button type="submit" class="btn btn-dark" > Back </button>
     </form>
+
         {% else %}
         <p>You need to have an account to view this page!</p>
     {% endif %}

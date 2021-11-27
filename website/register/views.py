@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 def register(response):
     if response.method == "POST":
         form = RegisterForm(response.POST)
+        print(form.errors)
         if form.is_valid():
             try:
                 form.save()

@@ -495,6 +495,20 @@ def viewAccount(response):
     # import current values into form:
     user = response.user
     user_info = db.get_user_by_username(user.username)
+    if response.method == "GET" and response.GET.get("action") == "delete":
+        index = user_info["index"]
+        username = db.get_user_by_index(index)[0]["username"]
+        user = User.objects.filter(username=username)
+        try:
+            user.delete()
+            db.delete_user(index)
+            # delete reservations of deleted user
+            reservations = db.get_reservations_by_userid(index)
+            for reservation in reservations:
+                db.delete_reservation(reservation["index"])
+        except:
+            print("Error when deleting user")
+        return redirect("/home")
     if response.method == "POST":
         errors = {}
         data = response.POST.dict()
@@ -589,16 +603,19 @@ def manageReservations(response):
             reservations = []
 
             if filterName:
+                print(filterName)
                 user = db.get_user_by_username(filterName)
                 if user:
                     reservations = db.get_reservations_by_userid(user["index"])
             if form_data["reservationId"]:
+                print(form_data["reservationId"])
                 filterId = int(form_data["reservationId"])
                 reservations = db.get_reservation_by_index(filterId)
             # add in filtering for if both fields are set
-
+            if reservations == []:
+                reservations = db.get_all_reservations()
         else:
-            reservations = reservations = db.get_all_reservations()
+            reservations = db.get_all_reservations()
     else:
         reservations = reservations = db.get_all_reservations()
     currentCount = 0
