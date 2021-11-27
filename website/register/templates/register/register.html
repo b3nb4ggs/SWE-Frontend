@@ -6,10 +6,12 @@
 
 {% block content%}
 <h1>Create New Account</h1><hr>
+<div style="background-color: whitesmoke">
 <form method="POST" class="form-group" >
  {% csrf_token %}
  {{form|crispy}}
 
 <button type="submit" class="btn btn-success"> Register </button>
 </form>
+</div>
 {% endblock %}

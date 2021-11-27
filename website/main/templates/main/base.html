@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <style type="text/css">
-    .sidenav {
-        height: 100%;
-        width: 160px;
-        position: fixed;
-        z-index: 1;
+    .navbar2 {
+        width: 100%;
         top:0;
         left:0;
-        background-color: #111;
-        overflow-x: hidden;
-        padding-top: 20px;
     }
     .errorlist
     {
         color: red;
     }
+    body, html{
+        height: 100%;
+    }
     .main{
-        margin-left: 160px;
-        padding:0px 10px;
+        background-image: url("{% static '' %}hotel.jpeg");
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .margins{
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+    .outer{
+    width:100%;
+    text-align: center;
+    }
+    .inner
+    {
+    display: inline-block;
     }
 
     </style>
@@ -30,8 +41,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title> {% block title %} Hotel Reservation Website {% endblock %} </title>
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body class="main">
+<nav class="navbar navbar2 navbar-expand-lg navbar-dark bg-dark"">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -51,10 +62,10 @@
 </nav>
 
 
-    <div class="main" id="content", name="content" >
+    <div class="margins" id="content", name="content" >
         <div class="row justify-content center">
         <div class = "col-8">
-            <hr class= "mt-0 mb-4">
+
 
         {% block content %}
         {% endblock %}

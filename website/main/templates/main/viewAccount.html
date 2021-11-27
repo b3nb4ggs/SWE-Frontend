@@ -6,7 +6,7 @@
 {% block content %}
 <p style="color:#FF0000";>{{error.error}}</p>
     {% if user.is_authenticated %}
-    
+
 <h1>My Account</h1><hr>
     <table>
         <tr>
@@ -31,23 +31,35 @@
 
 
 <h2>Update Account</h2><hr>
+
+
+<div style="background-color:whitesmoke"
     <form method="POST" class="form-group" action="/viewAccount/">
     {% csrf_token %}
     {{form|crispy}}
     <input type="hidden", name="index" value={{user_info.index}}>
+        <div class="inner">
         <button type="submit" class="btn btn-dark"> Update </button>
+        </div>
 </form>
+
+        <div class="outer">
+        <div class="inner"
         <form action="/viewAccount/" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
             <button type="submit" name="action" value = "delete" class="btn btn-dark"  > Delete Account </button>
     </form>
-
+        </div>
+<div class="inner">
     <form action="/password/">
             <button type="submit" class="btn btn-dark" > Change Password </button>
     </form>
+</div>
+        <div class="inner">
     <form action="/home/">
             <button type="submit" class="btn btn-dark" > Back </button>
     </form>
-
+        </div>
+        </div>
         {% else %}
         <p>You need to have an account to view this page!</p>
     {% endif %}
