@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, request
 from pymongo.message import MAX_INT32
 from .models import User, Property, Reservation
+from django.templatetags.static import static
 from .forms import (
     CreateAccount,
     Search,
@@ -239,14 +240,7 @@ def filterHotels(response):
 
 def makeReservation(response):
     if response.method == "GET":
-        # form = response.GET.dict()
-        # propertyId = form.get("id")
-        # roomType = form.get("roomType")
-        # property = Property.objects.get(id=propertyId)
-        # return render(response, "main/makeReservation.html", {"form": form, "roomType": roomType,"property": property})
-
         user = response.user
-
         user_data = db.get_user_by_username(user.username)
 
         context = {}
@@ -256,9 +250,10 @@ def makeReservation(response):
         numGuests = response.GET.get("numGuests", None)
         roomType = response.GET.get("roomType", None)
         propertyId = response.GET.get("id", None)
-        property = Property.objects.get(
-            id=propertyId
-        )  # query for property with given id and return property object
+        print(propertyId)
+        property = db.get_hotel_by_index(int(propertyId))
+        print(property)
+        # query for property with given id and return property object
         numNights = response.GET.get("days", None)  # calculate number of nights here
 
         avgRate = response.GET.get(
@@ -424,11 +419,8 @@ def addProperty(response):
     return render(response, "main/addProperty.html", {"form": form})
 
 
-def editProperty(response):
-    return render(response, "main/editProperty.html")
-
-
 def manageUsers(response):
+    users = db.get_all_users()
     return render(response, "main/manageUsers.html")
 
 
@@ -798,14 +790,20 @@ def editProperty(response):
                     "weekendDiff": property["weekend_differential"],
                 }
             )
+            #form.fields['file'].initial = static(str(index) + ".jpg")
             return render(
                 response, "main/editProperty.html", {"form": form, "property": property}
             )
     if response.POST["action"] == "save":
-        form = AddProperty(response.POST)
+        form = AddProperty(response.POST, response.FILES)
+        downloadthis = response.FILES["file"]
         form_data = response.POST.dict()
         index = int(form_data["index"].strip("/"))
         if form.is_valid():
+            path = "./assets/" + str(index) + ".jpg"
+            with open(path, "wb+") as destination:
+                for chunk in downloadthis.chunks():
+                                 destination.write(chunk)
             name = form.cleaned_data["name"]
             amenities = form.cleaned_data["amenities"]
             weekendDiff = form.cleaned_data["weekendDiff"]
@@ -826,6 +824,7 @@ def editProperty(response):
 
             db.update_hotel(index, name, weekendDiff, amenities, rooms)
             return redirect("/manageProperties")
-        db.update_hotel()
-        return redirect("/manageProperties")
+        #db.update_hotel()
+        #return redirect("/manageProperties")
+    form = AddProperty()
     return render(response, "main/editProperty.html")

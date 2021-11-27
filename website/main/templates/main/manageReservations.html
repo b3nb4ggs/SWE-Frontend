@@ -126,7 +126,12 @@
               <td>{{ reservation.checkout }} </td>
               <td> {{ reservation.rate }}</td>
               <td> {{ reservation.cost }}</td>
-
+                <td><form id="delete" method="POST" onsubmit="return confirm('Are you sure you want to delete reservation record {{ reservation.index }}?')">
+                {%  csrf_token %}
+                <input type="hidden" name="reservationId" value={{ reservation.index }}/>
+                <button type="Submit" name="action" value="delete" class="btn btn-dark">Delete</button>
+            </form>
+            </td>
                         {% endif %}
              		{% endfor %}
 

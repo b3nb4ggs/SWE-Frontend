@@ -36,7 +36,7 @@
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
         <!---Add reservation to database--->
-        <input type="hidden", name="hotel_id" value={{ property.id }}>
+        <input type="hidden", name="hotel_id" value={{ property.index }}>
         <input type="hidden", name="in" value={{context.checkin}}>
         <input type="hidden", name="out" value={{context.checkout}}>
         <input type="hidden", name="user_id" value={{user_info.index}}>
