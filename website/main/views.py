@@ -335,7 +335,7 @@ def viewReservations(response):
         item["checkin"] = item["in"].date
         item["checkout"] = item["out"].date
         reservationCount += 1
-        if item["out"] <= datetime.now():
+        if item["out"] < datetime.now():
             pastreservations.append(item)
             pastCount += 1
         else:
@@ -633,7 +633,11 @@ def manageReservations(response):
         reservation["phone"] = user[0]["phone"]
         reservation["checkin"] = reservation["in"].date
         reservation["checkout"] = reservation["out"].date
-        if reservation["out"] <= datetime.now():
+        now = datetime.now()
+        today = now.replace(hour=0, minute=0,second=0, microsecond=0)
+        if reservation["out"] < today:
+            print(reservation["out"])
+            print( today)
             reservation["current"] = 0
             pastCount += 1
         else:
@@ -729,7 +733,9 @@ def editReservation(response):
             reservation["first"] = user[0]["first_name"]
             reservation["last"] = user[0]["last_name"]
 
-            if(reservation["in"] < datetime.now()):
+            now = datetime.now()
+            today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            if(reservation["in"] <= today):
                 pastCheckin = 1
             else:
                 pastCheckin = 0
@@ -761,6 +767,7 @@ def editReservation(response):
             errors = {}
             # check if new hotel reservation is valid
             # check if dates are a valid range
+
             if(response.user.is_superuser):
                 if (
                     datetime.date(checkout) < datetime.date(datetime.today())
@@ -769,8 +776,11 @@ def editReservation(response):
                     errors["error"] = "ERROR: Invalid Date Range"
             else:
                 if (
-                    datetime.date(checkin) < datetime.date(datetime.now())
-                    or datetime.date(checkout) < datetime.date(datetime.today())
+                    datetime.date(checkin) <= datetime.date(datetime.today() + timedelta(hours=14))
+                ):
+                    errors["error"] = "ERROR: Check-In Time has passed. Reservation cannot be changed"
+                elif(
+                    datetime.date(checkout) < datetime.date(datetime.today())
                     or datetime.date(checkin) >= datetime.date(checkout)
                 ):
                     errors["error"] = "ERROR: Invalid Date Range"

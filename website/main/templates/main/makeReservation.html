@@ -7,31 +7,32 @@
 
 {% if user.is_authenticated %}
 
-    	<table>
-        <td>
-            <tr><h2>Reservation Info</h2></tr>
+    <div style="background-color: whitesmoke">
+    	<table style="background-color: whitesmoke">
+        <td >
+            <tr><h2>Reservation Info</h2><hr></tr>
             <tr>{{property.name}}</tr> <br>
             <tr>{{ context.numRooms }} {{context.roomType}} Room(s) for {{ context.numNights }} nights</tr> <br>
             <tr>Check-in: {{ context.checkin }} Check-out: {{ context.checkout }}</tr> <br>
             <tr>Hotel Amenities: {{property.amenities}}</tr> <br>
         </td>
         <td>
-            <tr><h2>Price Summary</h2></tr>
+            <tr><h2>Price Summary</h2><hr></tr>
             <tr>{{context.numNights}} Night Stay</tr> <br>
             <tr>Average rate per night: ${{ context.avgRate }}</tr> <br>
             <tr>Total cost: ${{ context.total }}</tr> <br>
         </td>
         <td>
-            <tr><h2>Your Information</h2></tr>
+            <tr><h2>Your Information</h2><hr></tr>
             <tr>Username:{{user_info.username}}  </tr> <br>
             <tr>Name:{{user_info.first_name}} {{user_info.last_name}} </tr> <br>
             <tr>Email:{{user_info.email}} </tr> <br>
-            <tr>Phone Number:{{user_info.phone}} </tr>
+            <tr>Phone Number:{{user_info.phone}} </tr><hr>
 
         </td>
         </table>
-        
-<table class="table table-light">
+
+<table >
 	<td>
 	<form method="post" action="/confirmReservation/">
         {% csrf_token %}
@@ -48,8 +49,13 @@
         <input type="hidden", name="cost" value={{context.total}}>
 		<button type="submit", name="confirm" class="btn btn-dark">Confirm Reservation</button>
 	</form>
+        <br><a href="/home" <button type="submit"  class="btn btn-dark">Back </button></a>
     </td>
 </table>
+
+
+       </div>
+
 
 {% else %}
     <h3>You must login or create an account to book a room!</h3>
