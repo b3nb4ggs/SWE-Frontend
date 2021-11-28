@@ -635,9 +635,9 @@ def manageReservations(response):
         reservation["checkout"] = reservation["out"].date
         now = datetime.now()
         today = now.replace(hour=0, minute=0,second=0, microsecond=0)
-        if reservation["out"] < today:
-            print(reservation["out"])
-            print( today)
+        if reservation["out"] < datetime.now():
+            #print(reservation["out"])
+            #print( datetime.now())
             reservation["current"] = 0
             pastCount += 1
         else:
