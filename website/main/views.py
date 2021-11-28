@@ -237,7 +237,7 @@ def filterHotels(response):
 
 
 def makeReservation(response):
-    if response.method == "GET":
+    if response.method == "GET" and "id" in response.GET:
         user = response.user
         user_data = db.get_user_by_username(user.username)
 
@@ -254,8 +254,8 @@ def makeReservation(response):
 
         avgRate = response.GET.get(
             "avgRate", None
-        )  # query for rate of roomType and weekend differential, calculate total/numNights
-
+        )
+        # query for rate of roomType and weekend differential, calculate total/numNights
         totalCost = response.GET.get("totalCost", None)  # use data from previous query
 
         context["checkin"] = checkin
@@ -267,13 +267,15 @@ def makeReservation(response):
         context["avgRate"] = avgRate
         context["total"] = totalCost
 
-        # user = get current user object and pass it to the page
 
         return render(
             response,
             "main/makeReservation.html",
             {"context": context, "property": property, "user_info": user_data},
         )
+    else:
+        return redirect("/home")
+
 
 
 def confirmReservation(response):
@@ -313,6 +315,8 @@ def confirmReservation(response):
             "main/confirmReservation.html",
             {"confirmation": confirmation, "hotel": hotel},
         )
+    else:
+        return redirect("/home")
 
 
 def viewReservations(response):
@@ -321,6 +325,8 @@ def viewReservations(response):
             form_data = response.POST.dict()
             index = int(form_data["reservationId"].strip("/"))
             db.delete_reservation(index)
+    else:
+        return redirect("/home")
     user = response.user
     user_info = db.get_user_by_username(user.username)
     reservations = db.get_reservations_by_userid(int(user_info["index"]))
@@ -348,16 +354,15 @@ def viewReservations(response):
          "pastCount": pastCount, "pastreservations": pastreservations, "currentreservations": currentreservations},
     )
 
-
-def cancelReservation(response):
-    return HttpResponse("cancel a reservation")
-
-
 def manage(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     return render(response, "main/manage.html")
 
 
 def manageProperties(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     if response.method == "POST":
         if response.POST["action"] == "delete":
             form_data = response.POST.dict()
@@ -384,6 +389,8 @@ def manageProperties(response):
 
 
 def addProperty(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     if response.method == "POST":
         form = AddProperty(response.POST)
         if response.POST["action"] == "add":
@@ -417,17 +424,17 @@ def addProperty(response):
 
 
 def manageUsers(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     users = db.get_all_users()
     if response.method == "POST" and response.POST["action"] == 'delete':
         form_data = response.POST.dict()
         index = int(form_data["userId"].strip("/"))
         username = db.get_user_by_index(index)[0]["username"]
-        #print(username)
         user = User.objects.filter(username=username)
         try:
             user.delete()
             db.delete_user(index)
-            #delete reservations of deleted user
             reservations = db.get_reservations_by_userid(index)
             for reservation in reservations:
                 db.delete_reservation(reservation["index"])
@@ -439,8 +446,9 @@ def manageUsers(response):
 
 
 def addUser(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     if response.method == "POST" and response.POST["action"] == "add":
-        #print("here")
         form = AddUser(response.POST)
         try:
             form.save()
@@ -458,9 +466,6 @@ def addUser(response):
         form = AddUser()
         return render(response, "main/addUser.html", {"form": form})
 
-
-def editUser(response):
-    return render(response, "main/editUser.html")
 
 
 def password(response):
@@ -495,6 +500,8 @@ def viewAccount(response):
     # import current values into form:
     user = response.user
     user_info = db.get_user_by_username(user.username)
+    if not user_info:
+        return redirect("/home")
     if response.method == "GET" and response.GET.get("action") == "delete":
         index = user_info["index"]
         username = db.get_user_by_index(index)[0]["username"]
@@ -589,6 +596,8 @@ def viewUserAccount(response):
 
 
 def manageReservations(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     filterId = ""
     filterName = ""
     if response.method == "POST":
@@ -652,6 +661,8 @@ def manageReservations(response):
 
 
 def addReservation(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     if response.method == "POST":
         savedata = response.POST
         form_data = response.POST.dict()
@@ -855,6 +866,8 @@ def editReservation(response):
 
 
 def editProperty(response):
+    if not response.user.is_superuser:
+        return redirect("/home")
     if response.method == "POST":
         form_data = response.POST.dict()
         if response.POST["action"] == "edit":
