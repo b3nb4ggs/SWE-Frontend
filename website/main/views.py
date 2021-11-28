@@ -249,14 +249,9 @@ def makeReservation(response):
         roomType = response.GET.get("roomType", None)
         propertyId = response.GET.get("id", None)
         property = db.get_hotel_by_index(int(propertyId))
-        # query for property with given id and return property object
-        numNights = response.GET.get("days", None)  # calculate number of nights here
-
-        avgRate = response.GET.get(
-            "avgRate", None
-        )
-        # query for rate of roomType and weekend differential, calculate total/numNights
-        totalCost = response.GET.get("totalCost", None)  # use data from previous query
+        numNights = response.GET.get("days", None)
+        avgRate = response.GET.get("avgRate", None)
+        totalCost = response.GET.get("totalCost", None)
 
         context["checkin"] = checkin
         context["checkout"] = checkout
@@ -266,7 +261,6 @@ def makeReservation(response):
         context["numNights"] = numNights
         context["avgRate"] = avgRate
         context["total"] = totalCost
-
 
         return render(
             response,
@@ -282,9 +276,6 @@ def confirmReservation(response):
     if response.method == "POST":
         form_data = response.POST.dict()
 
-        if response.method == "POST":
-            form_data = response.POST.dict()
-
         in_date = datetime.fromisoformat(form_data["in"])
         out_date = datetime.fromisoformat(form_data["out"])
         index = int(form_data["hotel_id"])
@@ -296,18 +287,9 @@ def confirmReservation(response):
         rate = float(form_data["rate"])
         cost = float(form_data["cost"])
 
-        result = db.make_reservation(
-            in_date,
-            out_date,
-            index,
-            user_index,
-            room_type,
-            number_of_rooms,
-            number_of_guests,
-            total_days,
-            rate,
-            cost,
-        )
+        result = db.make_reservation(in_date, out_date, index, user_index, room_type, number_of_rooms,
+                        number_of_guests, total_days, rate, cost)
+
         confirmation = db.get_reservation_by_id(result.inserted_id)
         hotel = db.get_hotel_by_index(int(index))
         return render(

@@ -13,14 +13,13 @@
             <tr><h2>Reservation Info</h2><hr></tr>
             <tr>{{property.name}}</tr> <br>
             <tr>{{ context.numRooms }} {{context.roomType}} Room(s) for {{ context.numNights }} nights</tr> <br>
-            <tr>Check-in: {{ context.checkin }} Check-out: {{ context.checkout }}</tr> <br>
-            <tr>Hotel Amenities: {{property.amenities}}</tr> <br>
+            <tr>Check-in: {{ context.checkin }} Check-out: {{ context.checkout }}</tr> <br><br>
         </td>
         <td>
             <tr><h2>Price Summary</h2><hr></tr>
             <tr>{{context.numNights}} Night Stay</tr> <br>
             <tr>Average rate per night: ${{ context.avgRate }}</tr> <br>
-            <tr>Total cost: ${{ context.total }}</tr> <br>
+            <tr>Total cost: ${{ context.total }}</tr> <br><br>
         </td>
         <td>
             <tr><h2>Your Information</h2><hr></tr>
