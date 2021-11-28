@@ -302,13 +302,13 @@ def confirmReservation(response):
 
 
 def viewReservations(response):
+    if not response.user.is_authenticated:
+        return redirect("/home")
     if response.method == "POST":
         if response.POST["action"] == "cancel":
             form_data = response.POST.dict()
             index = int(form_data["reservationId"].strip("/"))
             db.delete_reservation(index)
-    else:
-        return redirect("/home")
     user = response.user
     user_info = db.get_user_by_username(user.username)
     reservations = db.get_reservations_by_userid(int(user_info["index"]))
