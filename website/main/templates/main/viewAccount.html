@@ -33,15 +33,13 @@
 <h2>Update Account</h2><hr>
 
 
-<div style="background-color:whitesmoke"
+<div style="background-color:whitesmoke">
     <form method="POST" class="form-group" action="/viewAccount/">
-    {% csrf_token %}
-    {{form|crispy}}
-    <input type="hidden", name="index" value={{user_info.index}}><br>
-        <div class="inner">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="hidden", name="index" value={{user_info.index}}><br>
         <button type="submit" class="btn btn-dark"> Update </button>
-        </div>
-</form>
+    </form>
 
         <div class="outer">
         <div class="inner">
