@@ -84,17 +84,11 @@ class Search(forms.Form):
 
 class Filter(forms.Form):
     checkin = forms.DateField(widget=dateinput, required=True, initial=datetime.today())
-    checkout = forms.DateField(
-        widget=dateinput, required=True, initial=datetime.today() + timedelta(days=1)
-    )
+    checkout = forms.DateField(widget=dateinput, required=True, initial=datetime.today() + timedelta(days=1))
     numRooms = forms.ChoiceField(label="Rooms", choices=INTEGER_CHOICES, required=True)
-    numGuests = forms.ChoiceField(
-        label="Guests", choices=INTEGER_CHOICES, required=True
-    )
+    numGuests = forms.ChoiceField(label="Guests", choices=INTEGER_CHOICES, required=True)
     roomType = forms.ChoiceField(label="Room Type", choices=ROOM_TYPES, required=True)
-    amenities = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=False
-    )
+    amenities = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=AMENITIES, required=False)
 
 
 class Reserve(forms.Form):

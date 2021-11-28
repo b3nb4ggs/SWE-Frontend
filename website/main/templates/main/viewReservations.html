@@ -9,6 +9,7 @@
     <p>You haven't made any reservations yet!</p>
 {% else %}
 
+    <div style="background-color: whitesmoke">
     <h2>Current Reservations</h2><hr>
     {% if currentCount == 0%}
     <p>No current reservations</p>
@@ -21,6 +22,7 @@
 	        <th>Check-In</th>
               <th>Check-Out</th>
               <th>Room Type</th>
+              <th>Rooms</th>
               <th>Guests </th>
               <th>Nightly Rate</th>
               <th>Total Cost</th>
@@ -36,6 +38,7 @@
             <td>{{reservation.checkin}} </td>
             <td>{{ reservation.checkout }}</td>
               <td>{{ reservation.type }}</td>
+              <td>{{ reservation.number_rooms }}</td>
               <td>{{ reservation.number_guests}}</td>
               <td>{{ reservation.rate }}</td>
             <td> {{reservation.cost}}  </td>
@@ -94,5 +97,6 @@
             <form action="/home/">
             <button type="submit" class="btn btn-dark" > Back </button>
     </form>
+    </div>
     {% endif %}
 {% endblock %}

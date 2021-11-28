@@ -58,12 +58,19 @@
 
 
 {% else %}
-    <h3>You must login or create an account to book a room!</h3>
-        <br>
+
+        <div class="outer">
+                <h3>You must login or create an account to book a room!</h3>
+        <div class="inner">
         <a href="/register?action=redirect"><button type="submit" class="btn btn-dark" >Create Account</button></a>
-        <br>
+   </div>
+            <div class="inner">
         <a href="/login/"><button type="submit" class="btn btn-dark" >Login</button></a>
-        <br>
+        </div>
+            <div class="inner">
+        <a href="/filter/"><button type="submit" class="btn btn-dark" >Back </button></a>
+        </div>
+        </div>
  {% endif %}
 
 {% endblock %}

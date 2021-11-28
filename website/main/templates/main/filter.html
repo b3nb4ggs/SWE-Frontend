@@ -23,7 +23,7 @@
         <input name="maxRange" id="maxRange" type="range" min="0" max="600" value={{ high }} oninput="this.nextElementSibling.value = this.value" />
         <output>{{ high }}</output><br>
 
-		<button type="submit" name="action" value="filter" class="btn btn-success">Filter </button>
+		<button type="submit" name="action" value="filter" class="btn btn-dark">Filter </button>
 	</form>
 	</td>
 <td>
@@ -38,6 +38,7 @@
           </tr>
         </thead>
         <tbody>
+
 	    {% for property in properties %}
           <tr>
               <td><img src="{% static ''%}{{property.index}}.jpg"width="100" height="100" style="vertical-align: bottom;"></td>
@@ -45,39 +46,19 @@
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
               <td>${{property.cost}}</td>
-              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}&days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">Book </a> </td>
+              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}&days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">
+                <button type="submit" class="btn btn-dark">Book </button> </a> </td>
           </tr>
 		{% endfor %}
         </tbody>
+                  {% if not properties %}
+            <h4 class="errorlist">No hotels found! Try adjusting your filters or changing your travel dates</h4>
+        {% endif %}
       </table>
 	</td>
 </table>
 
 
-<!--- <div class="w3-quarter w3-container" >
-    {% for property in properties %}
-    <div class="w3-container" style="border-style: solid">
-        <div class="col">
-            <img src="{% static ''%}{{property.index}}.jpg" width="100" height="100" style="vertical-align: bottom;">
-        </div >
-        <div class="col">
-            <div>
-                {{property.name}}
-            </div>
-            <div >
-                {{ roomType }} Rate: {{property.price}}
-            </div>
-            <div >
-                Amenities: {{property.amenity}}
-            </div>
-            <div>
-                <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}&days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">Book </a>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
---->
 {% endblock %}
 
 

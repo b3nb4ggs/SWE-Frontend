@@ -612,7 +612,7 @@ def manageReservations(response):
                 filterId = int(form_data["reservationId"])
                 reservations = db.get_reservation_by_index(filterId)
             # add in filtering for if both fields are set
-            if reservations == []:
+            if not filterName and not form_data["reservationId"]:
                 reservations = db.get_all_reservations()
         else:
             reservations = db.get_all_reservations()

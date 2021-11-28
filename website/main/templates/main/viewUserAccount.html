@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <p style="color:#FF0000";>{{error.error}}</p>
-    {% if user.is_authenticated %}
+    {% if user.is_superuser %}
     
 <h1>User Account </h1><hr>
     <table>
@@ -41,6 +41,6 @@
             </form>
 
         {% else %}
-        <p>You need to have an account to view this page!</p>
+        <h2>You do not have the permissions required to view this page!</h2>
     {% endif %}
 {% endblock %}
