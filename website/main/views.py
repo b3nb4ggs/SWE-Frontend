@@ -769,7 +769,7 @@ def editReservation(response):
                     errors["error"] = "ERROR: Invalid Date Range"
             else:
                 if (
-                    datetime.date(checkin) <= datetime.date(datetime.today() + timedelta(hours=14))
+                    datetime.date(checkin) < datetime.date(datetime.today() + timedelta(hours=14))
                 ):
                     errors["error"] = "ERROR: Check-In Time has passed. Reservation cannot be changed"
                 elif(
