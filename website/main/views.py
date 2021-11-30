@@ -292,11 +292,7 @@ def confirmReservation(response):
 
         confirmation = db.get_reservation_by_id(result.inserted_id)
         hotel = db.get_hotel_by_index(int(index))
-        return render(
-            response,
-            "main/confirmReservation.html",
-            {"confirmation": confirmation, "hotel": hotel},
-        )
+        return render( response, "main/confirmReservation.html", {"confirmation": confirmation, "hotel": hotel},)
     else:
         return redirect("/home")
 
@@ -469,7 +465,7 @@ def password(response):
             else:
                 errors["error"] = "Old password incorrect"
         else:
-            errors["error"] += "Passwords don't match"
+            errors["error"] = "Passwords don't match"
 
     return render(
         response,

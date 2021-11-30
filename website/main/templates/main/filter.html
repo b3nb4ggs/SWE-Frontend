@@ -46,7 +46,9 @@
               <td> ${{property.price}} </td>
               <td>{{property.amenity}} </td>
               <td>${{property.cost}}</td>
-              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout={{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}&days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">
+              <td> <a href="/makeReservation/?id={{property.index}}&checkin={{ checkin }}&checkout=
+                    {{ checkout }}&numRooms={{ numRooms }}&numGuests={{ numGuests }}&roomType={{ roomType }}
+                      &days={{property.days}}&avgRate={{property.price}}&totalCost={{property.cost}}">
                 <button type="submit" class="btn btn-dark">Book </button> </a> </td>
           </tr>
 		{% endfor %}

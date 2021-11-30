@@ -374,13 +374,11 @@ def hotel_has_vacancy(day: datetime, hotel_index: int, type: str):
     day_before = datetime(day.year, day.month, day.day, 23, 59, 59)
     day_after = day_before + timedelta(days=1)
 
-    query = {
-        "hotel": hotel_index,
-        "in": {"$lt": day_after},
-        "out": {"$gte": day_before},
-        "type": type,
+    query = {"hotel": hotel_index,
+            "in": {"$lt": day_after},
+            "out": {"$gte": day_before},
+            "type": type,
     }
-
     reservations = Reservation.find(query)
     number_of_reservations = 0
     for reservation in reservations:
@@ -396,9 +394,7 @@ def number_of_rooms_by_hotel_and_type(hotel: int, type: str):
     return number_rooms
 
 
-def hotel_vacancy_range(
-    in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int
-):
+def hotel_vacancy_range(in_date: datetime, out_date: datetime, hotel_index: int, type: str, num_rooms: int):
     room_vacancy_by_day = []
     iterable_days = number_of_days(in_date, out_date)
     for day in range(iterable_days):
