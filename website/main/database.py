@@ -1,4 +1,5 @@
 import ssl
+import os
 from warnings import resetwarnings
 import pymongo as pymongo
 from pymongo import MongoClient
@@ -10,7 +11,7 @@ import re
 from pymongo.common import validate_readable
 
 cluster = MongoClient(
-    "mongodb://localhost:27017",
+    os.environ.get("MONGODB_URI", "mongodb://localhost:27017"),
     ssl_cert_reqs=ssl.CERT_NONE,
 )
 
